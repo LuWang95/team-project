@@ -61,3 +61,4 @@ Team Member Signatures:
 Chenhao Sun 
 Jeremy Tam
 Shiraz Ali
+Lu Wang
