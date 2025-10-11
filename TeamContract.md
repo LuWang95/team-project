@@ -11,7 +11,7 @@ This contract sets out shared expectations and commitments for how our team will
 
 ### Communication
 
-Discord will be the main platform we use for communication outside of class, when required for work on your course project? (Examples: Text message, Discord, WeChat, etc.)
+Discord will be the main platform we use for communication outside of class, when required for work on your course project.
 
 Respond to messages ASAP. Obviously everyone is busy with schoolwork and/or their own life but be present in the groupchat. 
 
@@ -21,7 +21,7 @@ Teammates will notify others in cases that they will not be able to meet deadlin
 * Respectfully listening to each teammate. Let everyone finish then chime in. 
 * Every group member is allowed to disagree. Never shut an idea down without thinking about it. 
 * Communicate blockers and progress. Let the rest of the group what you're up to. 
-    * If someone don't tell the rest of the group they are struggling with something no one else can help you. 
+* If someone don't tell the rest of the group they are struggling with something no one else can help you. 
 
 ---
 
