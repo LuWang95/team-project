@@ -1,3 +1,5 @@
+package CourseInfo;
+
 import java.util.ArrayList;
 
 public class Course {

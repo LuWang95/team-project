@@ -1,3 +1,5 @@
+package CourseInfo;
+
 public class Meeting {
     String instructor;
     String startTime;
