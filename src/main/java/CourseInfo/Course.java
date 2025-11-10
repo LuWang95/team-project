@@ -9,15 +9,17 @@ public class Course {
     double credit;
     ArrayList<LectureSection> lecture_sections;
     ArrayList<TutorialSection> tutorial_sections;
+    ArrayList<PracticalSection> practical_sections;
 
     public Course(String courseCode, String courseTitle, int sessionCode, double credit,
-                  ArrayList<LectureSection> lectureSections, ArrayList<TutorialSection> tutorialSections) {
+                  ArrayList<LectureSection> lectureSections, ArrayList<TutorialSection> tutorialSections,ArrayList<PracticalSection> practicalSections) {
         this.courseCode = courseCode;
         this.courseTitle = courseTitle;
         this.sessionCode = sessionCode;
         this.credit = credit;
         this.lecture_sections = lectureSections;
         this.tutorial_sections = tutorialSections;
+        this.practical_sections = practicalSections;
     }
 
     public String getCourseCode() {
@@ -42,6 +44,7 @@ public class Course {
     public ArrayList<TutorialSection> getTutorialSections() {
         return tutorial_sections;
     }
+    public ArrayList<PracticalSection> getPracticalSections() {return practical_sections;}
 
 
 }

@@ -5,13 +5,13 @@ import CourseInfo.Course;
 import java.util.ArrayList;
 
 public class AddCourseInputData {
-    public ArrayList<Course> courses;
+    public String coursesCode;
 
-    public AddCourseInputData(ArrayList<Course> courses) {
-        this.courses = courses;
+    public AddCourseInputData(String coursesCode) {
+        this.coursesCode = coursesCode;
     }
 
-    public ArrayList<Course> getCourseNames() {
-        return this.courses;
+    public String getCourseCode() {
+        return coursesCode;
     }
 }
