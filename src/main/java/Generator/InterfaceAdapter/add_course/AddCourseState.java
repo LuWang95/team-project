@@ -1,4 +1,4 @@
-package Generator;
+package Generator.InterfaceAdapter.add_course;
 
 public class AddCourseState {
     private String courseName;
