@@ -9,6 +9,8 @@ public interface AddCourseDataAccessInterface {
 
     void saveCourses(String coursesCode);
 
+    boolean alreadyInList(String courseCode);
+
 
 
 }

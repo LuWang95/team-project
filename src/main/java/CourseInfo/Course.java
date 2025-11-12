@@ -5,13 +5,13 @@ import java.util.ArrayList;
 public class Course {
     String courseCode;
     String courseTitle;
-    int sessionCode;
+    String sessionCode;
     double credit;
     ArrayList<LectureSection> lecture_sections;
     ArrayList<TutorialSection> tutorial_sections;
     ArrayList<PracticalSection> practical_sections;
 
-    public Course(String courseCode, String courseTitle, int sessionCode, double credit,
+    public Course(String courseCode, String courseTitle, String sessionCode, double credit,
                   ArrayList<LectureSection> lectureSections, ArrayList<TutorialSection> tutorialSections,ArrayList<PracticalSection> practicalSections) {
         this.courseCode = courseCode;
         this.courseTitle = courseTitle;
@@ -29,8 +29,7 @@ public class Course {
     public String getCourseTitle() {
         return courseTitle;
     }
-
-    public int getSessionCode() {
+    public String getSessionCode() {
         return sessionCode;
     }
     public double getCredit() {

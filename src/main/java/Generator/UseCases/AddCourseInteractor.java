@@ -22,13 +22,15 @@ public class AddCourseInteractor implements AddCourseInputBoundary {
             addCoursePresenter.prepareErrorView("Please enter a valid course code");
             return;
         }
+        if(addCourseDataAccessObject.alreadyInList(code)){
+            addCoursePresenter.prepareErrorView("This course already exists");
+        }
         if(!addCourseDataAccessObject.getCourseByCode(code)){
             addCoursePresenter.prepareErrorView("Course not found");
-            return;
         }else{
             Course courses = addCourseDataAccessObject.getCourse(code);
             AddCourseOutputData addCourseOutputData = new AddCourseOutputData(courses.getCourseCode(), courses.getCourseTitle(),
-                    courses.getLectureSections(),courses.getTutorialSections(),courses.getPracticalSections());
+                    courses.getLectureSections(),courses.getTutorialSections(),courses.getPracticalSections(),courses.getCredit(),courses.getSessionCode());
             addCoursePresenter.prepareSuccessView(addCourseOutputData);
 
         }
