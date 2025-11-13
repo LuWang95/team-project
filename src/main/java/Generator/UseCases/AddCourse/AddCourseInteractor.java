@@ -1,8 +1,6 @@
-package Generator.UseCases;
+package Generator.UseCases.AddCourse;
 
 import CourseInfo.Course;
-
-import java.util.ArrayList;
 
 public class AddCourseInteractor implements AddCourseInputBoundary {
 

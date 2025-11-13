@@ -1,4 +1,4 @@
-package Generator.UseCases;
+package Generator.UseCases.AddCourse;
 import CourseInfo.*;
 
 

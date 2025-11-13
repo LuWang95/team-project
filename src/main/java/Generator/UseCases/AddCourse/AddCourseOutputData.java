@@ -1,8 +1,6 @@
-package Generator.UseCases;
+package Generator.UseCases.AddCourse;
 
-import CourseInfo.Course;
 import CourseInfo.LectureSection;
-import CourseInfo.PracticalSection;
 import CourseInfo.PracticalSection;
 import CourseInfo.TutorialSection;
 

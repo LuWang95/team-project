@@ -1,12 +1,12 @@
 package Generator.InterfaceAdapter.AddCourse;
 
-import Generator.UseCases.AddCourseInputData;
-import Generator.UseCases.AddCourseInteractor;
+import Generator.UseCases.AddCourse.AddCourseInputBoundary;
+import Generator.UseCases.AddCourse.AddCourseInputData;
 
 public class AddCourseController {
-    private final AddCourseInteractor addCourseInteractor;
+    private final AddCourseInputBoundary addCourseInteractor;
 
-    public AddCourseController(AddCourseInteractor addCourseInteractor) {
+    public AddCourseController(AddCourseInputBoundary addCourseInteractor) {
         this.addCourseInteractor = addCourseInteractor;
     }
 

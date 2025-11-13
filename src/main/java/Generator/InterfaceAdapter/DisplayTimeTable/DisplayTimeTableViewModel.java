@@ -1,4 +1,4 @@
-package Generator.InterfaceAdapter;
+package Generator.InterfaceAdapter.DisplayTimeTable;
 
 import Generator.View.ViewModel;
 

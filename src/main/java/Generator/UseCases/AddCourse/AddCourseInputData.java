@@ -1,5 +1,4 @@
-package Generator.UseCases;
-import CourseInfo.Course;
+package Generator.UseCases.AddCourse;
 
 
 public class AddCourseInputData {
