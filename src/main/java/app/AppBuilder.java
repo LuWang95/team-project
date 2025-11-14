@@ -1,7 +1,16 @@
 package app;
 
+import Generator.DataAccess.FileUserDataAccessObject;
 import Generator.InterfaceAdapter.*;
-import Generator.InterfaceAdapter.add_course.AddCourseViewModel;
+import Generator.InterfaceAdapter.set_preferences.SetPreferencesController;
+import Generator.InterfaceAdapter.set_preferences.SetPreferencesPresenter;
+import Generator.InterfaceAdapter.set_preferences.SetPreferencesViewModel;
+import Generator.UseCase.add_course.AddCourseInputBoundary;
+import Generator.UseCase.add_course.AddCourseInteractor;
+import Generator.UseCase.add_course.AddCourseOutputBoundary;
+import Generator.UseCase.remove_course.RemoveCourseInputBoundary;
+import Generator.UseCase.remove_course.RemoveCourseInteractor;
+import Generator.UseCase.remove_course.RemoveCourseOutputBoundary;
 import Generator.View.*;
 
 
@@ -14,17 +23,34 @@ public class AppBuilder {
     final ViewManagerModel viewManagerModel = new ViewManagerModel();
     ViewManager viewManager = new ViewManager(cardPanel, cardLayout, viewManagerModel);
 
-    private AddCourseView addCourseView;
-    private AddCourseViewModel addCourseViewModel;
+    final FileUserDataAccessObject userDataAccessObject = new FileUserDataAccessObject("selectedCourses.csv");
+
+    private SetPreferencesView setPreferencesView;
+    private SetPreferencesViewModel setPreferencesViewModel;
 
     public AppBuilder() {
         cardPanel.setLayout(cardLayout);
     }
 
-    public AppBuilder addAddCourseView() {
-        addCourseViewModel = new AddCourseViewModel();
-        addCourseView = new AddCourseView(addCourseViewModel);
-        cardPanel.add(addCourseView, addCourseView.getViewName());
+    public AppBuilder addSetPreferencesView() {
+        setPreferencesViewModel = new SetPreferencesViewModel();
+        setPreferencesView = new SetPreferencesView(setPreferencesViewModel);
+        cardPanel.add(setPreferencesView, setPreferencesView.getViewName());
+        return this;
+    }
+
+    public AppBuilder addAddCourseUseCase() {
+        final AddCourseOutputBoundary addCourseOutputBoundary = new SetPreferencesPresenter(viewManagerModel,
+                setPreferencesViewModel);
+        final AddCourseInputBoundary addCourseInteractor = new AddCourseInteractor(userDataAccessObject,
+                addCourseOutputBoundary);
+        final RemoveCourseOutputBoundary removeCourseOutputBoundary = new SetPreferencesPresenter(viewManagerModel,
+                setPreferencesViewModel);
+        final RemoveCourseInputBoundary removeCourseInteractor = new RemoveCourseInteractor(userDataAccessObject,
+                removeCourseOutputBoundary);
+        SetPreferencesController setPreferencesController = new SetPreferencesController(addCourseInteractor,
+                removeCourseInteractor);
+        setPreferencesView.setSetPreferencesController(setPreferencesController);
         return this;
     }
 
@@ -34,7 +60,7 @@ public class AppBuilder {
 
         application.add(cardPanel);
 
-        viewManagerModel.setState(addCourseView.getViewName());
+        viewManagerModel.setState(setPreferencesView.getViewName());
         viewManagerModel.firePropertyChange();
 
         return application;

@@ -1,10 +1,10 @@
-package Generator.UseCase.add_course;
+package Generator.UseCase.remove_course;
 
-public class AddCourseInputData {
+public class RemoveCourseInputData {
 
     private final String course;
 
-    public AddCourseInputData(String course) {
+    public RemoveCourseInputData(String course) {
         this.course = course;
     }
 
