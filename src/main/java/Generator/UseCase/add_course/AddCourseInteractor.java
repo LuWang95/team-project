@@ -17,7 +17,7 @@ public class AddCourseInteractor implements AddCourseInputBoundary {
     // if not, then records the added course in the files and then tells the presenter to display the added course
     @Override
     public void execute(AddCourseInputData addCourseInputData) {
-        if (addCourseDataAccessObject.existsByName(addCourseInputData.getCourse())) {
+        if (addCourseDataAccessObject.courseExistsByName(addCourseInputData.getCourse())) {
             addCoursePresenter.prepareAddCourseFailureView("Course already selected");
         }
         else {

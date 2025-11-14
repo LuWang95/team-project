@@ -6,12 +6,11 @@ public class SetPreferencesState {
     private ArrayList<String> courses;
     private String courseError;
     private ArrayList<String> degrees;
+    private String degreeError;
     private String selectedCourse;
     private String selectedDegree;
     private int year;
-    private boolean morning;
-    private boolean afternoon;
-    private boolean evening;
+    private ArrayList<String> times;
 
     public ArrayList<String> getCourses() {
         return courses;
@@ -35,6 +34,14 @@ public class SetPreferencesState {
 
     public void setDegrees(ArrayList<String> degrees) {
         this.degrees = degrees;
+    }
+
+    public String getDegreeError() {
+        return degreeError;
+    }
+
+    public void setDegreeError(String degreeError) {
+        this.degreeError = degreeError;
     }
 
     public String getSelectedCourse() {
@@ -61,29 +68,14 @@ public class SetPreferencesState {
         this.year = year;
     }
 
-    public boolean isMorning() {
-        return morning;
+    public ArrayList<String> getTimes() {
+        return times;
     }
 
-    public void setMorning(boolean morning) {
-        this.morning = morning;
+    public void setTimes(ArrayList<String> times) {
+        this.times = times;
     }
 
-    public boolean isAfternoon() {
-        return afternoon;
-    }
-
-    public void setAfternoon(boolean afternoon) {
-        this.afternoon = afternoon;
-    }
-
-    public boolean isEvening() {
-        return evening;
-    }
-
-    public void setEvening(boolean evening) {
-        this.evening = evening;
-    }
 
     @Override
     public String toString() {
@@ -93,9 +85,9 @@ public class SetPreferencesState {
                 + ", selectedCourse='" + selectedCourse + '\''
                 + ", selectedDegree='" + selectedDegree + '\''
                 + ", year='" + year + '\''
-                + ", morning='" + morning + '\''
-                + ", afternoon='" + afternoon + '\''
-                + ", evening='" + evening + '\''
+                + ", morning='" + times.contains("Morning") + '\''
+                + ", afternoon='" + times.contains("Afternoon") + '\''
+                + ", evening='" + times.contains("Evening") + '\''
                 + '}';
     }
 }

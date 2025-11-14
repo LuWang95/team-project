@@ -7,7 +7,7 @@ public class Main {
         AppBuilder appBuilder = new AppBuilder();
         JFrame application = appBuilder
                 .addSetPreferencesView()
-                .addAddCourseUseCase()
+                .addSetPreferencesUseCase()
                 .build();
         application.pack();
         application.setLocationRelativeTo(null);

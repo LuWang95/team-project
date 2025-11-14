@@ -1,20 +1,26 @@
 package Generator.DataAccess;
 
+import CourseInfo.Degree;
 import Generator.UseCase.add_course.AddCourseDataAccessInterface;
 import CourseInfo.Course;
+import Generator.UseCase.add_degree.AddDegreeDataAccessInterface;
 import Generator.UseCase.remove_course.RemoveCourseDataAccessInterface;
+import Generator.UseCase.remove_degree.RemoveDegreeDataAccessInterface;
 
 import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class FileUserDataAccessObject implements AddCourseDataAccessInterface, RemoveCourseDataAccessInterface {
+public class FileUserDataAccessObject implements AddCourseDataAccessInterface, RemoveCourseDataAccessInterface,
+        AddDegreeDataAccessInterface, RemoveDegreeDataAccessInterface {
     private final File csvFile;
     private final ArrayList<Course> courses;
+    private final ArrayList<Degree> degrees;
 
     public FileUserDataAccessObject(String csvPath) {
         csvFile = new File(csvPath);
         courses = new ArrayList<>();
+        degrees = new ArrayList<>();
         save();
 
 //        need to figure out how to load previous data from file into the view when the program restarts TODO
@@ -55,6 +61,17 @@ public class FileUserDataAccessObject implements AddCourseDataAccessInterface, R
             }
             writer.write(courseString.toString());
 
+            writer.newLine();
+
+            StringBuilder degreeString = new StringBuilder();
+            for (Degree degree : degrees) {
+                degreeString.append(degree.getDegreeCode()).append(",");
+            }
+            if (!degreeString.toString().isEmpty()) {
+                degreeString.deleteCharAt(degreeString.length() - 1);
+            }
+            writer.write(degreeString.toString());
+
             writer.close();
         }
         catch (IOException ex) {
@@ -64,15 +81,28 @@ public class FileUserDataAccessObject implements AddCourseDataAccessInterface, R
 
     // checks to see if specified course is already in the courses ArrayList
     @Override
-    public boolean existsByName(String course) {
+    public boolean courseExistsByName(String course) {
         List<String> courseNames = courses.stream().map(Course::getCourseCode).collect(Collectors.toList());
         return courseNames.contains(course);
+    }
+
+    @Override
+    public boolean degreeExistsByName(String degree) {
+        List<String> degreeNames = degrees.stream().map(Degree::getDegreeCode).collect(Collectors.toList());
+        return degreeNames.contains(degree);
     }
 
     // adds course to the courses ArrayList
     @Override
     public void add(Course course) {
         courses.add(course);
+        this.save();
+    }
+
+    // adds degree to the degrees ArrayList
+    @Override
+    public void add(Degree degree) {
+        degrees.add(degree);
         this.save();
     }
 
@@ -85,6 +115,17 @@ public class FileUserDataAccessObject implements AddCourseDataAccessInterface, R
         for (int i = courses.size() - 1; i >= 0; i--) {
             if (courses.get(i).getCourseCode().equals(course.getCourseCode())) {
                 courses.remove(i);
+                break;
+            }
+        }
+        this.save();
+    }
+
+    @Override
+    public void remove(Degree degree) {
+        for (int i = degrees.size() - 1; i >= 0; i--) {
+            if (degrees.get(i).getDegreeCode().equals(degree.getDegreeCode())) {
+                degrees.remove(i);
                 break;
             }
         }

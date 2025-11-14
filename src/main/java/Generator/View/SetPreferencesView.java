@@ -12,9 +12,12 @@ import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.Enumeration;
 
 public class SetPreferencesView extends JPanel implements ActionListener, PropertyChangeListener {
 
@@ -24,8 +27,8 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
 
     private final JTextField degreeInputField = new JTextField("Enter degree", 15);
     private final JTextField courseInputField = new JTextField("Enter courses",15);
-
-    private final ArrayList<String> degreesSelected = new ArrayList<>(); // will get deleted soon! TODO
+    private final ButtonGroup yearButtons = new ButtonGroup();
+    private final JRadioButton[] timeButtons = new JRadioButton[3];
 
     private final JPanel degreesPanel = new JPanel();
     private final JPanel coursesPanel = new JPanel();
@@ -36,6 +39,8 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
         this.setPreferencesViewModel = setPreferencesViewModel;
         setPreferencesViewModel.addPropertyChangeListener(this);
         setPreferencesViewModel.getState().setCourses(new ArrayList<>());
+        setPreferencesViewModel.getState().setDegrees(new ArrayList<>());
+        setPreferencesViewModel.getState().setTimes(new ArrayList<>());
 
         final JLabel title = new JLabel("Set Preferences");
         title.setAlignmentX(JComponent.CENTER_ALIGNMENT);
@@ -49,13 +54,16 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
         rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
 
         // creates the selecting degrees section, will be modified soon TODO
+        degreesPanel.setLayout(new BoxLayout(degreesPanel, BoxLayout.Y_AXIS));
         degreeInputField.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                degreesSelected.add(degreeInputField.getText()); // gets changed soon TODO
+                final SetPreferencesState setPreferencesState = setPreferencesViewModel.getState();
+                setPreferencesController.addDegree(setPreferencesState.getSelectedDegree());
             }
         });
         final LabelTextPanel degreeInfo = new LabelTextPanel(new JLabel("Degree"), degreeInputField);
+        displayDegrees(setPreferencesViewModel.getState().getDegrees());
 
         // creates the selecting courses section
         // courses get added as you press enter in the text field
@@ -73,13 +81,12 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
 
         // creates the select year section, years select from 1 to 4
         final JPanel yearInfo = new JPanel();
-        final ButtonGroup yearGroup = new ButtonGroup();
         final JLabel yearTitle = new JLabel("Year of Study");
         yearInfo.add(yearTitle);
         for (int i = 1; i <= 4; i++) {
             JRadioButton radioYear = new JRadioButton(String.valueOf(i));
             yearInfo.add(radioYear);
-            yearGroup.add(radioYear);
+            yearButtons.add(radioYear);
         }
 
         // creates the select time preferences section
@@ -87,16 +94,17 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
         final JLabel timeTitle = new JLabel("Preferred Time");
         final String[] possibleTimes = {"Morning", "Afternoon", "Evening"};
         timeInfo.add(timeTitle);
-        for (String possibleTime : possibleTimes) {
-            JRadioButton radioTime = new JRadioButton(possibleTime);
+        for (int i = 0; i < possibleTimes.length; i++) {
+            JRadioButton radioTime = new JRadioButton(possibleTimes[i]);
             timeInfo.add(radioTime);
+            timeButtons[i] = radioTime;
         }
 
         // makes sure SetPreferencesState is updated whenever applicable
         addCourseListener();
         addDegreeListener();
-        // addYearListener();
-        // addTimeListener(); not implemented yet! TODO
+        addYearListener();
+        addTimeListener();
 
         // creates the generate timetable button
         generate = new JButton("Generate Time Table");
@@ -113,7 +121,7 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
         this.add(title);
 
         leftPanel.add(degreeInfo);
-        // leftPanel.add(degreePanel); NOT IMPLEMENTED YET!
+        leftPanel.add(degreesPanel);
         leftPanel.add(courseInfo);
         leftPanel.add(coursesPanel);
         infoPanel.add(leftPanel);
@@ -126,14 +134,14 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
         this.add(generate);
 
 //        testing, will be removed as soon as the UI for this part is done
-//        JButton updateme = new JButton("update");
-//        updateme.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                System.out.println(setPreferencesViewModel.getState());
-//            }
-//        });
-//        this.add(updateme);
+        JButton updateme = new JButton("update");
+        updateme.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println(setPreferencesViewModel.getState());
+            }
+        });
+        this.add(updateme);
     }
 
     // ensures that the SetPreferencesState is well-updated with what's in the course TextField
@@ -185,13 +193,42 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
         });
     }
 
-    // need to implement addTimeListener() and addYearListener() TODO
+    private void addYearListener() {
+        for (Enumeration<AbstractButton> e = yearButtons.getElements(); e.hasMoreElements();) {
+            JRadioButton yearButton = (JRadioButton) e.nextElement();
+            yearButton.addItemListener(new ItemListener() {
+                @Override
+                public void itemStateChanged(ItemEvent e) {
+                    final SetPreferencesState setPreferencesState = setPreferencesViewModel.getState();
+                    setPreferencesState.setYear(Integer.parseInt(yearButton.getText()));
+                    setPreferencesViewModel.setState(setPreferencesState);
+                }
+            });
+        }
+    }
+
+    private void addTimeListener() {
+        for (JRadioButton timeButton: timeButtons) {
+            timeButton.addItemListener(new ItemListener() {
+                @Override
+                public void itemStateChanged(ItemEvent e) {
+                    final SetPreferencesState setPreferencesState = setPreferencesViewModel.getState();
+                    String timeOfDay = timeButton.getText();
+                    if (timeButton.isSelected())
+                        setPreferencesState.getTimes().add(timeOfDay);
+                    else
+                        setPreferencesState.getTimes().remove(timeOfDay);
+                    setPreferencesViewModel.setState(setPreferencesState);
+                }
+            });
+        }
+    }
 
     private void displayCourses(ArrayList<String> coursesSelected) {
         displayCourses(coursesSelected, null);
     }
 
-    // updates CoursesPanel when you add a course, triggered by propertyChange(), which is triggered by the Presenter
+    // updates coursesPanel when you add a course, triggered by propertyChange(), which is triggered by the Presenter
     // displays an error message if you try to enter a course you already entered
     private void displayCourses(ArrayList<String> coursesSelected, String errorMessage) {
 
@@ -221,11 +258,46 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
         coursesPanel.repaint();
     }
 
+    private void displayDegrees(ArrayList<String> coursesSelected) {
+        displayCourses(coursesSelected, null);
+    }
+
+    // updates degreesPanel when you add a course, triggered by propertyChange(), which is triggered by the Presenter
+    // displays an error message if you try to enter a course you already entered
+    private void displayDegrees(ArrayList<String> degreesSelected, String errorMessage) {
+
+        degreesPanel.removeAll();
+
+        if (errorMessage != null) {
+            JLabel errorMessageLabel = new JLabel(errorMessage);
+            errorMessageLabel.setForeground(Color.RED);
+            degreesPanel.add(errorMessageLabel);
+        }
+
+        for (String degree: degreesSelected) {
+            JPanel degreePanel = new JPanel();
+            degreePanel.setLayout(new BoxLayout(degreePanel, BoxLayout.X_AXIS));
+            degreePanel.add(new JLabel(degree));
+
+            JButton degreeButton = new JButton("X");
+            degreeButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    setPreferencesController.removeDegree(degree);
+                }
+            });
+            degreePanel.add(degreeButton);
+            degreesPanel.add(degreePanel);
+        }
+        degreesPanel.revalidate();
+        degreesPanel.repaint();
+    }
+
     // whenever the ViewModel changes, this runs
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         final SetPreferencesState state = (SetPreferencesState) evt.getNewValue();
         displayCourses(state.getCourses(), state.getCourseError());
+        displayDegrees(state.getDegrees(), state.getDegreeError());
     }
 
     /**
