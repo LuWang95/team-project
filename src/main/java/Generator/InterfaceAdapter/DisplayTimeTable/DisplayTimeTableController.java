@@ -1,22 +1,19 @@
 package Generator.InterfaceAdapter.DisplayTimeTable;
 
-import Generator.UseCases.DisplayTimeTable.DisplayTimeTableInputData;
+import Generator.UseCases.DisplayTimeTable.DisplayTimeTableInteractor;
 
 public class DisplayTimeTableController {
+    private final DisplayTimeTableInteractor displayTimeTableInteractor;
     private final DisplayTimeTableViewModel displayTimeTableViewModel;
-    private final DisplayTimeTableViewModel displayTimeTableInteractor;
 
-    public DisplayTimeTableController(DisplayTimeTableViewModel displayTimeTableViewModel,DisplayTimeTableViewModel displayTimeTableInteractor) {
-        this.displayTimeTableViewModel = displayTimeTableViewModel;
+    public DisplayTimeTableController(DisplayTimeTableInteractor displayTimeTableInteractor,DisplayTimeTableViewModel displayTimeTableViewModel) {
         this.displayTimeTableInteractor = displayTimeTableInteractor;
+        this.displayTimeTableViewModel = displayTimeTableViewModel;
     }
 
     public void execute() {
-        DisplayTimeTableState displayTimeTableState = new DisplayTimeTableState();
-        DisplayTimeTableInputData inputData = new DisplayTimeTableInputData(displayTimeTableState.getCourses(),displayTimeTableState.getCourseNames(),displayTimeTableState.getLectureSections(),displayTimeTableState.getTutorialSections(),displayTimeTableState.getPracticalSections(),displayTimeTableState.getCredit());
+        DisplayTimeTableState displayTimeTableState = displayTimeTableViewModel.getState();
+
 
     }
-
-
-
 }

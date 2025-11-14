@@ -2,7 +2,7 @@ package Generator.UseCases.AddCourse;
 
 
 public class AddCourseInputData {
-    public String coursesCode;
+    private final String coursesCode;
 
     public AddCourseInputData(String coursesCode) {
         this.coursesCode = coursesCode;

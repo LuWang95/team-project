@@ -7,14 +7,13 @@ import CourseInfo.TutorialSection;
 import java.util.ArrayList;
 
 public class AddCourseOutputData {
-    public String courseName;
-    public String courseCode;
-    public ArrayList<LectureSection> lectureSection;
-    public ArrayList<TutorialSection> tutorialSection;
-    public ArrayList<PracticalSection> practicalSection;
-    public double credit;
-    public double instructor;
-    public String sessionCode;
+    private final String courseName;
+    private final String courseCode;
+    private final ArrayList<LectureSection> lectureSection;
+    private final ArrayList<TutorialSection> tutorialSection;
+    private final ArrayList<PracticalSection> practicalSection;
+    private final double credit;
+    private final String sessionCode;
 
     public AddCourseOutputData(String courseCode, String courseName,ArrayList<LectureSection> lectureSection,ArrayList<TutorialSection> tutorialSection,
                                ArrayList<PracticalSection> practicalSection, double credit, String sessionCode) {
@@ -26,7 +25,6 @@ public class AddCourseOutputData {
         this.credit = credit;
         this.sessionCode = sessionCode;
     }
-
 
     public String getCourseName() {
         return courseName;

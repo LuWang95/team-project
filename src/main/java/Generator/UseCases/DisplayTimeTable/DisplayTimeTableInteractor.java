@@ -7,12 +7,8 @@ public class DisplayTimeTableInteractor implements DisplayTimeTableInputBoundary
         this.displayTimeTableOutputBoundary = displayTimeTableOutputBoundary;
     }
 
-    public void execute(DisplayTimeTableInputData inputData) {
-        if(inputData.getCourses() != null){
-            displayTimeTableOutputBoundary.prepareErrorView("Please add a course");
-        }else{
-            displayTimeTableOutputBoundary.prepareSuccessView(inputData);
-        }
+    public void execute() {
+
 
 
     }

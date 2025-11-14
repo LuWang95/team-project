@@ -15,5 +15,4 @@ public class AddCourseController {
         addCourseInteractor.execute(inputData);
     }
 
-
 }

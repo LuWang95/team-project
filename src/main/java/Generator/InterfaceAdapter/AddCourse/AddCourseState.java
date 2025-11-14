@@ -10,7 +10,7 @@ public class AddCourseState {
     private AddCourseState(AddCourseState copy) {
         this.coursesCode = copy.coursesCode;
         this.courseNotFoundError = copy.courseNotFoundError;
-        this.curCourses = copy.curCourses;
+        this.curCourses = new ArrayList<>(copy.curCourses);
     }
 
     AddCourseState() {

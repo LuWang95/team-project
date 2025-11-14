@@ -3,6 +3,7 @@ import CourseInfo.LectureSection;
 import CourseInfo.PracticalSection;
 import CourseInfo.TutorialSection;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class DisplayTimeTableState {
@@ -12,7 +13,9 @@ public class DisplayTimeTableState {
     private ArrayList<ArrayList<TutorialSection>> tutorialSections = new ArrayList<>();
     private ArrayList<ArrayList<PracticalSection>> practicalSections = new ArrayList<>();
     private ArrayList<Double> credit = new ArrayList<>();
+    private ArrayList<String> sessionCode = new ArrayList<>();
     private String noCourseError;
+    private ArrayList<String[][]> timeTable;
 
     public DisplayTimeTableState() {
     }
@@ -35,6 +38,9 @@ public class DisplayTimeTableState {
     public ArrayList<Double> getCredit() {
         return credit;
     }
+    public ArrayList<String> getSessionCode() {
+        return sessionCode;
+    }
     public void setCourses(ArrayList<String> courses) {
         this.courseCodes = courses;
     }
@@ -52,6 +58,9 @@ public class DisplayTimeTableState {
     }
     public void setCredit(ArrayList<Double> credit) {
         this.credit = credit;
+    }
+    public void setSessionCode(ArrayList<String> sessionCode) {
+        this.sessionCode = sessionCode;
     }
 }
 

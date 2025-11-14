@@ -1,6 +1,5 @@
 package Generator.InterfaceAdapter.DisplayTimeTable;
 
-import Generator.UseCases.DisplayTimeTable.DisplayTimeTableInputData;
 import Generator.UseCases.DisplayTimeTable.DisplayTimeTableOutputBoundary;
 
 public class DisplayTimeTablePresenter implements DisplayTimeTableOutputBoundary {
@@ -17,7 +16,9 @@ public class DisplayTimeTablePresenter implements DisplayTimeTableOutputBoundary
     }
 
     @Override
-    public void prepareSuccessView(DisplayTimeTableInputData displayTimeTableInputData) {
+    public void prepareSuccessView() {
 
     }
+
+
 }
