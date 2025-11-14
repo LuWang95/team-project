@@ -7,12 +7,12 @@ public class Course {
     String courseTitle;
     String sessionCode;
     double credit;
-    ArrayList<LectureSection> lecture_sections;
-    ArrayList<TutorialSection> tutorial_sections;
-    ArrayList<PracticalSection> practical_sections;
+    ArrayList<Section> lecture_sections;
+    ArrayList<Section> tutorial_sections;
+    ArrayList<Section> practical_sections;
 
     public Course(String courseCode, String courseTitle, String sessionCode, double credit,
-                  ArrayList<LectureSection> lectureSections, ArrayList<TutorialSection> tutorialSections,ArrayList<PracticalSection> practicalSections) {
+                  ArrayList<Section> lectureSections, ArrayList<Section> tutorialSections,ArrayList<Section> practicalSections) {
         this.courseCode = courseCode;
         this.courseTitle = courseTitle;
         this.sessionCode = sessionCode;
@@ -36,14 +36,14 @@ public class Course {
         return credit;
     }
 
-    public ArrayList<LectureSection> getLectureSections() {
+    public ArrayList<Section> getLectureSections() {
         return lecture_sections;
     }
 
-    public ArrayList<TutorialSection> getTutorialSections() {
+    public ArrayList<Section> getTutorialSections() {
         return tutorial_sections;
     }
-    public ArrayList<PracticalSection> getPracticalSections() {return practical_sections;}
+    public ArrayList<Section> getPracticalSections() {return practical_sections;}
 
 
 }

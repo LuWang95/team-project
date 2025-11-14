@@ -2,6 +2,7 @@ package Generator.InterfaceAdapter.AddCourse;
 
 import CourseInfo.LectureSection;
 import CourseInfo.PracticalSection;
+import CourseInfo.Section;
 import CourseInfo.TutorialSection;
 import Generator.InterfaceAdapter.DisplayTimeTable.DisplayTimeTableState;
 import Generator.InterfaceAdapter.DisplayTimeTable.DisplayTimeTableViewModel;
@@ -43,18 +44,18 @@ public class AddCoursePresenter implements AddCourseOutputBoundary {
         newCourseNames.add(newCourseName);
         displayTimeTableState.setCourseNames(newCourseNames);
 
-        final ArrayList<LectureSection>     newLectureSection = addcourseOutputData.getLectureSection();
-        final ArrayList<ArrayList<LectureSection>> lectureSections = new ArrayList<>(displayTimeTableState.getLectureSections());
+        final ArrayList<Section>     newLectureSection = addcourseOutputData.getLectureSection();
+        final ArrayList<ArrayList<Section>> lectureSections = new ArrayList<>(displayTimeTableState.getLectureSections());
         lectureSections.add(newLectureSection);
         displayTimeTableState.setLectureSections(lectureSections);
 
-        final ArrayList<TutorialSection> newTutorialSection = addcourseOutputData.getTutorialSection();
-        final ArrayList<ArrayList<TutorialSection>> tutorialSections = new ArrayList<>(displayTimeTableState.getTutorialSections());
+        final ArrayList<Section> newTutorialSection = addcourseOutputData.getTutorialSection();
+        final ArrayList<ArrayList<Section>> tutorialSections = new ArrayList<>(displayTimeTableState.getTutorialSections());
         tutorialSections.add(newTutorialSection);
         displayTimeTableState.setTutorialSections(tutorialSections);
 
-        final ArrayList<PracticalSection> newPracticalSections = addcourseOutputData.getPracticalSection();
-        final ArrayList<ArrayList<PracticalSection>> practicalSections = new ArrayList<>(displayTimeTableState.getPracticalSections());
+        final ArrayList<Section> newPracticalSections = addcourseOutputData.getPracticalSection();
+        final ArrayList<ArrayList<Section>> practicalSections = new ArrayList<>(displayTimeTableState.getPracticalSections());
         practicalSections.add(newPracticalSections);
         displayTimeTableState.setPracticalSections(practicalSections);
 

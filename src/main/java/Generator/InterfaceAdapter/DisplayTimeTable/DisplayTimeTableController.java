@@ -1,19 +1,16 @@
 package Generator.InterfaceAdapter.DisplayTimeTable;
 
-import Generator.UseCases.DisplayTimeTable.DisplayTimeTableInteractor;
+
+import Generator.UseCases.DisplayTimeTable.DisplayTimeTableInputBoundary;
 
 public class DisplayTimeTableController {
-    private final DisplayTimeTableInteractor displayTimeTableInteractor;
-    private final DisplayTimeTableViewModel displayTimeTableViewModel;
+    private final DisplayTimeTableInputBoundary displayTimeTableInteractor;
 
-    public DisplayTimeTableController(DisplayTimeTableInteractor displayTimeTableInteractor,DisplayTimeTableViewModel displayTimeTableViewModel) {
+    public DisplayTimeTableController(DisplayTimeTableInputBoundary displayTimeTableInteractor) {
         this.displayTimeTableInteractor = displayTimeTableInteractor;
-        this.displayTimeTableViewModel = displayTimeTableViewModel;
     }
 
     public void execute() {
-        DisplayTimeTableState displayTimeTableState = displayTimeTableViewModel.getState();
-
-
+        displayTimeTableInteractor.execute();
     }
 }

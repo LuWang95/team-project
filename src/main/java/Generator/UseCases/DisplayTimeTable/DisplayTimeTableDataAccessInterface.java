@@ -5,5 +5,5 @@ import CourseInfo.Course;
 import java.util.ArrayList;
 
 public interface DisplayTimeTableDataAccessInterface {
-    ArrayList<Course> getCourses();
+    ArrayList<Course> getAddedCourses();
 }

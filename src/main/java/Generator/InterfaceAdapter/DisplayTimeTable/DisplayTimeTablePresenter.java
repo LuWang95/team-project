@@ -1,6 +1,7 @@
 package Generator.InterfaceAdapter.DisplayTimeTable;
 
 import Generator.UseCases.DisplayTimeTable.DisplayTimeTableOutputBoundary;
+import Generator.UseCases.DisplayTimeTable.DisplayTimeTableOutputData;
 
 public class DisplayTimeTablePresenter implements DisplayTimeTableOutputBoundary {
     private final DisplayTimeTableViewModel displayTimeTableViewModel;
@@ -11,12 +12,17 @@ public class DisplayTimeTablePresenter implements DisplayTimeTableOutputBoundary
 
 
     @Override
-    public void prepareErrorView(String errorMessage) {
-
+    public void prepareErrorView(String errorMessage){
+        DisplayTimeTableState displayTimeTableState = displayTimeTableViewModel.getState();
+        displayTimeTableState.setNoCourseError(errorMessage);
+        displayTimeTableViewModel.firePropertyChange();
     }
 
     @Override
-    public void prepareSuccessView() {
+    public void prepareSuccessView(DisplayTimeTableOutputData outputData) {
+        DisplayTimeTableState displayTimeTableState = displayTimeTableViewModel.getState();
+        displayTimeTableState.setAllTimeTables(outputData.getAllTimetables());
+        displayTimeTableViewModel.firePropertyChange();
 
     }
 

@@ -1,5 +1,6 @@
 package Generator.DataAccess;
 
+import Generator.UseCases.DisplayTimeTable.DisplayTimeTableDataAccessInterface;
 import com.google.gson.Gson;
 import CourseInfo.Course;
 import CourseInfo.Meeting;
@@ -13,7 +14,7 @@ import java.io.IOException;
 import java.util.*;
 
 
-public class JsonCourseDataAccess implements AddCourseDataAccessInterface {
+public class JsonCourseDataAccess implements AddCourseDataAccessInterface, DisplayTimeTableDataAccessInterface {
 
     private final Map<String, Course> coursesByCode = new HashMap<>();
     private final ArrayList<Course> addedCourses = new ArrayList<>();
@@ -141,6 +142,11 @@ public class JsonCourseDataAccess implements AddCourseDataAccessInterface {
     @Override
     public boolean alreadyInList(String courseCode) {
         return addedCourses.contains(coursesByCode.get(courseCode));
+    }
+
+    @Override
+    public ArrayList<Course> getAddedCourses() {
+        return addedCourses;
     }
 
     private static class JsonCourseRecord {
