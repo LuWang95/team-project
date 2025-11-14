@@ -11,6 +11,12 @@ import Generator.UseCase.add_course.AddCourseOutputBoundary;
 import Generator.UseCase.remove_course.RemoveCourseInputBoundary;
 import Generator.UseCase.remove_course.RemoveCourseInteractor;
 import Generator.UseCase.remove_course.RemoveCourseOutputBoundary;
+import Generator.UseCase.add_degree.AddDegreeInputBoundary;
+import Generator.UseCase.add_degree.AddDegreeInteractor;
+import Generator.UseCase.add_degree.AddDegreeOutputBoundary;
+import Generator.UseCase.remove_degree.RemoveDegreeInputBoundary;
+import Generator.UseCase.remove_degree.RemoveDegreeInteractor;
+import Generator.UseCase.remove_degree.RemoveDegreeOutputBoundary;
 import Generator.View.*;
 
 
@@ -23,7 +29,7 @@ public class AppBuilder {
     final ViewManagerModel viewManagerModel = new ViewManagerModel();
     ViewManager viewManager = new ViewManager(cardPanel, cardLayout, viewManagerModel);
 
-    final FileUserDataAccessObject userDataAccessObject = new FileUserDataAccessObject("selectedCourses.csv");
+    final FileUserDataAccessObject userDataAccessObject = new FileUserDataAccessObject("selectedPreferences.csv");
 
     private SetPreferencesView setPreferencesView;
     private SetPreferencesViewModel setPreferencesViewModel;
@@ -39,7 +45,7 @@ public class AppBuilder {
         return this;
     }
 
-    public AppBuilder addAddCourseUseCase() {
+    public AppBuilder addSetPreferencesUseCase() {
         final AddCourseOutputBoundary addCourseOutputBoundary = new SetPreferencesPresenter(viewManagerModel,
                 setPreferencesViewModel);
         final AddCourseInputBoundary addCourseInteractor = new AddCourseInteractor(userDataAccessObject,
@@ -48,8 +54,16 @@ public class AppBuilder {
                 setPreferencesViewModel);
         final RemoveCourseInputBoundary removeCourseInteractor = new RemoveCourseInteractor(userDataAccessObject,
                 removeCourseOutputBoundary);
+        final AddDegreeOutputBoundary addDegreeOutputBoundary = new SetPreferencesPresenter(viewManagerModel,
+                setPreferencesViewModel);
+        final AddDegreeInputBoundary addDegreeInteractor = new AddDegreeInteractor(userDataAccessObject,
+                addDegreeOutputBoundary);
+        final RemoveDegreeOutputBoundary removeDegreeOutputBoundary = new SetPreferencesPresenter(viewManagerModel,
+                setPreferencesViewModel);
+        final RemoveDegreeInputBoundary removeDegreeInteractor = new RemoveDegreeInteractor(userDataAccessObject,
+                removeDegreeOutputBoundary);
         SetPreferencesController setPreferencesController = new SetPreferencesController(addCourseInteractor,
-                removeCourseInteractor);
+                removeCourseInteractor, addDegreeInteractor, removeDegreeInteractor);
         setPreferencesView.setSetPreferencesController(setPreferencesController);
         return this;
     }

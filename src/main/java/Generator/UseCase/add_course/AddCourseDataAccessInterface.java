@@ -8,7 +8,7 @@ public interface AddCourseDataAccessInterface {
      * @param course the course to look for
      * @return true if the course is already selected
      */
-    boolean existsByName(String course);
+    boolean courseExistsByName(String course);
 
     /**
      * adds the course to the list
