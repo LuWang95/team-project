@@ -1,9 +1,9 @@
-package Generator.UseCase.add_course;
+package Generator.UseCase.remove_course;
 
-public class AddCourseOutputData {
+public class RemoveCourseOutputData {
     private final String course;
 
-    public AddCourseOutputData(String course) {
+    public RemoveCourseOutputData(String course) {
         this.course = course;
     }
 
