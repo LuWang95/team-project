@@ -11,7 +11,7 @@ public  class SectionFactory {
             case "TUT":
                 return new TutorialSection(sectionCode, meetings);
             case "PRA":
-                return new PraticalSection(sectionCode, meetings);
+                return new PracticalSection(sectionCode, meetings);
             default:
                 throw new IllegalArgumentException(
                         "Wrong shape type: " + sectionType

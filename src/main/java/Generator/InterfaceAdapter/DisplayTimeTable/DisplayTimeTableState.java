@@ -1,0 +1,78 @@
+package Generator.InterfaceAdapter.DisplayTimeTable;
+import CourseInfo.LectureSection;
+
+import CourseInfo.Section;
+
+import java.util.ArrayList;
+
+public class DisplayTimeTableState {
+    private ArrayList<String> courseCodes = new ArrayList<>();
+    private ArrayList<String> courseNames = new ArrayList<>();
+    private ArrayList<ArrayList<Section>> lectureSections = new ArrayList<>();
+    private ArrayList<ArrayList<Section>> tutorialSections = new ArrayList<>();
+    private ArrayList<ArrayList<Section>> practicalSections = new ArrayList<>();
+    private ArrayList<Double> credit = new ArrayList<>();
+    private ArrayList<String> sessionCode = new ArrayList<>();
+    private String noCourseError;
+    private ArrayList<ArrayList<String>[][]> allTimeTables;
+
+    public DisplayTimeTableState() {
+    }
+
+    public ArrayList<String> getCourses() {
+        return courseCodes;
+    }
+    public ArrayList<String > getCourseNames() {
+        return courseNames;
+    }
+    public ArrayList<ArrayList<Section>> getLectureSections() {
+        return lectureSections;
+    }
+    public ArrayList<ArrayList<Section>> getTutorialSections() {
+        return tutorialSections;
+    }
+    public ArrayList<ArrayList<Section>> getPracticalSections() {
+        return practicalSections;
+    }
+    public ArrayList<Double> getCredit() {
+        return credit;
+    }
+    public ArrayList<String> getSessionCode() {
+        return sessionCode;
+    }
+    public String getNoCourseError() {
+        return noCourseError;
+    }
+    public ArrayList<ArrayList<String>[][]> getAllTimeTables() {
+        return allTimeTables;
+    }
+    public void setCourses(ArrayList<String> courses) {
+        this.courseCodes = courses;
+    }
+    public void setCourseNames(ArrayList<String> courseNames) {
+        this.courseNames = courseNames;
+    }
+    public void setLectureSections(ArrayList<ArrayList<Section>> lectureSections) {
+        this.lectureSections = lectureSections;
+    }
+    public void setTutorialSections(ArrayList<ArrayList<Section>> tutorialSections) {
+        this.tutorialSections = tutorialSections;
+    }
+    public void setPracticalSections(ArrayList<ArrayList<Section>> practicalSections) {
+        this.practicalSections = practicalSections;
+    }
+    public void setCredit(ArrayList<Double> credit) {
+        this.credit = credit;
+    }
+    public void setSessionCode(ArrayList<String> sessionCode) {
+        this.sessionCode = sessionCode;
+    }
+    public void setNoCourseError(String noCourseError) {
+        this.noCourseError = noCourseError;
+    }
+    public void setAllTimeTables (ArrayList<ArrayList<String>[][]> allTimeTables) {
+        this.allTimeTables = allTimeTables;
+    }
+}
+
+

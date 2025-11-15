@@ -3,19 +3,21 @@ package CourseInfo;
 public class Meeting {
     String instructor;
     String startTime;
+    int date;
     String endTime;
     int startMinutes;
     int endMinutes;
     String buildingCode;
 
     public Meeting(String instructor, String startTime, String endTime, int startMinutes,
-                   int endMinutes, String buildingCode) {
+                   int endMinutes, String buildingCode,int date) {
         this.instructor = instructor;
         this.startTime = startTime;
         this.endTime = endTime;
         this.startMinutes = startMinutes;
         this.endMinutes = endMinutes;
         this.buildingCode = buildingCode;
+        this.date = date;
     }
 
     public String getInstructor() {
@@ -35,6 +37,9 @@ public class Meeting {
     }
     public String getBuildingCode() {
         return buildingCode;
+    }
+    public int getDate() {
+        return date;
     }
 
 
