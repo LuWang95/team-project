@@ -1,21 +1,23 @@
 package Generator.UseCases.DisplayTimeTable;
 
-import java.lang.reflect.Array;
+import CourseInfo.TimeTable;
+
+
 import java.util.ArrayList;
 
 public class DisplayTimeTableOutputData {
-    private ArrayList<ArrayList<String>[][]> allTimeTables  = new ArrayList<>();
+    private ArrayList<TimeTableDTO> allTimeTables  = new ArrayList<>();
 
 
-    public DisplayTimeTableOutputData(ArrayList<ArrayList<String>[][]> timeTables) {
+    public DisplayTimeTableOutputData(ArrayList<TimeTableDTO>  timeTables) {
         this.allTimeTables = timeTables;
     }
 
-    public ArrayList<ArrayList<String>[][]> getAllTimetables() {
+    public ArrayList<TimeTableDTO>  getAllTimetables() {
         return allTimeTables;
     }
 
-    public void getAllTimeTables (ArrayList<ArrayList<String>[][]> timeTables) {
+    public void setAllTimeTables (ArrayList<TimeTableDTO>  timeTables) {
         this.allTimeTables = timeTables;
     }
 }

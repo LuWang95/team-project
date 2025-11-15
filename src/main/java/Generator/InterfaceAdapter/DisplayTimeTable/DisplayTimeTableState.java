@@ -2,6 +2,8 @@ package Generator.InterfaceAdapter.DisplayTimeTable;
 import CourseInfo.LectureSection;
 
 import CourseInfo.Section;
+import CourseInfo.TimeTable;
+import Generator.UseCases.DisplayTimeTable.TimeTableDTO;
 
 import java.util.ArrayList;
 
@@ -14,7 +16,7 @@ public class DisplayTimeTableState {
     private ArrayList<Double> credit = new ArrayList<>();
     private ArrayList<String> sessionCode = new ArrayList<>();
     private String noCourseError;
-    private ArrayList<ArrayList<String>[][]> allTimeTables;
+    private ArrayList<TimeTableDTO>  allTimeTables;
 
     public DisplayTimeTableState() {
     }
@@ -43,7 +45,7 @@ public class DisplayTimeTableState {
     public String getNoCourseError() {
         return noCourseError;
     }
-    public ArrayList<ArrayList<String>[][]> getAllTimeTables() {
+    public ArrayList<TimeTableDTO> getAllTimeTables() {
         return allTimeTables;
     }
     public void setCourses(ArrayList<String> courses) {
@@ -70,7 +72,7 @@ public class DisplayTimeTableState {
     public void setNoCourseError(String noCourseError) {
         this.noCourseError = noCourseError;
     }
-    public void setAllTimeTables (ArrayList<ArrayList<String>[][]> allTimeTables) {
+    public void setAllTimeTables (ArrayList<TimeTableDTO>  allTimeTables) {
         this.allTimeTables = allTimeTables;
     }
 }
