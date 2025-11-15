@@ -2,6 +2,7 @@ package Generator.InterfaceAdapter.AddCourse;
 
 import java.util.ArrayList;
 
+// The courseCode should be displayed in the courseCode textField and curCourse should be displayed as a list of added course.
 public class AddCourseState {
     private String coursesCode = "";
     private ArrayList<String> curCourses = new ArrayList<>();

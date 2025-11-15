@@ -21,6 +21,7 @@ public class AddCoursePresenter implements AddCourseOutputBoundary {
         this.displayTimeTableViewModel = displayTimetableViewModel;
     }
 
+    //Update(add the course that the user inputs) the curCourses in the addCourseState. Clear the courseCode in the addCourseState and set the Error to null.
     @Override
     public void prepareSuccessView(AddCourseOutputData addcourseOutputData) {
         // Modify the addCourseState
@@ -34,7 +35,7 @@ public class AddCoursePresenter implements AddCourseOutputBoundary {
         addCourseState.setCourseNotFoundError(null);
 
 
-        //Modify the DisplayTimeTableState
+        //Modify the DisplayTimeTableState(To implement the basic view function, you can ignore this)
         ArrayList<String>  courseCodes = new ArrayList<>(displayTimeTableState.getCourses());
         courseCodes.add(newCourseCode);
         displayTimeTableState.setCourses(courseCodes);
@@ -74,6 +75,7 @@ public class AddCoursePresenter implements AddCourseOutputBoundary {
 
     }
 
+    // If the addCourseCode textField is empty then send an error message.
     @Override
     public void prepareErrorView(String errorMessage) {
         final AddCourseState addCourseState = addCourseViewModel.getState();

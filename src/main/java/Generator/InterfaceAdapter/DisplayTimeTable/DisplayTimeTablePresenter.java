@@ -18,6 +18,11 @@ public class DisplayTimeTablePresenter implements DisplayTimeTableOutputBoundary
         displayTimeTableViewModel.firePropertyChange();
     }
 
+    /**
+     * Presenter method called when timetable the generation process succeeds.
+     * It writes the list of TimeTableDTOs into the ViewModel state.
+     * View code can get the updated state through the property change listener.
+     */
     @Override
     public void prepareSuccessView(DisplayTimeTableOutputData outputData) {
         DisplayTimeTableState displayTimeTableState = displayTimeTableViewModel.getState();
