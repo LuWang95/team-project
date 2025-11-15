@@ -8,6 +8,8 @@ import java.util.Collection;
 public class DisplayTimeTableInteractor implements DisplayTimeTableInputBoundary {
     final DisplayTimeTableOutputBoundary displayTimeTablePresenter;
     final DisplayTimeTableDataAccessInterface displayTimeTableDataAccessObject;
+    ArrayList<TimeTable> rawTimeTables = new ArrayList<>();
+    ArrayList<TimeTable> filteredTimeTables = new ArrayList<>();
 
     public DisplayTimeTableInteractor(DisplayTimeTableOutputBoundary displayTimeTablePresenter,
                                       DisplayTimeTableDataAccessInterface displayTimeTableDataAccessObject) {
@@ -16,7 +18,7 @@ public class DisplayTimeTableInteractor implements DisplayTimeTableInputBoundary
     }
 
     public void execute() {
-        if(displayTimeTableDataAccessObject.getAddedCourses() == null){
+        if(displayTimeTableDataAccessObject.getAddedCourses() == null || displayTimeTableDataAccessObject.getAddedCourses().isEmpty()) {
             displayTimeTablePresenter.prepareErrorView("No added courses");
             return;
         }else{
@@ -35,14 +37,9 @@ public class DisplayTimeTableInteractor implements DisplayTimeTableInputBoundary
                 }
             }
 
-            ArrayList<String>[][] timetable = new ArrayList[5][12];
-            for (int day = 0; day < 5; day++) {
-                for (int hour = 0; hour < 12; hour++) {
-                    timetable[day][hour] = new ArrayList<>();
-                }
-            }
 
             int n = lectureSections.size();
+
 
             ArrayList<ArrayList<Section>> allSections = new ArrayList<>();
             ArrayList<String> respectiveCourseCode = new ArrayList<>();
@@ -54,14 +51,45 @@ public class DisplayTimeTableInteractor implements DisplayTimeTableInputBoundary
             }
 
 
+            rawTimeTables.clear();
+            filteredTimeTables.clear();
+            TimeTable emptyTimeTable = new TimeTable();
+            addAllCombination(allSections,emptyTimeTable,0,respectiveCourseCode);
 
 
+            for (TimeTable timetable:rawTimeTables) {
+                if (timetable.isValid()){
+                    filteredTimeTables.add(timetable);
+                }
+            }
 
+            ArrayList<TimeTableDTO> dtoList = new ArrayList<>();
+            for (TimeTable timetable : filteredTimeTables) {
+                dtoList.add(TimeTableDTO.fromEntity(timetable));
+            }
 
-
+            DisplayTimeTableOutputData outputData = new DisplayTimeTableOutputData(dtoList);
+            displayTimeTablePresenter.prepareSuccessView(outputData);
+        }
 
 
         }
+
+    private void addAllCombination(ArrayList<ArrayList<Section>> allSections, TimeTable curTimeTable, Integer index, ArrayList<String> courseCodes) {
+        if(index == allSections.size()){
+            rawTimeTables.add(curTimeTable);
+            return;
+        }
+        if(allSections.get(index).isEmpty()){
+            addAllCombination(allSections,curTimeTable,index+1,courseCodes);
+            return;
+        }
+        for (Section section : allSections.get(index)) {
+            TimeTable newTimeTable = new TimeTable(curTimeTable);
+            newTimeTable.setBlocks(section, courseCodes.get(index));
+            addAllCombination(allSections, newTimeTable,index+1, courseCodes);
+        }
+
 
 
 
