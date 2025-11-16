@@ -21,7 +21,7 @@ public class AddCourseInteractor implements AddCourseInputBoundary {
             addCoursePresenter.prepareAddCourseFailureView("Course already selected");
         }
         else {
-            final Course course = new Course(addCourseInputData.getCourse(), null, 0, 0, null, null);
+            final Course course = new Course(addCourseInputData.getCourse(), null, 0, 0, null, null, null);
             addCourseDataAccessObject.add(course);
 
             final AddCourseOutputData addCourseOutputData = new AddCourseOutputData(addCourseInputData.getCourse());
