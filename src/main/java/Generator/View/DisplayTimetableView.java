@@ -79,7 +79,7 @@ public class DisplayTimetableView extends JPanel implements ActionListener, Prop
                                 ArrayList<ArrayList<Section>> tutorialSections,
                                 ArrayList<ArrayList<Section>> practicalSections) {
         for (int i = 0; i < 12; i++) {
-            for (int j = 0; j < 6; j++) {
+            for (int j = 1; j < 6; j++) {
                 colorMap.put(new Point(i, j), Color.WHITE);
                 timetableTable.setValueAt("", i, j);
             }
@@ -95,7 +95,7 @@ public class DisplayTimetableView extends JPanel implements ActionListener, Prop
 
             for (Meeting m : courseLec.getMeetings()) {
                 int rowIndex = m.getStartMinutes() / 60 - 9;
-                int columnIndex = m.getDate() + 1;
+                int columnIndex = m.getDate();
                 colorMap.replace(new Point(rowIndex, columnIndex), lecColour);
                 timetableTable.setValueAt(courseCodes.get(i) + " " + lectureCode, rowIndex, columnIndex);
 
@@ -107,7 +107,8 @@ public class DisplayTimetableView extends JPanel implements ActionListener, Prop
             Color tutColour = chooseColour(true);
             for (Meeting m : courseTut.getMeetings()) {
                 int rowIndex = m.getStartMinutes() / 60 - 8;
-                int columnIndex = m.getDate() + 1;
+
+                int columnIndex = m.getDate();
                 colorMap.replace(new Point(rowIndex, columnIndex), tutColour);
                 timetableTable.setValueAt(courseCodes.get(i) + " " + tutorialCode, rowIndex, columnIndex);
 
@@ -117,8 +118,6 @@ public class DisplayTimetableView extends JPanel implements ActionListener, Prop
                 }
             }
         }
-
-
     }
 
     private Color chooseColour(boolean lighter) {
