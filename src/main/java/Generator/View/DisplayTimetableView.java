@@ -95,7 +95,9 @@ public class DisplayTimetableView extends JPanel implements ActionListener, Prop
 
             for (Meeting m : courseLec.getMeetings()) {
                 int rowIndex = m.getStartMinutes() / 60 - 9;
-                int columnIndex = m.getDate() + 1;
+                System.out.println(m.getDate());
+                System.out.println(lectureCode);
+                int columnIndex = m.getDate();
                 colorMap.replace(new Point(rowIndex, columnIndex), lecColour);
                 timetableTable.setValueAt(courseCodes.get(i) + " " + lectureCode, rowIndex, columnIndex);
 
@@ -107,7 +109,8 @@ public class DisplayTimetableView extends JPanel implements ActionListener, Prop
             Color tutColour = chooseColour(true);
             for (Meeting m : courseTut.getMeetings()) {
                 int rowIndex = m.getStartMinutes() / 60 - 8;
-                int columnIndex = m.getDate() + 1;
+
+                int columnIndex = m.getDate();
                 colorMap.replace(new Point(rowIndex, columnIndex), tutColour);
                 timetableTable.setValueAt(courseCodes.get(i) + " " + tutorialCode, rowIndex, columnIndex);
 
