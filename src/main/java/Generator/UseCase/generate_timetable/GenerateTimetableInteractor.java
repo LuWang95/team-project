@@ -50,20 +50,19 @@ public class GenerateTimetableInteractor implements GenerateTimetableInputBounda
                 respectiveCourseCode.add(addedCourses.get(i).getCourseCode());
             }
 
-
-            rawTimetables.clear();
-            filteredTimetables.clear();
-            Timetable emptyTimetable = new Timetable();
-            addAllCombination(allSections, emptyTimetable,0,respectiveCourseCode);
-
-            for (Timetable timetable: rawTimetables) {
-                if (timetable.isValid()){
-                    filteredTimetables.add(timetable);
-                }
-            }
+//            rawTimetables.clear();
+//            filteredTimetables.clear();
+//            Timetable emptyTimetable = new Timetable();
+//            addAllCombination(allSections, emptyTimetable,0,respectiveCourseCode);
+//
+//            for (Timetable timetable: rawTimetables) {
+//                if (timetable.isValid()){
+//                    filteredTimetables.add(timetable);
+//                }
+//            }
 
             ArrayList<TimetableDTO> dtoList = new ArrayList<>();
-            for (Timetable timetable : filteredTimetables) {
+            for (Timetable timetable : rawTimetables) {
                 dtoList.add(TimetableDTO.fromEntity(timetable));
             }
 
@@ -84,14 +83,10 @@ public class GenerateTimetableInteractor implements GenerateTimetableInputBounda
             return;
         }
         for (Section section : allSections.get(index)) {
-            Timetable newTimetable = new Timetable(curTimetable);
-            newTimetable.setBlocks(section, courseCodes.get(index));
-            if (newTimetable.isValid()) {
-                addAllCombination(allSections, newTimetable, index + 1, courseCodes);
+            if(curTimetable.canAddBlock(section, courseCodes.get(index))){
+                addAllCombination(allSections, curTimetable,index+1,courseCodes);
             }
         }
-
-
 
 
     }
