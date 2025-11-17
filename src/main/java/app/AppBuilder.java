@@ -106,7 +106,7 @@ public class AppBuilder {
     }
 
     public JFrame build() {
-        final JFrame application = new JFrame("sdjkfsjdkdjfksjkdfk");
+        final JFrame application = new JFrame("Timetable Builder");
         application.setMinimumSize(new Dimension(600, 400));
         application.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 

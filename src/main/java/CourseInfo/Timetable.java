@@ -39,11 +39,8 @@ public class Timetable {
                 }
                 timeTable[day][i].add(courseCode + section.getSectionCode());
             }
-
         }
         return this;
-
-
     }
 
     public boolean isValid(){
