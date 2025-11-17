@@ -72,4 +72,16 @@ public class Timetable {
         }
     }
 
+    public int getDayCount() {
+        return timeTable.length;
+    }
+
+    public int getSlotCount() {
+        return timeTable[0].length;
+    }
+
+    public boolean isOccupied(int dayIndex, int slotIndex) {
+        return !timeTable[dayIndex][slotIndex].isEmpty();
+    }
+
 }
