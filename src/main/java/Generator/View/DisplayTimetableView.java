@@ -78,6 +78,13 @@ public class DisplayTimetableView extends JPanel implements ActionListener, Prop
     private void displayCourses(ArrayList<String> courseCodes, ArrayList<ArrayList<Section>> lectureSections,
                                 ArrayList<ArrayList<Section>> tutorialSections,
                                 ArrayList<ArrayList<Section>> practicalSections) {
+        for (int i = 0; i < 12; i++) {
+            for (int j = 0; j < 6; j++) {
+                colorMap.put(new Point(i, j), Color.WHITE);
+                timetableTable.setValueAt("", i, j);
+            }
+        }
+
         for (int i = 0; i < courseCodes.size(); i++) {
             Section courseLec = lectureSections.get(i).get(0);
             String lectureCode = courseLec.getSectionCode();
@@ -89,27 +96,29 @@ public class DisplayTimetableView extends JPanel implements ActionListener, Prop
             for (Meeting m : courseLec.getMeetings()) {
                 int rowIndex = m.getStartMinutes() / 60 - 9;
                 int columnIndex = m.getDate() + 1;
-                colorMap.put(new Point(rowIndex, columnIndex), lecColour);
+                colorMap.replace(new Point(rowIndex, columnIndex), lecColour);
                 timetableTable.setValueAt(courseCodes.get(i) + " " + lectureCode, rowIndex, columnIndex);
 
                 for (int j = 1; j < (m.getEndMinutes() - m.getStartMinutes()) / 60; j++) {
                     rowIndex++;
-                    colorMap.put(new Point(rowIndex, columnIndex), lecColour);
+                    colorMap.replace(new Point(rowIndex, columnIndex), lecColour);
                 }
             }
             Color tutColour = chooseColour(true);
             for (Meeting m : courseTut.getMeetings()) {
                 int rowIndex = m.getStartMinutes() / 60 - 8;
                 int columnIndex = m.getDate() + 1;
-                colorMap.put(new Point(rowIndex, columnIndex), tutColour);
+                colorMap.replace(new Point(rowIndex, columnIndex), tutColour);
                 timetableTable.setValueAt(courseCodes.get(i) + " " + tutorialCode, rowIndex, columnIndex);
 
                 for (int j = 1; j < (m.getEndMinutes() - m.getStartMinutes()) / 60; j++) {
                     rowIndex++;
-                    colorMap.put(new Point(rowIndex, columnIndex), tutColour);
+                    colorMap.replace(new Point(rowIndex, columnIndex), tutColour);
                 }
             }
         }
+
+
     }
 
     private Color chooseColour(boolean lighter) {
