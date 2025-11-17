@@ -7,9 +7,9 @@ public class Course {
     String courseTitle;
     int sessionCode;
     double credit;
-    ArrayList<Section> lecture_sections;
-    ArrayList<Section> tutorial_sections;
-    ArrayList<Section> practical_sections;
+    ArrayList<Section> lectureSections;
+    ArrayList<Section> tutorialSections;
+    ArrayList<Section> practicalSections;
 
     public Course(String courseCode, String courseTitle, int sessionCode, double credit,
                   ArrayList<Section> lectureSections, ArrayList<Section> tutorialSections,
@@ -18,9 +18,9 @@ public class Course {
         this.courseTitle = courseTitle;
         this.sessionCode = sessionCode;
         this.credit = credit;
-        this.lecture_sections = lectureSections;
-        this.tutorial_sections = tutorialSections;
-        this.practical_sections = practicalSections;
+        this.lectureSections = lectureSections;
+        this.tutorialSections = tutorialSections;
+        this.practicalSections = practicalSections;
     }
 
     public String getCourseCode() {
@@ -39,14 +39,14 @@ public class Course {
     }
 
     public ArrayList<Section> getLectureSections() {
-        return lecture_sections;
+        return lectureSections;
     }
 
     public ArrayList<Section> getTutorialSections() {
-        return tutorial_sections;
+        return tutorialSections;
     }
 
-    public ArrayList<Section> getPracticalSections() {return practical_sections;}
+    public ArrayList<Section> getPracticalSections() {return practicalSections;}
 
     public String toString() {
         return courseCode + ": \"" + courseTitle + "\"";
