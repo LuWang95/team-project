@@ -1,6 +1,6 @@
 package Generator.InterfaceAdapter.AddCourse;
 
-import Generator.View.ViewModel;
+import Generator.InterfaceAdapter.ViewModel;
 
 public class AddCourseViewModel extends ViewModel<AddCourseState> {
     public AddCourseViewModel() {

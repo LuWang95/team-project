@@ -49,7 +49,7 @@ public class JsonCourseDataAccess implements AddCourseDataAccessInterface, Displ
                 course = new Course(
                         r.course_code,           // courseCode
                         r.course_title,          // courseTitle
-                        r.session,               // sessionCode
+                        Integer.parseInt(r.session),               // sessionCode
                         r.credit,                // credit
                         new ArrayList<>(),       // lecture_sections
                         new ArrayList<>(),       // tutorial_sections

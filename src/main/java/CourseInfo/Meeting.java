@@ -10,7 +10,7 @@ public class Meeting {
     String buildingCode;
 
     public Meeting(String instructor, String startTime, String endTime, int startMinutes,
-                   int endMinutes, String buildingCode,int date) {
+                   int endMinutes, String buildingCode, int date) {
         this.instructor = instructor;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -41,6 +41,5 @@ public class Meeting {
     public int getDate() {
         return date;
     }
-
 
 }

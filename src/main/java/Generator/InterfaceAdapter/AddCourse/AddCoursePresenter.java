@@ -8,7 +8,7 @@ import Generator.InterfaceAdapter.DisplayTimeTable.DisplayTimeTableState;
 import Generator.InterfaceAdapter.DisplayTimeTable.DisplayTimeTableViewModel;
 import Generator.UseCases.AddCourse.AddCourseOutputBoundary;
 import Generator.UseCases.AddCourse.AddCourseOutputData;
-import Generator.View.ViewManagerModel;
+import Generator.InterfaceAdapter.ViewManagerModel;
 
 import java.util.ArrayList;
 

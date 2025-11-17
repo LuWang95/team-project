@@ -31,7 +31,7 @@ public class AddCourseInteractor implements AddCourseInputBoundary {
             Course courses = addCourseDataAccessObject.getCourse(code);
             addCourseDataAccessObject.saveCourses(code);
             AddCourseOutputData addCourseOutputData = new AddCourseOutputData(courses.getCourseCode(), courses.getCourseTitle(),
-                    courses.getLectureSections(),courses.getTutorialSections(),courses.getPracticalSections(),courses.getCredit(),courses.getSessionCode());
+                    courses.getLectureSections(),courses.getTutorialSections(),courses.getPracticalSections(), courses.getCredit(), String.valueOf(courses.getSessionCode()));
             addCoursePresenter.prepareSuccessView(addCourseOutputData);
         }
 

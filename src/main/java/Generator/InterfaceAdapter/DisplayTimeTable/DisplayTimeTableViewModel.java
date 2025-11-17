@@ -1,6 +1,6 @@
 package Generator.InterfaceAdapter.DisplayTimeTable;
 
-import Generator.View.ViewModel;
+import Generator.InterfaceAdapter.ViewModel;
 
 public class DisplayTimeTableViewModel extends ViewModel<DisplayTimeTableState> {
     public DisplayTimeTableViewModel() {
