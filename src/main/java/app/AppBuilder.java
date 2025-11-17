@@ -107,6 +107,7 @@ public class AppBuilder {
 
     public JFrame build() {
         final JFrame application = new JFrame("sdjkfsjdkdjfksjkdfk");
+        application.setMinimumSize(new Dimension(600, 400));
         application.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         application.add(cardPanel);

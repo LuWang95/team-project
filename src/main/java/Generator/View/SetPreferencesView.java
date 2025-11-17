@@ -135,16 +135,17 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
         this.add(infoPanel);
         this.add(generate);
         this.add(noCoursesError);
+        noCoursesError.setForeground(Color.RED);
 
 //        testing, will be removed as soon as the UI for this part is done
-        JButton updateme = new JButton("update");
-        updateme.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println(setPreferencesViewModel.getState());
-            }
-        });
-        this.add(updateme);
+//        JButton updateme = new JButton("update");
+//        updateme.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                System.out.println(setPreferencesViewModel.getState());
+//            }
+//        });
+//        this.add(updateme);
     }
 
     // ensures that the SetPreferencesState is well-updated with what's in the course TextField
