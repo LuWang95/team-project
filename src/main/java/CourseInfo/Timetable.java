@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 public class Timetable {
     private ArrayList<String>[][] timeTable = new ArrayList[5][12];
+    private int score = 0; 
 
     public Timetable() {
         for (int i = 0; i < 5; i++) {

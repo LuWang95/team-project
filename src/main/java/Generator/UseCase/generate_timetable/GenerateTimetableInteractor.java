@@ -70,9 +70,7 @@ public class GenerateTimetableInteractor implements GenerateTimetableInputBounda
             GenerateTimetableOutputData outputData = new GenerateTimetableOutputData(dtoList);
             generateTimeTablePresenter.prepareGenerateTimetableSuccessView(outputData);
         }
-
-
-        }
+    }
 
     private void addAllCombination(ArrayList<ArrayList<Section>> allSections, Timetable curTimetable, Integer index, ArrayList<String> courseCodes) {
         if(index == allSections.size()){
@@ -90,10 +88,6 @@ public class GenerateTimetableInteractor implements GenerateTimetableInputBounda
                 addAllCombination(allSections, newTimetable, index + 1, courseCodes);
             }
         }
-
-
-
-
     }
 
 
