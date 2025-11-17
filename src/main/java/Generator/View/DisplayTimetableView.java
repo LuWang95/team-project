@@ -75,42 +75,72 @@ public class DisplayTimetableView extends JPanel implements ActionListener, Prop
         this.add(back);
     }
 
-    private void displayCourses(ArrayList<String> courseCodes, ArrayList<ArrayList<Section>> lectureSections,
+    private void displayCourses(ArrayList<String> courseCodes,
+                                ArrayList<ArrayList<Section>> lectureSections,
                                 ArrayList<ArrayList<Section>> tutorialSections,
                                 ArrayList<ArrayList<Section>> practicalSections) {
+
         for (int i = 0; i < courseCodes.size(); i++) {
-            Section courseLec = lectureSections.get(i).get(0);
-            String lectureCode = courseLec.getSectionCode();
-            Section courseTut = tutorialSections.get(i).get(0);
-            String tutorialCode = courseTut.getSectionCode();
+            String courseCode = courseCodes.get(i);
 
-            Color lecColour = chooseColour(false);
+            if (!lectureSections.get(i).isEmpty()) {
+                Section courseLec = lectureSections.get(i).get(0);
+                String lectureCode = courseLec.getSectionCode();
+                Color lecColour = chooseColour(false);
 
-            for (Meeting m : courseLec.getMeetings()) {
-                int rowIndex = m.getStartMinutes() / 60 - 9;
-                int columnIndex = m.getDate() + 1;
-                colorMap.put(new Point(rowIndex, columnIndex), lecColour);
-                timetableTable.setValueAt(courseCodes.get(i) + " " + lectureCode, rowIndex, columnIndex);
-
-                for (int j = 1; j < (m.getEndMinutes() - m.getStartMinutes()) / 60; j++) {
-                    rowIndex++;
-                    colorMap.put(new Point(rowIndex, columnIndex), lecColour);
+                ArrayList<Meeting> lecMeetings = courseLec.getMeetings();
+                for (Meeting m : lecMeetings) {
+                    displayMeetingOnTable(courseCode, lectureCode, m, lecColour);
                 }
             }
-            Color tutColour = chooseColour(true);
-            for (Meeting m : courseTut.getMeetings()) {
-                int rowIndex = m.getStartMinutes() / 60 - 8;
-                int columnIndex = m.getDate() + 1;
-                colorMap.put(new Point(rowIndex, columnIndex), tutColour);
-                timetableTable.setValueAt(courseCodes.get(i) + " " + tutorialCode, rowIndex, columnIndex);
+            if (!tutorialSections.get(i).isEmpty()) {
+                Section courseTut = tutorialSections.get(i).get(0);
+                String tutorialCode = courseTut.getSectionCode();
+                Color tutColour = chooseColour(true);
 
-                for (int j = 1; j < (m.getEndMinutes() - m.getStartMinutes()) / 60; j++) {
-                    rowIndex++;
-                    colorMap.put(new Point(rowIndex, columnIndex), tutColour);
+                ArrayList<Meeting> tutMeetings = courseTut.getMeetings();
+                for (Meeting m : tutMeetings) {
+                    displayMeetingOnTable(courseCode, tutorialCode, m, tutColour);
+                }
+            }
+
+            if (!practicalSections.get(i).isEmpty()) {
+                Section coursePrac = practicalSections.get(i).get(0);
+                String practicalCode = coursePrac.getSectionCode();
+                Color pracColour = chooseColour(true);
+
+                ArrayList<Meeting> pracMeetings = coursePrac.getMeetings();
+                for (Meeting m : pracMeetings) {
+                    displayMeetingOnTable(courseCode, practicalCode, m, pracColour);
                 }
             }
         }
     }
+
+    private void displayMeetingOnTable(String courseCode, String sectionCode,
+                                       Meeting meeting, Color color) {
+        int startMinutes = meeting.getStartMinutes();
+        int endMinutes = meeting.getEndMinutes();
+        int dayOfWeek = meeting.getDate();
+
+        int rowIndex = (startMinutes / 60) - 9;  // 9am is row 0
+        int columnIndex = dayOfWeek + 1;          // +1 to skip time column
+
+        if (rowIndex < 0 || rowIndex >= 12 || columnIndex < 1 || columnIndex > 5) {
+            return;
+        }
+
+        String displayText = courseCode + " " + sectionCode;
+        timetableTable.setValueAt(displayText, rowIndex, columnIndex);
+        colorMap.put(new Point(rowIndex, columnIndex), color);
+
+        int durationHours = (endMinutes - startMinutes) / 60;
+        for (int j = 1; j < durationHours && (rowIndex + j) < 12; j++) {
+            colorMap.put(new Point(rowIndex + j, columnIndex), color);
+            timetableTable.setValueAt("", rowIndex + j, columnIndex);
+        }
+    }
+
 
     private Color chooseColour(boolean lighter) {
         float hue = 0.0f;
