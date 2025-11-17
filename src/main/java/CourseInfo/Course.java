@@ -47,4 +47,8 @@ public class Course {
     }
 
     public ArrayList<Section> getPracticalSections() {return practical_sections;}
+
+    public String toString() {
+        return courseCode + ": \"" + courseTitle + "\"";
+    }
 }

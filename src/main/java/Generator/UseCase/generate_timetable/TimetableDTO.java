@@ -1,6 +1,7 @@
-package Generator.UseCases.DisplayTimeTable;
+package Generator.UseCase.generate_timetable;
 
-import CourseInfo.TimeTable;
+import CourseInfo.Timetable;
+
 import java.util.ArrayList;
 
 
@@ -14,10 +15,10 @@ import java.util.ArrayList;
  *      day: 0=Mon, 1=Tue, ..., 4=Fri
  *      hour: 0=9am, 1=10am, ..., 11=9pm  (or whatever mapping your UI uses
  */
-public class TimeTableDTO {
+public class TimetableDTO {
     private final ArrayList<ArrayList<ArrayList<String>>> table;
 
-    public TimeTableDTO(ArrayList<ArrayList<ArrayList<String>>> table) {
+    public TimetableDTO(ArrayList<ArrayList<ArrayList<String>>> table) {
         this.table = table;
     }
 
@@ -25,7 +26,7 @@ public class TimeTableDTO {
         return table;
     }
 
-    public static TimeTableDTO fromEntity(TimeTable timeTable) {
+    public static TimetableDTO fromEntity(Timetable timeTable) {
         ArrayList<String>[][] raw = timeTable.getTimeTable();
 
         ArrayList<ArrayList<ArrayList<String>>> table = new ArrayList<>();
@@ -36,6 +37,6 @@ public class TimeTableDTO {
             }
             table.add(dayList);
         }
-        return new TimeTableDTO(table);
+        return new TimetableDTO(table);
     }
 }

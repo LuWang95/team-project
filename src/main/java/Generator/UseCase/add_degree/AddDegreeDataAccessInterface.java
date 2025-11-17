@@ -8,7 +8,7 @@ public interface AddDegreeDataAccessInterface {
      * @param degree the degree to look for
      * @return true if the degree is already selected
      */
-    boolean degreeExistsByName(String degree);
+    boolean degreeAlreadyAdded(String degree);
 
     /**
      * adds the degree to the list

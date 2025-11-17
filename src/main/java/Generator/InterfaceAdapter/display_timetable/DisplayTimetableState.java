@@ -1,9 +1,7 @@
-package Generator.InterfaceAdapter.DisplayTimeTable;
-import CourseInfo.LectureSection;
+package Generator.InterfaceAdapter.display_timetable;
 
 import CourseInfo.Section;
-import CourseInfo.TimeTable;
-import Generator.UseCases.DisplayTimeTable.TimeTableDTO;
+import Generator.UseCase.generate_timetable.TimetableDTO;
 
 import java.util.ArrayList;
 
@@ -13,7 +11,7 @@ import java.util.ArrayList;
 //// The View should iterate through this list and display each timetable
 ///  The main attribute for this class is allTimeTables, which is enough for generating a timetable.
 ///  The other attributes is for additional features.
-public class DisplayTimeTableState {
+public class DisplayTimetableState {
     private ArrayList<String> courseCodes = new ArrayList<>();
     private ArrayList<String> courseNames = new ArrayList<>();
     private ArrayList<ArrayList<Section>> lectureSections = new ArrayList<>();
@@ -22,9 +20,9 @@ public class DisplayTimeTableState {
     private ArrayList<Double> credit = new ArrayList<>();
     private ArrayList<String> sessionCode = new ArrayList<>();
     private String noCourseError;
-    private ArrayList<TimeTableDTO>  allTimeTables;
+    private ArrayList<TimetableDTO>  allTimeTables;
 
-    public DisplayTimeTableState() {
+    public DisplayTimetableState() {
     }
 
     public ArrayList<String> getCourses() {
@@ -33,6 +31,8 @@ public class DisplayTimeTableState {
     public ArrayList<String > getCourseNames() {
         return courseNames;
     }
+
+
     public ArrayList<ArrayList<Section>> getLectureSections() {
         return lectureSections;
     }
@@ -51,7 +51,7 @@ public class DisplayTimeTableState {
     public String getNoCourseError() {
         return noCourseError;
     }
-    public ArrayList<TimeTableDTO> getAllTimeTables() {
+    public ArrayList<TimetableDTO> getAllTimeTables() {
         return allTimeTables;
     }
     public void setCourses(ArrayList<String> courses) {
@@ -78,8 +78,40 @@ public class DisplayTimeTableState {
     public void setNoCourseError(String noCourseError) {
         this.noCourseError = noCourseError;
     }
-    public void setAllTimeTables (ArrayList<TimeTableDTO>  allTimeTables) {
+    public void setAllTimeTables (ArrayList<TimetableDTO>  allTimeTables) {
         this.allTimeTables = allTimeTables;
+    }
+
+    public void addCourseName(String courseName) {
+        this.courseNames.add(courseName);
+    }
+    public void addCourseCode(String courseCode) {
+        this.courseCodes.add(courseCode);
+    }
+    public void addLectureSection(ArrayList<Section> section) {
+        this.lectureSections.add(section);
+    }
+    public void addTutorialSection(ArrayList<Section> section) {
+        this.tutorialSections.add(section);
+    }
+    public void addPracticalSection(ArrayList<Section> section) {
+        this.practicalSections.add(section);
+    }
+    public void addCredit(Double credit) {
+        this.credit.add(credit);
+    }
+    public void addSessionCode(String sessionCode) {
+        this.sessionCode.add(sessionCode);
+    }
+    public void removeCourse(String courseCode) {
+        int index = this.courseCodes.indexOf(courseCode);
+        this.courseCodes.remove(index);
+        this.courseNames.remove(index);
+        this.lectureSections.remove(index);
+        this.tutorialSections.remove(index);
+        this.practicalSections.remove(index);
+        this.credit.remove(index);
+        this.sessionCode.remove(index);
     }
 }
 

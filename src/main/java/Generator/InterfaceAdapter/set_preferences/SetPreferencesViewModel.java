@@ -3,7 +3,7 @@ import Generator.InterfaceAdapter.ViewModel;
 
 public class SetPreferencesViewModel extends ViewModel<SetPreferencesState> {
     public SetPreferencesViewModel() {
-        super("set preferences");
+        super("Set Preferences");
         setState(new SetPreferencesState());
     }
 }
