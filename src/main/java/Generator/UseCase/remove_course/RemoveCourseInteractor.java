@@ -14,7 +14,7 @@ public class RemoveCourseInteractor implements RemoveCourseInputBoundary {
 
     @Override
     public void execute(RemoveCourseInputData removeCourseInputData) {
-        final Course course = new Course(removeCourseInputData.getCourse(), null, 0, 0, null, null, null);
+        final Course course = removeCourseDataAccessObject.getCoursebyCode(removeCourseInputData.getCourse());
         removeCourseDataAccessObject.remove(course);
 
         final RemoveCourseOutputData removeCourseOutputData = new RemoveCourseOutputData(

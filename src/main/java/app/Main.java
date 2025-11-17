@@ -7,7 +7,9 @@ public class Main {
         AppBuilder appBuilder = new AppBuilder();
         JFrame application = appBuilder
                 .addSetPreferencesView()
-                .addSetPreferencesUseCase()
+                .addDisplayTimetableView()
+                .addSetPreferencesUseCases()
+                .addDisplayTimetableUseCases()
                 .build();
         application.pack();
         application.setLocationRelativeTo(null);

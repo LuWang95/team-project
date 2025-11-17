@@ -8,11 +8,15 @@ public interface AddCourseDataAccessInterface {
      * @param course the course to look for
      * @return true if the course is already selected
      */
-    boolean courseExistsByName(String course);
+    boolean courseAlreadyAdded(String course);
 
     /**
      * adds the course to the list
      * @param course the course to be added
      */
     void add(Course course);
+
+    boolean courseExists(String course);
+
+    Course getCoursebyCode(String courseCode);
 }

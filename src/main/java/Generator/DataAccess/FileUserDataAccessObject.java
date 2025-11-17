@@ -6,21 +6,24 @@ import CourseInfo.Course;
 import Generator.UseCase.add_degree.AddDegreeDataAccessInterface;
 import Generator.UseCase.remove_course.RemoveCourseDataAccessInterface;
 import Generator.UseCase.remove_degree.RemoveDegreeDataAccessInterface;
+import Generator.UseCase.generate_timetable.GenerateTimetableDataAccessInterface;
 
 import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class FileUserDataAccessObject implements AddCourseDataAccessInterface, RemoveCourseDataAccessInterface,
-        AddDegreeDataAccessInterface, RemoveDegreeDataAccessInterface {
+        AddDegreeDataAccessInterface, RemoveDegreeDataAccessInterface, GenerateTimetableDataAccessInterface {
     private final File csvFile;
     private final ArrayList<Course> courses;
     private final ArrayList<Degree> degrees;
+    private final JsonCourseDataAccess jsonAccess;
 
-    public FileUserDataAccessObject(String csvPath) {
-        csvFile = new File(csvPath);
+    public FileUserDataAccessObject(String userDataPath, String timetableDataPath) {
+        csvFile = new File(userDataPath);
         courses = new ArrayList<>();
         degrees = new ArrayList<>();
+        jsonAccess = new JsonCourseDataAccess(timetableDataPath);
         save();
 
 //        need to figure out how to load previous data from file into the view when the program restarts TODO
@@ -81,15 +84,25 @@ public class FileUserDataAccessObject implements AddCourseDataAccessInterface, R
 
     // checks to see if specified course is already in the courses ArrayList
     @Override
-    public boolean courseExistsByName(String course) {
+    public boolean courseAlreadyAdded(String course) {
         List<String> courseNames = courses.stream().map(Course::getCourseCode).collect(Collectors.toList());
         return courseNames.contains(course);
     }
 
     @Override
-    public boolean degreeExistsByName(String degree) {
+    public boolean degreeAlreadyAdded(String degree) {
         List<String> degreeNames = degrees.stream().map(Degree::getDegreeCode).collect(Collectors.toList());
         return degreeNames.contains(degree);
+    }
+
+    @Override
+    public boolean courseExists(String courseCode) {
+        return jsonAccess.courseExists(courseCode);
+    }
+
+    @Override
+    public Course getCoursebyCode(String courseCode) {
+        return jsonAccess.getCoursebyCode(courseCode);
     }
 
     // adds course to the courses ArrayList
@@ -130,5 +143,10 @@ public class FileUserDataAccessObject implements AddCourseDataAccessInterface, R
             }
         }
         this.save();
+    }
+
+    @Override
+    public ArrayList<Course> getCourses() {
+        return courses;
     }
 }

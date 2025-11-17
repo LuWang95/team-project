@@ -21,7 +21,7 @@ import java.util.Enumeration;
 
 public class SetPreferencesView extends JPanel implements ActionListener, PropertyChangeListener {
 
-    private final String viewName = "set preferences";
+    private final String viewName = "Set Preferences";
     private final SetPreferencesViewModel setPreferencesViewModel;
     private SetPreferencesController setPreferencesController = null;
 
@@ -32,6 +32,8 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
 
     private final JPanel degreesPanel = new JPanel();
     private final JPanel coursesPanel = new JPanel();
+
+    private final JLabel noCoursesError = new JLabel("");
 
     private final JButton generate;
 
@@ -111,7 +113,7 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
         generate.addActionListener(
                 new ActionListener() {
                     public void actionPerformed(ActionEvent evt) {
-                        System.out.println("this does not work at the moment :(");
+                        setPreferencesController.displayTimetable();
                     }
                 });
         generate.setAlignmentX(JComponent.CENTER_ALIGNMENT);
@@ -132,6 +134,7 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
 
         this.add(infoPanel);
         this.add(generate);
+        this.add(noCoursesError);
 
 //        testing, will be removed as soon as the UI for this part is done
         JButton updateme = new JButton("update");
@@ -298,6 +301,13 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
         final SetPreferencesState state = (SetPreferencesState) evt.getNewValue();
         displayCourses(state.getCourses(), state.getCourseError());
         displayDegrees(state.getDegrees(), state.getDegreeError());
+
+        if (state.getNoSelectedCoursesError() != null) {
+            noCoursesError.setText(state.getNoSelectedCoursesError());
+        }
+        else {
+            noCoursesError.setText("");
+        }
     }
 
     /**

@@ -1,23 +1,21 @@
 package Generator.DataAccess;
 
-import Generator.UseCases.DisplayTimeTable.DisplayTimeTableDataAccessInterface;
+import Generator.UseCase.generate_timetable.GenerateTimetableDataAccessInterface;
 import com.google.gson.Gson;
 import CourseInfo.Course;
 import CourseInfo.Meeting;
 import CourseInfo.LectureSection;
 import CourseInfo.TutorialSection;
 import CourseInfo.PracticalSection;
-import Generator.UseCases.AddCourse.AddCourseDataAccessInterface;
 
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 
 
-public class JsonCourseDataAccess implements AddCourseDataAccessInterface, DisplayTimeTableDataAccessInterface {
+public class JsonCourseDataAccess {
 
     private final Map<String, Course> coursesByCode = new HashMap<>();
-    private final ArrayList<Course> addedCourses = new ArrayList<>();
 
 
     public JsonCourseDataAccess(String jsonFilePath) {
@@ -123,30 +121,12 @@ public class JsonCourseDataAccess implements AddCourseDataAccessInterface, Displ
         return new PracticalSection(r.section_code, list);
     }
 
-    @Override
-    public Course getCourse(String coursesCode) {
-        return coursesByCode.get(coursesCode);
-    }
-
-    @Override
-    public boolean getCourseByCode(String coursesCode) {
+    public boolean courseExists(String coursesCode) {
         return coursesByCode.containsKey(coursesCode);
     }
 
-    @Override
-    public void saveCourses(String coursesCode) {
-        Course course = coursesByCode.get(coursesCode);
-        addedCourses.add(course);
-    }
-
-    @Override
-    public boolean alreadyInList(String courseCode) {
-        return addedCourses.contains(coursesByCode.get(courseCode));
-    }
-
-    @Override
-    public ArrayList<Course> getAddedCourses() {
-        return addedCourses;
+    public Course getCoursebyCode(String coursesCode) {
+        return coursesByCode.get(coursesCode);
     }
 
     private static class JsonCourseRecord {

@@ -7,8 +7,9 @@ public class SetPreferencesState {
     private String courseError;
     private ArrayList<String> degrees;
     private String degreeError;
-    private String selectedCourse;
-    private String selectedDegree;
+    private String selectedCourse = "";
+    private String selectedDegree = "";
+    private String noSelectedCoursesError;
     private int year;
     private ArrayList<String> times;
 
@@ -76,6 +77,13 @@ public class SetPreferencesState {
         this.times = times;
     }
 
+    public String getNoSelectedCoursesError() {
+        return noSelectedCoursesError;
+    }
+
+    public void setNoSelectedCoursesError(String noSelectedCoursesError) {
+        this.noSelectedCoursesError = noSelectedCoursesError;
+    }
 
     @Override
     public String toString() {
