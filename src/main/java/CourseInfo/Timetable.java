@@ -13,7 +13,6 @@ public class Timetable {
         }
     }
 
-    // This constructor is used for the DisplayTimeTable Interactor.
     public Timetable(Timetable other) {
         this.timeTable = new ArrayList[5][12];
         for (int i = 0; i < 5; i++) {
@@ -30,9 +29,9 @@ public class Timetable {
     public Timetable setBlocks(Section section, String courseCode){
         ArrayList<Meeting> meetings = section.getMeetings();
         for (Meeting meeting : meetings) {
-            int day = meeting.getDate() - 1; //Monday has the index of 0.
-            int startTime = (meeting.getStartMinutes() / 60) - 9; // 9:00-10:00 has the index of 0.
-            int endTime = (meeting.getEndMinutes() / 60) - 9;// 20:00-21:00 has the index of 11.
+            int day = meeting.getDate() - 1;
+            int startTime = (meeting.getStartMinutes() / 60) - 9;
+            int endTime = (meeting.getEndMinutes() / 60) - 9;
             for(int i = startTime; i < endTime; i++){
                 if (timeTable[day][i].contains(courseCode + section.getSectionCode())) {
                     continue;
@@ -61,12 +60,12 @@ public class Timetable {
                     System.out.print("[              ]");
                 }
                 else {
-                    System.out.print("[" + timeTable[j][i].get(0).substring(0, 6) + " " +  timeTable[j][i].get(0).substring(8, 15) + "]");
+                    System.out.print("[" + timeTable[j][i].get(0).substring(0, 6) + " " +
+                            timeTable[j][i].get(0).substring(8, 15) + "]");
                 }
                 System.out.print(" ");
             }
             System.out.println();
         }
     }
-
 }

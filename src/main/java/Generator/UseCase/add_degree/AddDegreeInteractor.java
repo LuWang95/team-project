@@ -1,6 +1,8 @@
 package Generator.UseCase.add_degree;
 
 import CourseInfo.Degree;
+import CourseInfo.Course;
+import java.util.ArrayList;
 
 public class AddDegreeInteractor implements AddDegreeInputBoundary {
     private final AddDegreeDataAccessInterface addDegreeDataAccessObject;
@@ -12,9 +14,6 @@ public class AddDegreeInteractor implements AddDegreeInputBoundary {
         this.addDegreePresenter = addDegreeOutputBoundary;
     }
 
-    // checks if the course to be added is already selected
-    // if so, then sends an error message to be displayed
-    // if not, then records the added course in the files and then tells the presenter to display the added course
     @Override
     public void execute(AddDegreeInputData addDegreeInputData) {
         if (addDegreeDataAccessObject.degreeAlreadyAdded(addDegreeInputData.getDegree())) {
@@ -24,7 +23,22 @@ public class AddDegreeInteractor implements AddDegreeInputBoundary {
             final Degree degree = new Degree(addDegreeInputData.getDegree(), null);
             addDegreeDataAccessObject.add(degree);
 
-            final AddDegreeOutputData addDegreeOutputData = new AddDegreeOutputData(addDegreeInputData.getDegree());
+            ArrayList<Course> requiredCourses = addDegreeDataAccessObject
+                    .getRequiredCoursesForDegree(
+                            addDegreeInputData.getDegree(),
+                            addDegreeInputData.getYear()
+                    );
+
+            int coursesAdded = 0;
+            for (Course course : requiredCourses) {
+                addDegreeDataAccessObject.addCourse(course);
+                coursesAdded++;
+            }
+
+            final AddDegreeOutputData addDegreeOutputData = new AddDegreeOutputData(
+                    addDegreeInputData.getDegree(),
+                    coursesAdded
+            );
             addDegreePresenter.prepareAddDegreeSuccessView(addDegreeOutputData);
         }
     }
