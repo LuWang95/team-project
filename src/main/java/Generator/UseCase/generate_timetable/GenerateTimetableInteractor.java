@@ -1,8 +1,6 @@
 package Generator.UseCase.generate_timetable;
 
 import CourseInfo.*;
-
-import java.sql.Time;
 import java.util.ArrayList;
 
 public class GenerateTimetableInteractor implements GenerateTimetableInputBoundary {
@@ -22,12 +20,29 @@ public class GenerateTimetableInteractor implements GenerateTimetableInputBounda
             generateTimeTablePresenter.prepareGenerateTimetableFailureView("No added courses");
             return;
         }else{
+            ArrayList<Course> fallCourses = new ArrayList<>();
+            ArrayList<Course> winterCourses = new ArrayList<>();
             ArrayList<Course> addedCourses = generateTimeTableDataAccessObject.getCourses();
             ArrayList<ArrayList<Section>> lectureSections = new ArrayList<>();
             ArrayList<ArrayList<Section>> secondarySections = new ArrayList<>();
 
+            for (Course course : addedCourses) {
+                String CourseCode = course.getCourseCode();
+                if (CourseCode.charAt(6) == 'Y') {
+                    fallCourses.add(course);
+                    winterCourses.add(course);
+                }else{
+                    int sessionCode = course.getSessionCode();
+                    if (sessionCode == 20259) {
+                        fallCourses.add(course);
+                    }else{
+                        winterCourses.add(course);
+                    }
+                }
+            }
 
-            for(Course course: addedCourses){
+
+            for(Course course: fallCourses){
                 lectureSections.add(course.getLectureSections());
                 if(course.getPracticalSections().isEmpty() && course.getTutorialSections().isEmpty()){
                     secondarySections.add(new ArrayList<>());
@@ -38,35 +53,59 @@ public class GenerateTimetableInteractor implements GenerateTimetableInputBounda
                 }
             }
 
-
-            int n = lectureSections.size();
-
-
+            int n = fallCourses.size();
             ArrayList<ArrayList<Section>> allSections = new ArrayList<>();
             ArrayList<String> respectiveCourseCode = new ArrayList<>();
             for (int i = 0; i < n; i++) {
                 allSections.add(lectureSections.get(i));
                 allSections.add(secondarySections.get(i));
-                respectiveCourseCode.add(addedCourses.get(i).getCourseCode());
-                respectiveCourseCode.add(addedCourses.get(i).getCourseCode());
+                respectiveCourseCode.add(fallCourses.get(i).getCourseCode());
+                respectiveCourseCode.add(fallCourses.get(i).getCourseCode());
             }
 
-              rawTimetables.clear();
-
-              Timetable emptyTimetable = new Timetable();
-              addAllCombination(allSections, emptyTimetable,0,respectiveCourseCode);
-
-            ArrayList<TimetableDTO> dtoList = new ArrayList<>();
+            rawTimetables.clear();
+            Timetable emptyTimetable = new Timetable();
+            addAllCombination(allSections, emptyTimetable,0,respectiveCourseCode);
+            ArrayList<TimetableDTO> fallList = new ArrayList<>();
             for (Timetable timetable : rawTimetables) {
-                dtoList.add(TimetableDTO.fromEntity(timetable));
+                fallList.add(TimetableDTO.fromEntity(timetable));
             }
 
-            GenerateTimetableOutputData outputData = new GenerateTimetableOutputData(dtoList);
+
+            //winterlist
+            ArrayList<TimetableDTO> winterList = new ArrayList<>();
+            lectureSections.clear();
+            secondarySections.clear();
+            allSections.clear();
+            respectiveCourseCode.clear();
+            for(Course course: winterCourses){
+                lectureSections.add(course.getLectureSections());
+                if(course.getPracticalSections().isEmpty() && course.getTutorialSections().isEmpty()){
+                    secondarySections.add(new ArrayList<>());
+                }else if(! course.getTutorialSections().isEmpty()){
+                    secondarySections.add(course.getTutorialSections());
+                }else if(! course.getPracticalSections().isEmpty()){
+                    secondarySections.add(course.getPracticalSections());
+                }
+            }
+            n = winterCourses.size();
+            for (int i = 0; i < n; i++) {
+                allSections.add(lectureSections.get(i));
+                allSections.add(secondarySections.get(i));
+                respectiveCourseCode.add(winterCourses.get(i).getCourseCode());
+                respectiveCourseCode.add(winterCourses.get(i).getCourseCode());
+            }
+            rawTimetables.clear();
+            emptyTimetable = new Timetable();
+            addAllCombination(allSections, emptyTimetable,0,respectiveCourseCode);
+            for (Timetable timetable : rawTimetables) {
+                winterList.add(TimetableDTO.fromEntity(timetable));
+            }
+
+            GenerateTimetableOutputData outputData = new GenerateTimetableOutputData(fallList,winterList);
             generateTimeTablePresenter.prepareGenerateTimetableSuccessView(outputData);
         }
-
-
-        }
+    }
 
     private void addAllCombination(ArrayList<ArrayList<Section>> allSections, Timetable curTimetable, Integer index, ArrayList<String> courseCodes) {
         if (rawTimetables.size() >= LIMIT) {
@@ -88,4 +127,5 @@ public class GenerateTimetableInteractor implements GenerateTimetableInputBounda
             }
         }
     }
+
 }
