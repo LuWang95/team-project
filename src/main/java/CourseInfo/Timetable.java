@@ -43,7 +43,7 @@ public class Timetable {
         return this;
     }
 
-    public Timetable removetBlocks(Section section, String courseCode){
+    public Timetable removeBlocks(Section section, String courseCode){
         ArrayList<Meeting> meetings = section.getMeetings();
         for (Meeting meeting : meetings) {
             int day = meeting.getDate() - 1; //Monday has the index of 0.

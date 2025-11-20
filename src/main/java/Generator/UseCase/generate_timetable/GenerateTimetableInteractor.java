@@ -54,13 +54,11 @@ public class GenerateTimetableInteractor implements GenerateTimetableInputBounda
 
             rawTimetables.clear();
             Timetable emptyTimetable = new Timetable();
-            addAllCombination(allSections, emptyTimetable,0,respectiveCourseCode);
-//
-//            for (Timetable timetable: rawTimetables) {
-//                if (timetable.isValid()){
-//                    filteredTimetables.add(timetable);
-//                }
-//            }
+            addAllCombination(lectureSections, emptyTimetable,0,courseCodes);
+
+            for (Timetable timetable: rawTimetables) {
+                timetable.printTimetable();
+            }
 
             ArrayList<TimetableDTO> dtoList = new ArrayList<>();
             for (Timetable timetable : rawTimetables) {
@@ -87,7 +85,7 @@ public class GenerateTimetableInteractor implements GenerateTimetableInputBounda
             if(curTimetable.canAddBlock(section, courseCodes.get(index))){
                 curTimetable.setBlocks(section, courseCodes.get(index));
                 addAllCombination(allSections, curTimetable,index+1,courseCodes);
-
+                curTimetable.removeBlocks(section, courseCodes.get(index));
             }
         }
 
