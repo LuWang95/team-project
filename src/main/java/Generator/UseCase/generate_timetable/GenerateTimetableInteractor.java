@@ -2,13 +2,14 @@ package Generator.UseCase.generate_timetable;
 
 import CourseInfo.*;
 
+import java.sql.Time;
 import java.util.ArrayList;
 
 public class GenerateTimetableInteractor implements GenerateTimetableInputBoundary {
     final GenerateTimetableOutputBoundary generateTimeTablePresenter;
     final GenerateTimetableDataAccessInterface generateTimeTableDataAccessObject;
+    final private static int LIMIT = 5000;
     ArrayList<Timetable> rawTimetables = new ArrayList<>();
-    ArrayList<Timetable> filteredTimetables = new ArrayList<>();
 
     public GenerateTimetableInteractor(GenerateTimetableDataAccessInterface generateTimeTableDataAccessObject,
                                        GenerateTimetableOutputBoundary generateTimeTablePresenter) {
@@ -50,16 +51,10 @@ public class GenerateTimetableInteractor implements GenerateTimetableInputBounda
                 respectiveCourseCode.add(addedCourses.get(i).getCourseCode());
             }
 
-//            rawTimetables.clear();
-//            filteredTimetables.clear();
-//            Timetable emptyTimetable = new Timetable();
-//            addAllCombination(allSections, emptyTimetable,0,respectiveCourseCode);
-//
-//            for (Timetable timetable: rawTimetables) {
-//                if (timetable.isValid()){
-//                    filteredTimetables.add(timetable);
-//                }
-//            }
+              rawTimetables.clear();
+
+              Timetable emptyTimetable = new Timetable();
+              addAllCombination(allSections, emptyTimetable,0,respectiveCourseCode);
 
             ArrayList<TimetableDTO> dtoList = new ArrayList<>();
             for (Timetable timetable : rawTimetables) {
@@ -74,8 +69,11 @@ public class GenerateTimetableInteractor implements GenerateTimetableInputBounda
         }
 
     private void addAllCombination(ArrayList<ArrayList<Section>> allSections, Timetable curTimetable, Integer index, ArrayList<String> courseCodes) {
+        if (rawTimetables.size() >= LIMIT) {
+            return;
+        }
         if(index == allSections.size()){
-            rawTimetables.add(curTimetable);
+            rawTimetables.add(new Timetable(curTimetable));
             return;
         }
         if(allSections.get(index).isEmpty()){
@@ -84,12 +82,10 @@ public class GenerateTimetableInteractor implements GenerateTimetableInputBounda
         }
         for (Section section : allSections.get(index)) {
             if(curTimetable.canAddBlock(section, courseCodes.get(index))){
+                curTimetable.setBlocks(section, courseCodes.get(index));
                 addAllCombination(allSections, curTimetable,index+1,courseCodes);
+                curTimetable.removeBlocks(section, courseCodes.get(index));
             }
         }
-
-
     }
-
-
 }
