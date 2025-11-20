@@ -43,6 +43,19 @@ public class Timetable {
         return this;
     }
 
+    public Timetable removetBlocks(Section section, String courseCode){
+        ArrayList<Meeting> meetings = section.getMeetings();
+        for (Meeting meeting : meetings) {
+            int day = meeting.getDate() - 1; //Monday has the index of 0.
+            int startTime = (meeting.getStartMinutes() / 60) - 9; // 9:00-10:00 has the index of 0.
+            int endTime = (meeting.getEndMinutes() / 60) - 9;// 20:00-21:00 has the index of 11.
+            for(int i = startTime; i < endTime; i++){
+                timeTable[day][i].remove(courseCode + section.getSectionCode());
+            }
+        }
+        return this;
+    }
+
 //    public boolean isValid(){
 //        for (int i = 0; i < 5; i++) {
 //            for (int j = 0; j < 12; j++) {

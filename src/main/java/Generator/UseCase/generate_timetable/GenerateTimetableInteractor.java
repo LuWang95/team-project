@@ -43,17 +43,18 @@ public class GenerateTimetableInteractor implements GenerateTimetableInputBounda
 
             ArrayList<ArrayList<Section>> allSections = new ArrayList<>();
             ArrayList<String> respectiveCourseCode = new ArrayList<>();
+            ArrayList<String> courseCodes = new ArrayList<>();
             for (int i = 0; i < n; i++) {
                 allSections.add(lectureSections.get(i));
                 allSections.add(secondarySections.get(i));
                 respectiveCourseCode.add(addedCourses.get(i).getCourseCode());
                 respectiveCourseCode.add(addedCourses.get(i).getCourseCode());
+                courseCodes.add(addedCourses.get(i).getCourseCode());
             }
 
-//            rawTimetables.clear();
-//            filteredTimetables.clear();
-//            Timetable emptyTimetable = new Timetable();
-//            addAllCombination(allSections, emptyTimetable,0,respectiveCourseCode);
+            rawTimetables.clear();
+            Timetable emptyTimetable = new Timetable();
+            addAllCombination(allSections, emptyTimetable,0,respectiveCourseCode);
 //
 //            for (Timetable timetable: rawTimetables) {
 //                if (timetable.isValid()){
@@ -75,7 +76,7 @@ public class GenerateTimetableInteractor implements GenerateTimetableInputBounda
 
     private void addAllCombination(ArrayList<ArrayList<Section>> allSections, Timetable curTimetable, Integer index, ArrayList<String> courseCodes) {
         if(index == allSections.size()){
-            rawTimetables.add(curTimetable);
+            rawTimetables.add(new Timetable(curTimetable));
             return;
         }
         if(allSections.get(index).isEmpty()){
@@ -84,7 +85,9 @@ public class GenerateTimetableInteractor implements GenerateTimetableInputBounda
         }
         for (Section section : allSections.get(index)) {
             if(curTimetable.canAddBlock(section, courseCodes.get(index))){
+                curTimetable.setBlocks(section, courseCodes.get(index));
                 addAllCombination(allSections, curTimetable,index+1,courseCodes);
+
             }
         }
 
