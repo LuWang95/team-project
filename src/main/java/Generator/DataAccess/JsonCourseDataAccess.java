@@ -14,7 +14,6 @@ import java.util.*;
 
 
 public class JsonCourseDataAccess {
-
     private final Map<String, Course> coursesByCode = new HashMap<>();
 
 
@@ -40,12 +39,21 @@ public class JsonCourseDataAccess {
 
     private void buildDomainCourses(List<JsonCourseRecord> rawList) {
         for (JsonCourseRecord r : rawList) {
-            String key = r.course_code.trim().toUpperCase();
+            String baseCode = r.course_code.trim().toUpperCase();
+            String fullCode = baseCode;
+            if (r.course_code.charAt(6) == 'H'){
+                if(Integer.parseInt(r.session)==20259){
+                    fullCode = baseCode + "F";
+                }else{
+                    fullCode = baseCode + "S";
+                }
+            }
 
-            Course course = coursesByCode.get(key);
+
+            Course course = coursesByCode.get(fullCode);
             if (course == null) {
                 course = new Course(
-                        r.course_code,           // courseCode
+                        fullCode,
                         r.course_title,          // courseTitle
                         Integer.parseInt(r.session),               // sessionCode
                         r.credit,                // credit
@@ -53,7 +61,7 @@ public class JsonCourseDataAccess {
                         new ArrayList<>(),       // tutorial_sections
                         new ArrayList<>()        // practical_sections
                 );
-                coursesByCode.put(key, course);
+                coursesByCode.put(fullCode, course);
              }
 
             switch (r.component) {
