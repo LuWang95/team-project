@@ -37,12 +37,8 @@ public class SetPreferencesPresenter implements AddCourseOutputBoundary, RemoveC
         final DisplayTimetableState displayTimetableState = displayTimetableViewModel.getState();
         displayTimetableState.addCourseCode(addCourseOutputData.getCourseCode());
         displayTimetableState.addCourseName(addCourseOutputData.getCourseName());
-        displayTimetableState.addLectureSection(addCourseOutputData.getLectureSection());
-        displayTimetableState.addTutorialSection(addCourseOutputData.getTutorialSection());
-        displayTimetableState.addPracticalSection(addCourseOutputData.getPracticalSection());
         displayTimetableState.addCredit(addCourseOutputData.getCredit());
-        displayTimetableState.addSessionCode(addCourseOutputData.getSessionCode());
-        displayTimetableViewModel.firePropertyChange();
+        displayTimetableState.resetTimetableIndex();
 
         viewManagerModel.setState(setPreferencesViewModel.getViewName());
         viewManagerModel.firePropertyChange();
@@ -68,7 +64,7 @@ public class SetPreferencesPresenter implements AddCourseOutputBoundary, RemoveC
 
         final DisplayTimetableState displayTimetableState = displayTimetableViewModel.getState();
         displayTimetableState.removeCourse(removeCourseOutputData.getCourse());
-        displayTimetableViewModel.firePropertyChange();
+        displayTimetableState.resetTimetableIndex();
 
         viewManagerModel.setState(setPreferencesViewModel.getViewName());
         viewManagerModel.firePropertyChange();
@@ -112,6 +108,11 @@ public class SetPreferencesPresenter implements AddCourseOutputBoundary, RemoveC
         final SetPreferencesState setPreferencesState = setPreferencesViewModel.getState();
         setPreferencesState.setNoSelectedCoursesError(null);
         setPreferencesViewModel.firePropertyChange();
+
+        final DisplayTimetableState displayTimetableState = displayTimetableViewModel.getState();
+        displayTimetableState.setFallTimetables(generateTimetableOutputData.getFallTimeTables());
+        displayTimetableState.setWinterTimetables(generateTimetableOutputData.getWinterTimeTables());
+        displayTimetableViewModel.firePropertyChange();
 
         viewManagerModel.setState(displayTimetableViewModel.getViewName());
         viewManagerModel.firePropertyChange();
