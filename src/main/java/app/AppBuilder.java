@@ -116,7 +116,7 @@ public class AppBuilder {
 
     public JFrame build() {
         final JFrame application = new JFrame("Timetable Builder, but better");
-        application.setMinimumSize(new Dimension(1500, 600));
+        application.setMinimumSize(new Dimension(1500, 750));
         application.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         application.add(cardPanel);

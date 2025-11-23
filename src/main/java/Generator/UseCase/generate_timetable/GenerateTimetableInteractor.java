@@ -31,7 +31,7 @@ public class GenerateTimetableInteractor implements GenerateTimetableInputBounda
         List<TimetableDTO> fallList = generateTermTimetables(fallCourses);
         List<TimetableDTO> winterList = generateTermTimetables(winterCourses);
 
-        GenerateTimetableOutputData outputData = new GenerateTimetableOutputData(fallList, winterList);
+        GenerateTimetableOutputData outputData = new GenerateTimetableOutputData((ArrayList<TimetableDTO>) fallList, (ArrayList<TimetableDTO>) winterList);
         presenter.prepareGenerateTimetableSuccessView(outputData);
     }
 
@@ -39,8 +39,12 @@ public class GenerateTimetableInteractor implements GenerateTimetableInputBounda
         for (Course course : courses) {
             String code = course.getCourseCode();
             if (code.charAt(6) == 'Y') {
-                fallCourses.add(course);
-                winterCourses.add(course);
+                if (code.equals("CSC110Y1")){
+                    fallCourses.add(course);
+                }else{
+                    fallCourses.add(course);
+                    winterCourses.add(course);
+                }
             } else if (course.getSessionCode() == 20259) {
                 fallCourses.add(course);
             } else {
