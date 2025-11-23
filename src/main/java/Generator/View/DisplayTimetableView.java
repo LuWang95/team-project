@@ -1,10 +1,9 @@
 package Generator.View;
 
-import CourseInfo.Meeting;
-import CourseInfo.Section; // need to get rid of this !! TODO
 import Generator.InterfaceAdapter.display_timetable.DisplayTimetableController;
 import Generator.InterfaceAdapter.display_timetable.DisplayTimetableState;
 import Generator.InterfaceAdapter.display_timetable.DisplayTimetableViewModel;
+import Generator.UseCase.generate_timetable.TimetableDTO;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -20,28 +19,105 @@ public class DisplayTimetableView extends JPanel implements ActionListener, Prop
     private final DisplayTimetableViewModel displayTimetableViewModel;
     private DisplayTimetableController displayTimetableController = null;
 
-    private final Map<Point, Color> colorMap = new HashMap<>();
-    private final JTable timetableTable;
+    private final HashMap<Point, Color> fallColorMap = new HashMap<>();
+    private final HashMap<Point, Integer> fallAlignMap = new HashMap<>();
+    private final HashMap<Point, Color> winterColorMap = new HashMap<>();
+    private final HashMap<Point, Integer> winterAlignMap = new HashMap<>();
+
+    private final JTable fallTimetable;
+    private final JTable winterTimetable;
+    private final JPanel timetablesPanel = new JPanel();
+    private final JPanel fallPanel = new JPanel();
+    private final JPanel winterPanel = new JPanel();
     private final JPanel coursesPanel = new JPanel();
     private final JLabel creditsLabel = new JLabel("Credits: ");
 
+    private final JPanel bottomButtons = new JPanel();
     private final JButton back;
+    private final JButton regenerate;
 
     public DisplayTimetableView(DisplayTimetableViewModel displayTimetableViewModel) {
         this.displayTimetableViewModel = displayTimetableViewModel;
         displayTimetableViewModel.addPropertyChangeListener(this);
 
-        final JLabel title = new JLabel("Timetable");
-        title.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+        final JLabel title = new JLabel("Your Timetable");
+        title.setAlignmentX(JLabel.CENTER);
 
-        String[][] timetableData = new String[12][6];
+        String[][] fallTimetableData = new String[12][6];
+        String[][] winterTimetableData = new String[12][6];
         for (int i = 0; i < 12; i++) {
-            timetableData[i][0] = (i + 9) + ":00";
+            fallTimetableData[i][0] = (i + 9) + ":00";
+            winterTimetableData[i][0] = (i + 9) + ":00";
         }
+
         String[] columnHeaders = {"Time", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"};
-        timetableTable = new JTable(timetableData, columnHeaders);
+        fallTimetable = new JTable(fallTimetableData, columnHeaders);
+        winterTimetable = new JTable(winterTimetableData, columnHeaders);
+
+        setupTimetable(fallTimetable, fallColorMap, fallAlignMap);
+        setupTimetable(winterTimetable, winterColorMap, winterAlignMap);
+
+        timetablesPanel.setLayout(new BoxLayout(timetablesPanel, BoxLayout.X_AXIS));
+
+        fallPanel.setLayout(new BoxLayout(fallPanel, BoxLayout.Y_AXIS));
+        final JLabel fallTitle = new JLabel("Fall Timetable");
+        fallTitle.setAlignmentX(JLabel.CENTER);
+        fallPanel.add(fallTitle);
+        fallPanel.add(fallTimetable.getTableHeader());
+        fallPanel.add(fallTimetable);
+        timetablesPanel.add(fallPanel);
+
+        timetablesPanel.add(new JLabel(" "));
+
+        winterPanel.setLayout(new BoxLayout(winterPanel, BoxLayout.Y_AXIS));
+        final JLabel winterTitle = new JLabel("Winter Timetable");
+        winterTitle.setAlignmentX(JLabel.CENTER);
+        winterPanel.add(winterTitle);
+        winterPanel.add(winterTimetable.getTableHeader());
+        winterPanel.add(winterTimetable);
+        timetablesPanel.add(winterPanel);
+
+        coursesPanel.setLayout(new BoxLayout(coursesPanel, BoxLayout.Y_AXIS));
+        coursesPanel.add(new JLabel("Courses:"));
+        coursesPanel.setAlignmentX(JLabel.CENTER);
+        creditsLabel.setAlignmentX(JLabel.CENTER);
+
+        bottomButtons.setLayout(new BoxLayout(bottomButtons, BoxLayout.X_AXIS));
+        bottomButtons.setAlignmentX(JLabel.CENTER);
+
+        back = new JButton("Back");
+        back.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                displayTimetableController.returnToPrefs();
+            }
+        });
+        bottomButtons.add(back);
+
+        regenerate = new JButton("Regenerate");
+        regenerate.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                displayTimetableController.regenerateTimetable();
+            }
+        });
+        bottomButtons.add(regenerate);
+
+        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        this.add(title);
+        this.add(timetablesPanel);
+        this.add(coursesPanel);
+        this.add(creditsLabel);
+        this.add(bottomButtons);
+    }
+
+    private void setupTimetable(JTable timetableTable, HashMap<Point, Color> colorMap,
+                                HashMap<Point, Integer> alignMap) {
+
         timetableTable.setDefaultEditor(Object.class, null);
         timetableTable.setShowHorizontalLines(false);
+        timetableTable.setRowHeight(32);
+        timetableTable.getColumnModel().getColumn(0).setPreferredWidth(15);
 
         timetableTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
             @Override
@@ -51,87 +127,74 @@ public class DisplayTimetableView extends JPanel implements ActionListener, Prop
                 Point p = new Point(row, column);
 
                 c.setBackground(colorMap.getOrDefault(p, Color.WHITE));
+                super.setHorizontalAlignment(alignMap.getOrDefault(p, JLabel.LEFT));
                 return c;
             }
         });
-
-        coursesPanel.setLayout(new BoxLayout(coursesPanel, BoxLayout.Y_AXIS));
-        coursesPanel.add(new JLabel("Courses:"));
-
-        back = new JButton("Back");
-        back.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                displayTimetableController.returnToPrefs();
-            }
-        });
-
-        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        this.add(title);
-        this.add(timetableTable.getTableHeader());
-        this.add(timetableTable);
-        this.add(coursesPanel);
-        this.add(creditsLabel);
-        this.add(back);
     }
 
-    private void displayCourses(ArrayList<String> courseCodes, ArrayList<ArrayList<Section>> lectureSections,
-                                ArrayList<ArrayList<Section>> tutorialSections,
-                                ArrayList<ArrayList<Section>> practicalSections) {
+    private void displayCourses(TimetableDTO fallTTB, TimetableDTO winterTTB) {
+        // reset timetable colours
         for (int i = 0; i < 12; i++) {
-            for (int j = 1; j < 6; j++) {
-                colorMap.put(new Point(i, j), Color.WHITE);
-                timetableTable.setValueAt("", i, j);
+            for (int j = 0; j < 6; j++) {
+                fallColorMap.put(new Point(i, j), Color.WHITE);
+                fallAlignMap.put(new Point(i, j), JLabel.RIGHT);
+                winterColorMap.put(new Point(i, j), Color.WHITE);
+                winterAlignMap.put(new Point(i, j), JLabel.RIGHT);
+                if (j != 0) {
+                    this.fallTimetable.setValueAt("", i, j);
+                    this.winterTimetable.setValueAt("", i, j);
+                }
             }
         }
 
-        for (int i = 0; i < courseCodes.size(); i++) {
-            Section courseLec = lectureSections.get(i).get(0);
-            String lectureCode = courseLec.getSectionCode();
-            Section courseTut = tutorialSections.get(i).get(0);
-            String tutorialCode = courseTut.getSectionCode();
+        ArrayList<String> courses = new ArrayList<>();
+        displayTimetable(fallTTB.getTable(), fallTimetable, fallColorMap, fallAlignMap, courses);
+        displayTimetable(winterTTB.getTable(), winterTimetable, winterColorMap, winterAlignMap, courses);
+    }
 
-            Color lecColour = chooseColour(false);
+    private void displayTimetable(ArrayList<ArrayList<ArrayList<String>>> table, JTable timetableTable,
+                                  HashMap<Point, Color> colorMap, HashMap<Point, Integer> alignMap,
+                                  ArrayList<String> courses) {
 
-            for (Meeting m : courseLec.getMeetings()) {
-                int rowIndex = m.getStartMinutes() / 60 - 9;
-                int columnIndex = m.getDate();
-                colorMap.replace(new Point(rowIndex, columnIndex), lecColour);
-                timetableTable.setValueAt(courseCodes.get(i) + " " + lectureCode, rowIndex, columnIndex);
+        for (int i = 0; i < table.size(); i++) {
+            for (int j = 0; j < table.get(0).size(); j++) {
+                if (!table.get(i).get(j).isEmpty()) {
+                    String block = table.get(i).get(j).get(0);
+                    String courseCode = block.substring(0, 8);
+                    String sessionCode = block.substring(8);
+                    if (!courses.contains(courseCode)) {
+                        courses.add(courseCode);
+                    }
 
-                for (int j = 1; j < (m.getEndMinutes() - m.getStartMinutes()) / 60; j++) {
-                    rowIndex++;
-                    colorMap.replace(new Point(rowIndex, columnIndex), lecColour);
-                }
-            }
-            Color tutColour = chooseColour(true);
-            for (Meeting m : courseTut.getMeetings()) {
-                int rowIndex = m.getStartMinutes() / 60 - 8;
+                    String timetableString = courseCode + " " + sessionCode;
 
-                int columnIndex = m.getDate();
-                colorMap.replace(new Point(rowIndex, columnIndex), tutColour);
-                timetableTable.setValueAt(courseCodes.get(i) + " " + tutorialCode, rowIndex, columnIndex);
+                    Color sessionColour;
+                    if (sessionCode.contains("LEC")) {
+                        sessionColour = chooseColour(false, courses.indexOf(courseCode));
+                    }
+                    else {
+                        sessionColour = chooseColour(true, courses.indexOf(courseCode));
+                    }
+                    colorMap.replace(new Point(j, i + 1), sessionColour);
 
-                for (int j = 1; j < (m.getEndMinutes() - m.getStartMinutes()) / 60; j++) {
-                    rowIndex++;
-                    colorMap.replace(new Point(rowIndex, columnIndex), tutColour);
+                    if (j == 0 || !colorMap.get(new Point (j - 1, i + 1)).equals(sessionColour)) {
+                        timetableTable.setValueAt(timetableString, j, i + 1);
+                    }
+                    alignMap.replace(new Point(j, i + 1), JLabel.CENTER);
+
+
+
                 }
             }
         }
     }
 
-    private Color chooseColour(boolean lighter) {
-        float hue = 0.0f;
+    private Color chooseColour(boolean lighter, int id) {
         if (lighter) {
-            while (colorMap.containsValue(Color.getHSBColor(hue, 0.50f, 0.90f))) {
-                hue += 0.1f;
-            }
-            return Color.getHSBColor(hue, 0.50f, 0.90f);
+            return Color.getHSBColor(0.1f * id, 0.50f, 0.90f);
         }
-        while (colorMap.containsValue(Color.getHSBColor(hue, 0.75f, 0.90f))) {
-            hue += 0.1f;
-        }
-        return Color.getHSBColor(hue, 0.75f, 0.90f);
+        return Color.getHSBColor(0.1f * id, 0.75f, 0.90f);
     }
 
     private void updateCoursesLabel(ArrayList<String> courseTitles, ArrayList<String> courseCodes) {
@@ -160,8 +223,8 @@ public class DisplayTimetableView extends JPanel implements ActionListener, Prop
         final DisplayTimetableState state = (DisplayTimetableState) evt.getNewValue();
         updateCoursesLabel(state.getCourseNames(), state.getCourses());
         updateCreditsLabel(state.getCredit());
-        displayCourses(state.getCourses(), state.getLectureSections(), state.getTutorialSections(),
-                state.getPracticalSections());
+        displayCourses(state.getFallTimetables().get(state.getFallIndex()),
+                state.getWinterTimetables().get(state.getWinterIndex()));
     }
 
     public String getViewName() {

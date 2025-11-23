@@ -1,6 +1,5 @@
 package Generator.InterfaceAdapter.display_timetable;
 
-import CourseInfo.Section;
 import Generator.UseCase.generate_timetable.TimetableDTO;
 
 import java.util.ArrayList;
@@ -14,13 +13,12 @@ import java.util.ArrayList;
 public class DisplayTimetableState {
     private ArrayList<String> courseCodes = new ArrayList<>();
     private ArrayList<String> courseNames = new ArrayList<>();
-    private ArrayList<ArrayList<Section>> lectureSections = new ArrayList<>();
-    private ArrayList<ArrayList<Section>> tutorialSections = new ArrayList<>();
-    private ArrayList<ArrayList<Section>> practicalSections = new ArrayList<>();
     private ArrayList<Double> credit = new ArrayList<>();
-    private ArrayList<String> sessionCode = new ArrayList<>();
     private String noCourseError;
-    private ArrayList<TimetableDTO>  allTimeTables;
+    private ArrayList<TimetableDTO> fallTimetables;
+    private ArrayList<TimetableDTO> winterTimetables;
+    private int fallIndex = 0;
+    private int winterIndex = 0;
 
     public DisplayTimetableState() {
     }
@@ -31,55 +29,36 @@ public class DisplayTimetableState {
     public ArrayList<String > getCourseNames() {
         return courseNames;
     }
-
-
-    public ArrayList<ArrayList<Section>> getLectureSections() {
-        return lectureSections;
-    }
-    public ArrayList<ArrayList<Section>> getTutorialSections() {
-        return tutorialSections;
-    }
-    public ArrayList<ArrayList<Section>> getPracticalSections() {
-        return practicalSections;
-    }
     public ArrayList<Double> getCredit() {
         return credit;
-    }
-    public ArrayList<String> getSessionCode() {
-        return sessionCode;
     }
     public String getNoCourseError() {
         return noCourseError;
     }
-    public ArrayList<TimetableDTO> getAllTimeTables() {
-        return allTimeTables;
+    public ArrayList<TimetableDTO> getFallTimetables() {
+        return fallTimetables;
     }
+    public ArrayList<TimetableDTO> getWinterTimetables() {
+        return winterTimetables;
+    }
+
     public void setCourses(ArrayList<String> courses) {
         this.courseCodes = courses;
     }
     public void setCourseNames(ArrayList<String> courseNames) {
         this.courseNames = courseNames;
     }
-    public void setLectureSections(ArrayList<ArrayList<Section>> lectureSections) {
-        this.lectureSections = lectureSections;
-    }
-    public void setTutorialSections(ArrayList<ArrayList<Section>> tutorialSections) {
-        this.tutorialSections = tutorialSections;
-    }
-    public void setPracticalSections(ArrayList<ArrayList<Section>> practicalSections) {
-        this.practicalSections = practicalSections;
-    }
     public void setCredit(ArrayList<Double> credit) {
         this.credit = credit;
-    }
-    public void setSessionCode(ArrayList<String> sessionCode) {
-        this.sessionCode = sessionCode;
     }
     public void setNoCourseError(String noCourseError) {
         this.noCourseError = noCourseError;
     }
-    public void setAllTimeTables (ArrayList<TimetableDTO>  allTimeTables) {
-        this.allTimeTables = allTimeTables;
+    public void setFallTimetables(ArrayList<TimetableDTO> fallTimetables) {
+        this.fallTimetables = fallTimetables;
+    }
+    public void setWinterTimetables(ArrayList<TimetableDTO> winterTimetables) {
+        this.winterTimetables = winterTimetables;
     }
 
     public void addCourseName(String courseName) {
@@ -88,30 +67,43 @@ public class DisplayTimetableState {
     public void addCourseCode(String courseCode) {
         this.courseCodes.add(courseCode);
     }
-    public void addLectureSection(ArrayList<Section> section) {
-        this.lectureSections.add(section);
-    }
-    public void addTutorialSection(ArrayList<Section> section) {
-        this.tutorialSections.add(section);
-    }
-    public void addPracticalSection(ArrayList<Section> section) {
-        this.practicalSections.add(section);
-    }
     public void addCredit(Double credit) {
         this.credit.add(credit);
     }
-    public void addSessionCode(String sessionCode) {
-        this.sessionCode.add(sessionCode);
-    }
+
     public void removeCourse(String courseCode) {
         int index = this.courseCodes.indexOf(courseCode);
         this.courseCodes.remove(index);
         this.courseNames.remove(index);
-        this.lectureSections.remove(index);
-        this.tutorialSections.remove(index);
-        this.practicalSections.remove(index);
         this.credit.remove(index);
-        this.sessionCode.remove(index);
+    }
+
+    /**
+     * currently just goes to the next timetable in the arraylist
+     */
+    public void changeTimetableIndex() {
+        fallIndex++;
+        winterIndex++;
+
+        if (fallIndex >= fallTimetables.size()) {
+            fallIndex = 0;
+        }
+        if (winterIndex >= winterTimetables.size()) {
+            winterIndex = 0;
+        }
+    }
+
+    public void resetTimetableIndex() {
+        fallIndex = 0;
+        winterIndex = 0;
+    }
+
+    public int getFallIndex() {
+        return fallIndex;
+    }
+
+    public int getWinterIndex() {
+        return winterIndex;
     }
 }
 
