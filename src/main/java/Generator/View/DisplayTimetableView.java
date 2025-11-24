@@ -162,13 +162,16 @@ public class DisplayTimetableView extends JPanel implements ActionListener, Prop
                 if (!table.get(i).get(j).isEmpty()) {
                     String block = table.get(i).get(j).get(0);
                     String courseCode = block.substring(0, 8);
-                    String sessionCode = block.substring(8);
+                    String sessionCode = "";
+                    if(courseCode.charAt(6) == 'H'){
+                        sessionCode = block.substring(9);
+                    }else {
+                        sessionCode = block.substring(8);
+                    }
                     if (!courses.contains(courseCode)) {
                         courses.add(courseCode);
                     }
-
                     String timetableString = courseCode + " " + sessionCode;
-
                     Color sessionColour;
                     if (sessionCode.contains("LEC")) {
                         sessionColour = chooseColour(false, courses.indexOf(courseCode));
