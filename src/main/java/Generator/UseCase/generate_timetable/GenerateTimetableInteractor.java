@@ -16,6 +16,7 @@ public class GenerateTimetableInteractor implements GenerateTimetableInputBounda
         this.dataAccess = dataAccess;
     }
 
+
     @Override
     public void execute() {
         List<Course> allCourses = dataAccess.getCourses();
