@@ -1,13 +1,9 @@
-package Generator.UseCase.add_degree;
+package Generator.UseCase.generate_timetable;
 
-public class AddDegreeOutputData {
-    private final String degree;
+import CourseInfo.Course;
 
-    public AddDegreeOutputData(String degree) {
-        this.degree = degree;
-    }
+import java.util.ArrayList;
 
-    public String getDegree() {
-        return degree;
-    }
+public interface GenerateTimetableDataAccessInterface {
+    ArrayList<Course> getCourses();
 }

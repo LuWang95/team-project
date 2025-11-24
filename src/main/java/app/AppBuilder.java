@@ -1,10 +1,9 @@
-package app;
+package Generator.View;
 
-import Generator.DataAccess.FileUserDataAccessObject;
-import Generator.InterfaceAdapter.*;
 import Generator.InterfaceAdapter.display_timetable.DisplayTimetableController;
-import Generator.InterfaceAdapter.display_timetable.DisplayTimetablePresenter;
+import Generator.InterfaceAdapter.display_timetable.DisplayTimetableState;
 import Generator.InterfaceAdapter.display_timetable.DisplayTimetableViewModel;
+import Generator.UseCase.generate_timetable.TimetableDTO;
 import Generator.InterfaceAdapter.set_preferences.SetPreferencesController;
 import Generator.InterfaceAdapter.set_preferences.SetPreferencesPresenter;
 import Generator.InterfaceAdapter.set_preferences.SetPreferencesViewModel;
@@ -33,99 +32,275 @@ import Generator.View.*;
 
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.HashMap;
 
-public class AppBuilder {
-    private final JPanel cardPanel = new JPanel();
-    private final CardLayout cardLayout = new CardLayout();
-    final ViewManagerModel viewManagerModel = new ViewManagerModel();
-    ViewManager viewManager = new ViewManager(cardPanel, cardLayout, viewManagerModel);
+public class DisplayTimetableView extends JPanel implements ActionListener, PropertyChangeListener {
+    private final String viewName = "Display Timetable";
+    private final DisplayTimetableViewModel displayTimetableViewModel;
+    private DisplayTimetableController displayTimetableController = null;
 
-    final FileUserDataAccessObject userDataAccessObject =
-            new FileUserDataAccessObject("selectedPreferences.csv", "artsci_timetable.json");
+    private final HashMap<Point, Color> fallColorMap = new HashMap<>();
+    private final HashMap<Point, Integer> fallAlignMap = new HashMap<>();
+    private final HashMap<Point, Color> winterColorMap = new HashMap<>();
+    private final HashMap<Point, Integer> winterAlignMap = new HashMap<>();
 
-    private SetPreferencesView setPreferencesView;
-    private SetPreferencesViewModel setPreferencesViewModel;
-    private DisplayTimetableView displayTimetableView;
-    private DisplayTimetableViewModel displayTimetableViewModel;
+    private final JTable fallTimetable;
+    private final JTable winterTimetable;
+    private final JPanel timetablesPanel = new JPanel();
+    private final JPanel fallPanel = new JPanel();
+    private final JPanel winterPanel = new JPanel();
+    private final JPanel coursesPanel = new JPanel();
+    private final JLabel creditsLabel = new JLabel("Credits: ");
 
-    public AppBuilder() {
-        cardPanel.setLayout(cardLayout);
+    private final JPanel bottomButtons = new JPanel();
+    private final JButton back;
+    private final JButton regenerate;
+    private final JButton save;
+
+    public DisplayTimetableView(DisplayTimetableViewModel displayTimetableViewModel) {
+        this.displayTimetableViewModel = displayTimetableViewModel;
+        displayTimetableViewModel.addPropertyChangeListener(this);
+
+        final JLabel title = new JLabel("Your Timetable");
+        title.setAlignmentX(JLabel.CENTER);
+
+        String[][] fallTimetableData = new String[12][6];
+        String[][] winterTimetableData = new String[12][6];
+        for (int i = 0; i < 12; i++) {
+            fallTimetableData[i][0] = (i + 9) + ":00";
+            winterTimetableData[i][0] = (i + 9) + ":00";
+        }
+
+        String[] columnHeaders = {"Time", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"};
+        fallTimetable = new JTable(fallTimetableData, columnHeaders);
+        winterTimetable = new JTable(winterTimetableData, columnHeaders);
+
+        setupTimetable(fallTimetable, fallColorMap, fallAlignMap);
+        setupTimetable(winterTimetable, winterColorMap, winterAlignMap);
+
+        timetablesPanel.setLayout(new BoxLayout(timetablesPanel, BoxLayout.X_AXIS));
+
+        fallPanel.setLayout(new BoxLayout(fallPanel, BoxLayout.Y_AXIS));
+        final JLabel fallTitle = new JLabel("Fall Timetable");
+        fallTitle.setAlignmentX(JLabel.CENTER);
+        fallPanel.add(fallTitle);
+        fallPanel.add(fallTimetable.getTableHeader());
+        fallPanel.add(fallTimetable);
+        timetablesPanel.add(fallPanel);
+
+        timetablesPanel.add(new JLabel(" "));
+
+        winterPanel.setLayout(new BoxLayout(winterPanel, BoxLayout.Y_AXIS));
+        final JLabel winterTitle = new JLabel("Winter Timetable");
+        winterTitle.setAlignmentX(JLabel.CENTER);
+        winterPanel.add(winterTitle);
+        winterPanel.add(winterTimetable.getTableHeader());
+        winterPanel.add(winterTimetable);
+        timetablesPanel.add(winterPanel);
+
+        coursesPanel.setLayout(new BoxLayout(coursesPanel, BoxLayout.Y_AXIS));
+        coursesPanel.add(new JLabel("Courses:"));
+        coursesPanel.setAlignmentX(JLabel.CENTER);
+        creditsLabel.setAlignmentX(JLabel.CENTER);
+
+        bottomButtons.setLayout(new BoxLayout(bottomButtons, BoxLayout.X_AXIS));
+        bottomButtons.setAlignmentX(JLabel.CENTER);
+
+        back = new JButton("Back");
+        back.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (displayTimetableController != null) {
+                    displayTimetableController.returnToPrefs();
+                }
+            }
+        });
+        bottomButtons.add(back);
+
+        regenerate = new JButton("Regenerate");
+        regenerate.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (displayTimetableController != null) {
+                    displayTimetableController.regenerateTimetable();
+                }
+            }
+        });
+        bottomButtons.add(regenerate);
+
+        // New: Save button
+        save = new JButton("Save");
+        save.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (displayTimetableController == null) {
+                    return;
+                }
+
+                int confirm = JOptionPane.showConfirmDialog(
+                        DisplayTimetableView.this,
+                        "Do you want to save all available timetables?",
+                        "Save Timetables",
+                        JOptionPane.YES_NO_OPTION
+                );
+                if (confirm != JOptionPane.YES_OPTION) {
+                    return;
+                }
+
+                String fileName = JOptionPane.showInputDialog(
+                        DisplayTimetableView.this,
+                        "Enter file name to save timetables:",
+                        "Save Timetable",
+                        JOptionPane.PLAIN_MESSAGE
+                );
+                if (fileName == null || fileName.trim().isEmpty()) {
+                    return;
+                }
+
+                DisplayTimetableState state = displayTimetableViewModel.getState();
+                ArrayList<TimetableDTO> fall = state.getFallTimetables();
+                ArrayList<TimetableDTO> winter = state.getWinterTimetables();
+
+                displayTimetableController.saveTimetable(fall, winter, fileName.trim());
+            }
+        });
+        bottomButtons.add(save);
+
+        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        this.add(title);
+        this.add(timetablesPanel);
+        this.add(coursesPanel);
+        this.add(creditsLabel);
+        this.add(bottomButtons);
     }
 
-    public AppBuilder addSetPreferencesView() {
-        setPreferencesViewModel = new SetPreferencesViewModel();
-        setPreferencesView = new SetPreferencesView(setPreferencesViewModel);
-        cardPanel.add(setPreferencesView, setPreferencesView.getViewName());
-        return this;
+    private void setupTimetable(JTable timetableTable, HashMap<Point, Color> colorMap,
+                                HashMap<Point, Integer> alignMap) {
+
+        timetableTable.setDefaultEditor(Object.class, null);
+        timetableTable.setShowHorizontalLines(false);
+        timetableTable.setRowHeight(32);
+        timetableTable.getColumnModel().getColumn(0).setPreferredWidth(15);
+
+        timetableTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+                                                           boolean hasFocus, int row, int column) {
+                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                Point p = new Point(row, column);
+
+                c.setBackground(colorMap.getOrDefault(p, Color.WHITE));
+                super.setHorizontalAlignment(alignMap.getOrDefault(p, JLabel.LEFT));
+                return c;
+            }
+        });
     }
 
-    public AppBuilder addDisplayTimetableView() {
-        displayTimetableViewModel = new DisplayTimetableViewModel();
-        displayTimetableView = new DisplayTimetableView(displayTimetableViewModel);
-        cardPanel.add(displayTimetableView, displayTimetableView.getViewName());
-        return this;
+    private void displayCourses(TimetableDTO fallTTB, TimetableDTO winterTTB) {
+        // reset timetable colours
+        for (int i = 0; i < 12; i++) {
+            for (int j = 0; j < 6; j++) {
+                fallColorMap.put(new Point(i, j), Color.WHITE);
+                fallAlignMap.put(new Point(i, j), JLabel.RIGHT);
+                winterColorMap.put(new Point(i, j), Color.WHITE);
+                winterAlignMap.put(new Point(i, j), JLabel.RIGHT);
+                if (j != 0) {
+                    this.fallTimetable.setValueAt("", i, j);
+                    this.winterTimetable.setValueAt("", i, j);
+                }
+            }
+        }
+
+        ArrayList<String> courses = new ArrayList<>();
+        displayTimetable(fallTTB.getTable(), fallTimetable, fallColorMap, fallAlignMap, courses);
+        displayTimetable(winterTTB.getTable(), winterTimetable, winterColorMap, winterAlignMap, courses);
     }
 
-    public AppBuilder addSetPreferencesUseCases() {
-        final AddCourseOutputBoundary addCourseOutputBoundary = new SetPreferencesPresenter(viewManagerModel,
-                setPreferencesViewModel, displayTimetableViewModel);
-        final AddCourseInputBoundary addCourseInteractor = new AddCourseInteractor(userDataAccessObject,
-                addCourseOutputBoundary);
-        final RemoveCourseOutputBoundary removeCourseOutputBoundary = new SetPreferencesPresenter(viewManagerModel,
-                setPreferencesViewModel, displayTimetableViewModel);
-        final RemoveCourseInputBoundary removeCourseInteractor = new RemoveCourseInteractor(userDataAccessObject,
-                removeCourseOutputBoundary);
-        final AddDegreeOutputBoundary addDegreeOutputBoundary = new SetPreferencesPresenter(viewManagerModel,
-                setPreferencesViewModel, displayTimetableViewModel);
-        final AddDegreeInputBoundary addDegreeInteractor = new AddDegreeInteractor(userDataAccessObject,
-                addDegreeOutputBoundary);
-        final RemoveDegreeOutputBoundary removeDegreeOutputBoundary = new SetPreferencesPresenter(viewManagerModel,
-                setPreferencesViewModel, displayTimetableViewModel);
-        final RemoveDegreeInputBoundary removeDegreeInteractor = new RemoveDegreeInteractor(userDataAccessObject,
-                removeDegreeOutputBoundary);
-        final GenerateTimetableOutputBoundary generateTimetableOutputBoundary
-                = new SetPreferencesPresenter(viewManagerModel, setPreferencesViewModel, displayTimetableViewModel);
-        final GenerateTimetableInputBoundary generateTimetableInteractor
-                = new GenerateTimetableInteractor(userDataAccessObject, generateTimetableOutputBoundary);
-        SetPreferencesController setPreferencesController = new SetPreferencesController(addCourseInteractor,
-                removeCourseInteractor, addDegreeInteractor, removeDegreeInteractor, generateTimetableInteractor);
-        setPreferencesView.setSetPreferencesController(setPreferencesController);
-        return this;
+    private void displayTimetable(ArrayList<ArrayList<ArrayList<String>>> table, JTable timetableTable,
+                                  HashMap<Point, Color> colorMap, HashMap<Point, Integer> alignMap,
+                                  ArrayList<String> courses) {
+
+        for (int i = 0; i < table.size(); i++) {
+            for (int j = 0; j < table.get(0).size(); j++) {
+                if (!table.get(i).get(j).isEmpty()) {
+                    String block = table.get(i).get(j).get(0);
+                    String courseCode = block.substring(0, 8);
+                    String sessionCode = "";
+                    if (courseCode.charAt(6) == 'H') {
+                        sessionCode = block.substring(9);
+                    } else {
+                        sessionCode = block.substring(8);
+                    }
+                    if (!courses.contains(courseCode)) {
+                        courses.add(courseCode);
+                    }
+                    String timetableString = courseCode + " " + sessionCode;
+                    Color sessionColour;
+                    if (sessionCode.contains("LEC")) {
+                        sessionColour = chooseColour(false, courses.indexOf(courseCode));
+                    } else {
+                        sessionColour = chooseColour(true, courses.indexOf(courseCode));
+                    }
+                    colorMap.replace(new Point(j, i + 1), sessionColour);
+
+                    if (j == 0 || !colorMap.get(new Point(j - 1, i + 1)).equals(sessionColour)) {
+                        timetableTable.setValueAt(timetableString, j, i + 1);
+                    }
+                    alignMap.replace(new Point(j, i + 1), JLabel.CENTER);
+                }
+            }
+        }
     }
 
-    public AppBuilder addDisplayTimetableUseCases() {
-        final GenerateTimetableOutputBoundary generateTimetableOutputBoundary
-                = new SetPreferencesPresenter(viewManagerModel, setPreferencesViewModel, displayTimetableViewModel);
-        final GenerateTimetableInputBoundary generateTimetableInteractor
-                = new GenerateTimetableInteractor(userDataAccessObject, generateTimetableOutputBoundary);
-        final ReturnToPrefsOutputBoundary returnToPrefsOutputBoundary = new DisplayTimetablePresenter(viewManagerModel,
-                displayTimetableViewModel, setPreferencesViewModel);
-        final ReturnToPrefsInputBoundary returnToPrefsInteractor
-                = new ReturnToPrefsInteractor(returnToPrefsOutputBoundary);
-        final RegenerateTimetableOutputBoundary regenerateTimetableOutputBoundary = new
-                DisplayTimetablePresenter(viewManagerModel, displayTimetableViewModel, setPreferencesViewModel);
-        final RegenerateTimetableInputBoundary regenerateTimetableInteractor = new
-                RegenerateTimetableInteractor(regenerateTimetableOutputBoundary);
-        DisplayTimetableController displayTimetableController = new
-                DisplayTimetableController(generateTimetableInteractor, returnToPrefsInteractor,
-                regenerateTimetableInteractor);
-        displayTimetableView.setDisplayTimetableController(displayTimetableController);
-        return this;
+    private Color chooseColour(boolean lighter, int id) {
+        if (lighter) {
+            return Color.getHSBColor(0.1f * id, 0.50f, 0.90f);
+        }
+        return Color.getHSBColor(0.1f * id, 0.75f, 0.90f);
     }
 
-    public JFrame build() {
-        final JFrame application = new JFrame("Timetable Builder, but better");
-        application.setMinimumSize(new Dimension(1500, 750));
-        application.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        application.add(cardPanel);
-
-        viewManagerModel.setState(setPreferencesView.getViewName());
-        viewManagerModel.firePropertyChange();
-
-        return application;
+    private void updateCoursesLabel(ArrayList<String> courseTitles, ArrayList<String> courseCodes) {
+        coursesPanel.removeAll();
+        coursesPanel.add(new JLabel("Courses:"));
+        for (int i = 0; i < courseTitles.size(); i++) {
+            coursesPanel.add(new JLabel("     " + courseTitles.get(i) + " (" +  courseCodes.get(i) + ")"));
+        }
     }
 
+    private void updateCreditsLabel(ArrayList<Double> credits) {
+        double total_credits = 0;
+        for (Double credit : credits) {
+            total_credits += credit;
+        }
+        creditsLabel.setText("Total Credits: " + total_credits);
+    }
 
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        // currently unused
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        final DisplayTimetableState state = (DisplayTimetableState) evt.getNewValue();
+        updateCoursesLabel(state.getCourseNames(), state.getCourses());
+        updateCreditsLabel(state.getCredit());
+        displayCourses(state.getFallTimetables().get(state.getFallIndex()),
+                state.getWinterTimetables().get(state.getWinterIndex()));
+    }
+
+    public String getViewName() {
+        return viewName;
+    }
+
+    public void setDisplayTimetableController(DisplayTimetableController displayTimetableController) {
+        this.displayTimetableController = displayTimetableController;
+    }
 }
