@@ -1,6 +1,5 @@
 package Generator.InterfaceAdapter.display_timetable;
 
-import Generator.UseCase.generate_timetable.TimetableDTO;
 
 import Generator.UseCase.generate_timetable.GenerateTimetableInputBoundary;
 import Generator.UseCase.regenerate_timetable.RegenerateTimetableInputBoundary;
@@ -19,8 +18,8 @@ public class DisplayTimetableController {
         this.regenerateTimeTableInteractor = regenerateTimeTableInteractor;
     }
 
-    public int getWinterIndex() {
-        return winterIndex;
+    public void returnToPrefs() {
+        returnToPrefsInteractor.execute();
     }
 
     public void regenerateTimetable() {

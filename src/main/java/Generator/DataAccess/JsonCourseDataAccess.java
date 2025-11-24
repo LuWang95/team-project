@@ -50,8 +50,6 @@ public class JsonCourseDataAccess {
             }
 
 
-
-
             Course course = coursesByCode.get(fullCode);
             if (course == null) {
                 course = new Course(
@@ -64,7 +62,7 @@ public class JsonCourseDataAccess {
                         new ArrayList<>()        // practical_sections
                 );
                 coursesByCode.put(fullCode, course);
-            }
+             }
 
             switch (r.component) {
                 case "LEC":

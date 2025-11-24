@@ -1,24 +1,23 @@
-package Generator.InterfaceAdapter.display_timetable;
+package Generator.View;
 
-import Generator.UseCase.generate_timetable.GenerateTimetableInputBoundary;
-import Generator.UseCase.generate_timetable.TimetableDTO;
-import Generator.UseCase.regenerate_timetable.RegenerateTimetableInputBoundary;
-import Generator.UseCase.return_to_prefs.ReturnToPrefsInputBoundary;
-import Generator.UseCase.save_timetable.SaveTimetableInputBoundary;
-import Generator.UseCase.save_timetable.SaveTimetableInputData;
 import Generator.InterfaceAdapter.display_timetable.DisplayTimetableController;
 import Generator.InterfaceAdapter.display_timetable.DisplayTimetableState;
 import Generator.InterfaceAdapter.display_timetable.DisplayTimetableViewModel;
 import Generator.UseCase.generate_timetable.TimetableDTO;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.*;
 
-public class DisplayTimetableController {
-    private final GenerateTimetableInputBoundary generateTimeTableInteractor;
-    private final ReturnToPrefsInputBoundary returnToPrefsInteractor;
-    private final RegenerateTimetableInputBoundary regenerateTimeTableInteractor;
-    private final SaveTimetableInputBoundary saveTimetableInteractor;
+public class DisplayTimetableView extends JPanel implements ActionListener, PropertyChangeListener {
+    private final String viewName = "Display Timetable";
+    private final DisplayTimetableViewModel displayTimetableViewModel;
+    private DisplayTimetableController displayTimetableController = null;
 
     private final HashMap<Point, Color> fallColorMap = new HashMap<>();
     private final HashMap<Point, Integer> fallAlignMap = new HashMap<>();
@@ -209,12 +208,17 @@ public class DisplayTimetableController {
         }
     }
 
-    public void returnToPrefs() {
-        returnToPrefsInteractor.execute();
+    private void updateCreditsLabel(ArrayList<Double> credits) {
+        double total_credits = 0;
+        for (Double credit : credits) {
+            total_credits += credit;
+        }
+        creditsLabel.setText("Total Credits: " + total_credits);
     }
 
-    public void regenerateTimetable() {
-        regenerateTimeTableInteractor.execute();
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        System.out.println("hello");
     }
 
     @Override
@@ -230,8 +234,7 @@ public class DisplayTimetableController {
         return viewName;
     }
 
-        SaveTimetableInputData inputData =
-                new SaveTimetableInputData(fallList, winterList, filePath);
-        saveTimetableInteractor.execute(inputData);
+    public void setDisplayTimetableController(DisplayTimetableController displayTimetableController) {
+        this.displayTimetableController = displayTimetableController;
     }
 }

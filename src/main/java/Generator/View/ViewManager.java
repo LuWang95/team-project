@@ -39,4 +39,3 @@ public class ViewManager implements PropertyChangeListener {
         // Additional extensible features (e.g., hooks, transitions) could go here.
     }
 }
-}
