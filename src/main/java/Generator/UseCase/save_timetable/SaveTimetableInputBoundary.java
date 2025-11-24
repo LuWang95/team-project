@@ -1,5 +1,0 @@
-package Generator.UseCase.save_timetable;
-
-public interface SaveTimetableInputBoundary {
-    void execute(SaveTimetableInputData inputData);
-}
