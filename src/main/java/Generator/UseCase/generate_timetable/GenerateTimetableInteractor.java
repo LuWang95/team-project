@@ -28,8 +28,8 @@ public class GenerateTimetableInteractor implements GenerateTimetableInputBounda
         List<Course> winterCourses = new ArrayList<>();
         splitCoursesBySession(allCourses, fallCourses, winterCourses);
 
-        List<TimetableDTO> fallList = generateTermTimetables(fallCourses);
-        List<TimetableDTO> winterList = generateTermTimetables(winterCourses);
+        ArrayList<TimetableDTO> fallList = (ArrayList<TimetableDTO>) generateTermTimetables(fallCourses);
+        ArrayList<TimetableDTO> winterList = (ArrayList<TimetableDTO>) generateTermTimetables(winterCourses);
 
         GenerateTimetableOutputData outputData = new GenerateTimetableOutputData(fallList, winterList);
         presenter.prepareGenerateTimetableSuccessView(outputData);
