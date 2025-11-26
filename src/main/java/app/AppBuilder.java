@@ -14,6 +14,9 @@ import Generator.UseCase.add_course.AddCourseOutputBoundary;
 import Generator.UseCase.generate_timetable.GenerateTimetableInputBoundary;
 import Generator.UseCase.generate_timetable.GenerateTimetableInteractor;
 import Generator.UseCase.generate_timetable.GenerateTimetableOutputBoundary;
+import Generator.UseCase.regenerate_timetable.RegenerateTimetableInputBoundary;
+import Generator.UseCase.regenerate_timetable.RegenerateTimetableInteractor;
+import Generator.UseCase.regenerate_timetable.RegenerateTimetableOutputBoundary;
 import Generator.UseCase.remove_course.RemoveCourseInputBoundary;
 import Generator.UseCase.remove_course.RemoveCourseInteractor;
 import Generator.UseCase.remove_course.RemoveCourseOutputBoundary;
@@ -38,7 +41,8 @@ public class AppBuilder {
     final ViewManagerModel viewManagerModel = new ViewManagerModel();
     ViewManager viewManager = new ViewManager(cardPanel, cardLayout, viewManagerModel);
 
-    final FileUserDataAccessObject userDataAccessObject = new FileUserDataAccessObject("selectedPreferences.csv", "artsci_timetable.json");
+    final FileUserDataAccessObject userDataAccessObject =
+            new FileUserDataAccessObject("selectedPreferences.csv", "artsci_timetable.json");
 
     private SetPreferencesView setPreferencesView;
     private SetPreferencesViewModel setPreferencesViewModel;
@@ -99,15 +103,20 @@ public class AppBuilder {
                 displayTimetableViewModel, setPreferencesViewModel);
         final ReturnToPrefsInputBoundary returnToPrefsInteractor
                 = new ReturnToPrefsInteractor(returnToPrefsOutputBoundary);
-        DisplayTimetableController displayTimetableController
-                = new DisplayTimetableController(generateTimetableInteractor, returnToPrefsInteractor);
+        final RegenerateTimetableOutputBoundary regenerateTimetableOutputBoundary = new
+                DisplayTimetablePresenter(viewManagerModel, displayTimetableViewModel, setPreferencesViewModel);
+        final RegenerateTimetableInputBoundary regenerateTimetableInteractor = new
+                RegenerateTimetableInteractor(regenerateTimetableOutputBoundary);
+        DisplayTimetableController displayTimetableController = new
+                DisplayTimetableController(generateTimetableInteractor, returnToPrefsInteractor,
+                regenerateTimetableInteractor);
         displayTimetableView.setDisplayTimetableController(displayTimetableController);
         return this;
     }
 
     public JFrame build() {
-        final JFrame application = new JFrame("Timetable Builder");
-        application.setMinimumSize(new Dimension(600, 400));
+        final JFrame application = new JFrame("Timetable Builder, but better");
+        application.setMinimumSize(new Dimension(1500, 750));
         application.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         application.add(cardPanel);

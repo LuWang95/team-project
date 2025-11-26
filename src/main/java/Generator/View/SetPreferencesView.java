@@ -1,5 +1,3 @@
-// need to make alignments better TODO
-
 package Generator.View;
 
 import Generator.InterfaceAdapter.set_preferences.SetPreferencesController;
@@ -7,6 +5,8 @@ import Generator.InterfaceAdapter.set_preferences.SetPreferencesState;
 import Generator.InterfaceAdapter.set_preferences.SetPreferencesViewModel;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
@@ -25,8 +25,8 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
     private final SetPreferencesViewModel setPreferencesViewModel;
     private SetPreferencesController setPreferencesController = null;
 
-    private final JTextField degreeInputField = new JTextField("Enter degree", 15);
-    private final JTextField courseInputField = new JTextField("Enter courses",15);
+    private final JTextField degreeInputField = new JTextField(15);
+    private final JTextField courseInputField = new JTextField(15);
     private final ButtonGroup yearButtons = new ButtonGroup();
     private final JRadioButton[] timeButtons = new JRadioButton[3];
 
@@ -44,112 +44,296 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
         setPreferencesViewModel.getState().setDegrees(new ArrayList<>());
         setPreferencesViewModel.getState().setTimes(new ArrayList<>());
 
-        final JLabel title = new JLabel("Set Preferences");
-        title.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+        // Set better background color
+        this.setBackground(new Color(240, 248, 255)); // Alice blue
 
-        // separate selecting degrees/courses onto to the left, and year/time preferences on the right
-        final JPanel infoPanel = new JPanel();
-        infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.X_AXIS));
-        final JPanel leftPanel = new JPanel();
-        leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
-        final JPanel rightPanel = new JPanel();
-        rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
+        // Set up main panel with better spacing
+        this.setLayout(new BorderLayout(10, 10));
+        this.setBorder(new EmptyBorder(20, 20, 20, 20));
 
-        // creates the selecting degrees section, will be modified soon TODO
-        degreesPanel.setLayout(new BoxLayout(degreesPanel, BoxLayout.Y_AXIS));
-        degreeInputField.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                final SetPreferencesState setPreferencesState = setPreferencesViewModel.getState();
-                setPreferencesController.addDegree(setPreferencesState.getSelectedDegree());
-            }
-        });
-        final LabelTextPanel degreeInfo = new LabelTextPanel(new JLabel("Degree"), degreeInputField);
-        displayDegrees(setPreferencesViewModel.getState().getDegrees());
+        // Title Panel - Contains both title and subtitle
+        JPanel titlePanel = new JPanel();
+        titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.Y_AXIS));
+        titlePanel.setOpaque(false);
+        titlePanel.setBorder(new EmptyBorder(0, 0, 20, 0));
 
-        // creates the selecting courses section
-        // courses get added as you press enter in the text field
-        // pressing the X button next to the course removes it from the list
-        coursesPanel.setLayout(new BoxLayout(coursesPanel, BoxLayout.Y_AXIS));
-        courseInputField.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                final SetPreferencesState setPreferencesState = setPreferencesViewModel.getState();
-                setPreferencesController.addCourse(setPreferencesState.getSelectedCourse());
-            }
-        });
-        final LabelTextPanel courseInfo = new LabelTextPanel(new JLabel("Course"), courseInputField);
-        displayCourses(setPreferencesViewModel.getState().getCourses());
+        // Main title - CHANGED: Times New Roman font
+        final JLabel title = new JLabel("Timetable Builder");
+        title.setFont(new Font("Times New Roman", Font.BOLD, 28));
+        title.setHorizontalAlignment(SwingConstants.CENTER);
+        title.setAlignmentX(Component.CENTER_ALIGNMENT);
+        title.setForeground(new Color(0, 42, 92)); // UofT blue
 
-        // creates the select year section, years select from 1 to 4
-        final JPanel yearInfo = new JPanel();
-        final JLabel yearTitle = new JLabel("Year of Study");
-        yearInfo.add(yearTitle);
-        for (int i = 1; i <= 4; i++) {
-            JRadioButton radioYear = new JRadioButton(String.valueOf(i));
-            yearInfo.add(radioYear);
-            yearButtons.add(radioYear);
-        }
+        // Subtitle - Times New Roman font, darkish blue color
+        final JLabel subtitle = new JLabel("<html><div style='text-align: center;'>" +
+                "<span style='font-size: 12px;'>UNIVERSITY OF TORONTO</span><br>" +
+                "<span style='font-size: 10px;'>Faculty of Arts & Science</span>" +
+                "</div></html>");
+        subtitle.setFont(new Font("Times New Roman", Font.PLAIN, 12));
+        subtitle.setForeground(new Color(25, 60, 110)); // Darkish blue
+        subtitle.setHorizontalAlignment(SwingConstants.CENTER);
+        subtitle.setAlignmentX(Component.CENTER_ALIGNMENT);
+        subtitle.setBorder(new EmptyBorder(5, 0, 0, 0));
 
-        // creates the select time preferences section
-        final JPanel timeInfo = new JPanel();
-        final JLabel timeTitle = new JLabel("Preferred Time");
-        final String[] possibleTimes = {"Morning", "Afternoon", "Evening"};
-        timeInfo.add(timeTitle);
-        for (int i = 0; i < possibleTimes.length; i++) {
-            JRadioButton radioTime = new JRadioButton(possibleTimes[i]);
-            timeInfo.add(radioTime);
-            timeButtons[i] = radioTime;
-        }
+        titlePanel.add(title);
+        titlePanel.add(subtitle);
 
-        // makes sure SetPreferencesState is updated whenever applicable
+        // Main content panel
+        final JPanel contentPanel = new JPanel(new GridBagLayout());
+        contentPanel.setOpaque(false);
+        contentPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.insets = new Insets(5, 5, 5, 5);
+
+        // Left panel - Degrees and Courses
+        final JPanel leftPanel = createLeftPanel();
+
+        // Right panel - Year and Time preferences
+        final JPanel rightPanel = createRightPanel();
+
+        // Add panels to content
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 0.5;
+        gbc.weighty = 1;
+        contentPanel.add(leftPanel, gbc);
+
+        gbc.gridx = 1;
+        contentPanel.add(rightPanel, gbc);
+
+        // Generate button - CHANGED: Times New Roman font
+        generate = new JButton("Generate Timetable");
+        generate.setFont(new Font("Times New Roman", Font.BOLD, 14));
+        generate.setBackground(new Color(240, 248, 255));
+        generate.setForeground(Color.BLACK);
+        generate.setFocusPainted(false);
+        generate.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(0, 42, 92), 2),
+                BorderFactory.createEmptyBorder(10, 20, 10, 20)
+        ));
+        generate.addActionListener(evt -> setPreferencesController.displayTimetable());
+
+        JPanel buttonPanel = new JPanel(new GridBagLayout());
+        buttonPanel.setOpaque(false);
+        buttonPanel.setBorder(new EmptyBorder(20, 0, 10, 0));
+        buttonPanel.add(generate);
+
+        // Error label
+        noCoursesError.setForeground(Color.RED);
+        noCoursesError.setHorizontalAlignment(SwingConstants.CENTER);
+        noCoursesError.setBorder(new EmptyBorder(5, 0, 5, 0));
+
+        // Add all components to main panel
+        this.add(titlePanel, BorderLayout.NORTH);
+        this.add(contentPanel, BorderLayout.CENTER);
+
+        JPanel southPanel = new JPanel(new BorderLayout());
+        southPanel.setOpaque(false);
+        southPanel.add(noCoursesError, BorderLayout.CENTER);
+        southPanel.add(buttonPanel, BorderLayout.SOUTH);
+        this.add(southPanel, BorderLayout.SOUTH);
+
+        // Add listeners
         addCourseListener();
         addDegreeListener();
         addYearListener();
         addTimeListener();
-
-        // creates the generate timetable button
-        generate = new JButton("Generate Time Table");
-        generate.addActionListener(
-                new ActionListener() {
-                    public void actionPerformed(ActionEvent evt) {
-                        setPreferencesController.displayTimetable();
-                    }
-                });
-        generate.setAlignmentX(JComponent.CENTER_ALIGNMENT);
-
-        // set the layout of the UI
-        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        this.add(title);
-
-        leftPanel.add(degreeInfo);
-        leftPanel.add(degreesPanel);
-        leftPanel.add(courseInfo);
-        leftPanel.add(coursesPanel);
-        infoPanel.add(leftPanel);
-
-        rightPanel.add(yearInfo);
-        rightPanel.add(timeInfo);
-        infoPanel.add(rightPanel);
-
-        this.add(infoPanel);
-        this.add(generate);
-        this.add(noCoursesError);
-        noCoursesError.setForeground(Color.RED);
-
-//        testing, will be removed as soon as the UI for this part is done
-//        JButton updateme = new JButton("update");
-//        updateme.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                System.out.println(setPreferencesViewModel.getState());
-//            }
-//        });
-//        this.add(updateme);
     }
 
-    // ensures that the SetPreferencesState is well-updated with what's in the course TextField
-    // that's literally all there is to this function
+    private JPanel createLeftPanel() {
+        JPanel leftPanel = new JPanel();
+        leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
+        leftPanel.setBackground(Color.WHITE);
+        leftPanel.setBorder(BorderFactory.createCompoundBorder(
+                new TitledBorder(BorderFactory.createLineBorder(new Color(0, 42, 92), 1),
+                        "Academic Information",
+                        TitledBorder.DEFAULT_JUSTIFICATION,
+                        TitledBorder.DEFAULT_POSITION,
+                        new Font("Times New Roman", Font.BOLD, 12), // CHANGED: Times New Roman
+                        new Color(0, 42, 92)),
+                new EmptyBorder(10, 10, 10, 10)
+        ));
+
+        // Degrees section
+        JPanel degreeSection = new JPanel(new BorderLayout());
+        degreeSection.setOpaque(false);
+        degreeSection.setBorder(new EmptyBorder(5, 0, 15, 0));
+
+        JPanel degreeInputPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        degreeInputPanel.setOpaque(false);
+        degreeInputField.setToolTipText("Enter degree and press Enter");
+        degreeInputField.setFont(new Font("Times New Roman", Font.PLAIN, 12)); // CHANGED: Times New Roman
+        degreeInputField.addActionListener(e -> {
+            final SetPreferencesState setPreferencesState = setPreferencesViewModel.getState();
+            setPreferencesController.addDegree(setPreferencesState.getSelectedDegree());
+        });
+
+        JButton addDegreeBtn = new JButton("Add");
+        addDegreeBtn.setFont(new Font("Times New Roman", Font.PLAIN, 12)); // CHANGED: Times New Roman
+        addDegreeBtn.setBackground(new Color(0, 127, 163));
+        addDegreeBtn.setForeground(Color.BLACK);
+        addDegreeBtn.setFocusPainted(false);
+        addDegreeBtn.addActionListener(e -> {
+            final SetPreferencesState setPreferencesState = setPreferencesViewModel.getState();
+            setPreferencesController.addDegree(setPreferencesState.getSelectedDegree());
+        });
+
+        JLabel degreeLabel = new JLabel("Degree:");
+        degreeLabel.setFont(new Font("Times New Roman", Font.PLAIN, 12)); // CHANGED: Times New Roman
+        degreeInputPanel.add(degreeLabel);
+        degreeInputPanel.add(degreeInputField);
+        degreeInputPanel.add(addDegreeBtn);
+
+        degreesPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+        degreesPanel.setBackground(Color.WHITE);
+        degreesPanel.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(Color.GRAY),
+                "Selected Degrees",
+                TitledBorder.DEFAULT_JUSTIFICATION,
+                TitledBorder.DEFAULT_POSITION,
+                new Font("Times New Roman", Font.PLAIN, 11))); // CHANGED: Times New Roman
+        degreesPanel.setPreferredSize(new Dimension(400, 120));
+
+        JScrollPane degreeScroll = new JScrollPane(degreesPanel);
+        degreeScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        degreeScroll.setBorder(null);
+
+        degreeSection.add(degreeInputPanel, BorderLayout.NORTH);
+        degreeSection.add(degreeScroll, BorderLayout.CENTER);
+
+        // Courses section
+        JPanel courseSection = new JPanel(new BorderLayout());
+        courseSection.setOpaque(false);
+        courseSection.setBorder(new EmptyBorder(5, 0, 5, 0));
+
+        JPanel courseInputPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        courseInputPanel.setOpaque(false);
+        courseInputField.setToolTipText("Enter course and press Enter");
+        courseInputField.setFont(new Font("Times New Roman", Font.PLAIN, 12)); // CHANGED: Times New Roman
+        courseInputField.addActionListener(e -> {
+            final SetPreferencesState setPreferencesState = setPreferencesViewModel.getState();
+            setPreferencesController.addCourse(setPreferencesState.getSelectedCourse());
+        });
+
+        JButton addCourseBtn = new JButton("Add");
+        addCourseBtn.setFont(new Font("Times New Roman", Font.PLAIN, 12)); // CHANGED: Times New Roman
+        addCourseBtn.setBackground(new Color(0, 127, 163));
+        addCourseBtn.setForeground(Color.BLACK);
+        addCourseBtn.setFocusPainted(false);
+        addCourseBtn.addActionListener(e -> {
+            final SetPreferencesState setPreferencesState = setPreferencesViewModel.getState();
+            setPreferencesController.addCourse(setPreferencesState.getSelectedCourse());
+        });
+
+        JLabel courseLabel = new JLabel("Course:");
+        courseLabel.setFont(new Font("Times New Roman", Font.PLAIN, 12)); // CHANGED: Times New Roman
+        courseInputPanel.add(courseLabel);
+        courseInputPanel.add(courseInputField);
+        courseInputPanel.add(addCourseBtn);
+
+        coursesPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+        coursesPanel.setBackground(Color.WHITE);
+        coursesPanel.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(Color.GRAY),
+                "Selected Courses",
+                TitledBorder.DEFAULT_JUSTIFICATION,
+                TitledBorder.DEFAULT_POSITION,
+                new Font("Times New Roman", Font.PLAIN, 11))); // CHANGED: Times New Roman
+        coursesPanel.setPreferredSize(new Dimension(400, 150));
+
+        JScrollPane courseScroll = new JScrollPane(coursesPanel);
+        courseScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        courseScroll.setBorder(null);
+
+        courseSection.add(courseInputPanel, BorderLayout.NORTH);
+        courseSection.add(courseScroll, BorderLayout.CENTER);
+
+        leftPanel.add(degreeSection);
+        leftPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        leftPanel.add(courseSection);
+
+        return leftPanel;
+    }
+
+    private JPanel createRightPanel() {
+        JPanel rightPanel = new JPanel();
+        rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
+        rightPanel.setBackground(Color.WHITE);
+        rightPanel.setBorder(BorderFactory.createCompoundBorder(
+                new TitledBorder(BorderFactory.createLineBorder(new Color(0, 42, 92), 1),
+                        "Preferences",
+                        TitledBorder.DEFAULT_JUSTIFICATION,
+                        TitledBorder.DEFAULT_POSITION,
+                        new Font("Times New Roman", Font.BOLD, 12), // CHANGED: Times New Roman
+                        new Color(0, 42, 92)),
+                new EmptyBorder(10, 10, 10, 10)
+        ));
+
+        // Year selection
+        JPanel yearPanel = new JPanel();
+        yearPanel.setLayout(new BoxLayout(yearPanel, BoxLayout.Y_AXIS));
+        yearPanel.setBackground(Color.WHITE);
+        yearPanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createTitledBorder(
+                        BorderFactory.createLineBorder(new Color(180, 180, 180), 1),
+                        "Year of Study",
+                        TitledBorder.LEFT,
+                        TitledBorder.TOP,
+                        new Font("Times New Roman", Font.PLAIN, 11)), // CHANGED: Times New Roman
+                new EmptyBorder(10, 10, 10, 10)
+        ));
+        yearPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        yearPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100));
+
+        JPanel yearButtonsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
+        yearButtonsPanel.setBackground(Color.WHITE);
+        for (int i = 1; i <= 4; i++) {
+            JRadioButton radioYear = new JRadioButton(String.valueOf(i));
+            radioYear.setBackground(Color.WHITE);
+            radioYear.setFont(new Font("Times New Roman", Font.PLAIN, 12)); // CHANGED: Times New Roman
+            yearButtonsPanel.add(radioYear);
+            yearButtons.add(radioYear);
+        }
+        yearPanel.add(yearButtonsPanel);
+
+        // Time preference
+        JPanel timePanel = new JPanel();
+        timePanel.setLayout(new BoxLayout(timePanel, BoxLayout.Y_AXIS));
+        timePanel.setBackground(Color.WHITE);
+        timePanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createTitledBorder(
+                        BorderFactory.createLineBorder(new Color(180, 180, 180), 1),
+                        "Preferred Time",
+                        TitledBorder.LEFT,
+                        TitledBorder.TOP,
+                        new Font("Times New Roman", Font.PLAIN, 11)), // CHANGED: Times New Roman
+                new EmptyBorder(10, 10, 10, 10)
+        ));
+        timePanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        timePanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100));
+
+        JPanel timeButtonsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
+        timeButtonsPanel.setBackground(Color.WHITE);
+        final String[] possibleTimes = {"Morning", "Afternoon", "Evening"};
+        for (int i = 0; i < possibleTimes.length; i++) {
+            JRadioButton radioTime = new JRadioButton(possibleTimes[i]);
+            radioTime.setBackground(Color.WHITE);
+            radioTime.setFont(new Font("Times New Roman", Font.PLAIN, 12)); // CHANGED: Times New Roman
+            timeButtonsPanel.add(radioTime);
+            timeButtons[i] = radioTime;
+        }
+        timePanel.add(timeButtonsPanel);
+
+        rightPanel.add(yearPanel);
+        rightPanel.add(Box.createRigidArea(new Dimension(0, 15)));
+        rightPanel.add(timePanel);
+        rightPanel.add(Box.createVerticalGlue());
+
+        return rightPanel;
+    }
+
     private void addCourseListener() {
         courseInputField.getDocument().addDocumentListener(new DocumentListener() {
             @Override
@@ -173,7 +357,6 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
         });
     }
 
-    // see addCourseListener() but for degrees
     private void addDegreeListener() {
         degreeInputField.getDocument().addDocumentListener(new DocumentListener() {
             @Override
@@ -232,71 +415,82 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
         displayCourses(coursesSelected, null);
     }
 
-    // updates coursesPanel when you add a course, triggered by propertyChange(), which is triggered by the Presenter
-    // displays an error message if you try to enter a course you already entered
     private void displayCourses(ArrayList<String> coursesSelected, String errorMessage) {
-
         coursesPanel.removeAll();
 
         if (errorMessage != null) {
             JLabel errorMessageLabel = new JLabel(errorMessage);
             errorMessageLabel.setForeground(Color.RED);
+            errorMessageLabel.setFont(new Font("Times New Roman", Font.PLAIN, 11)); // CHANGED: Times New Roman
             coursesPanel.add(errorMessageLabel);
         }
 
         for (String course: coursesSelected) {
-            JPanel coursePanel = new JPanel();
-            coursePanel.setLayout(new BoxLayout(coursePanel, BoxLayout.X_AXIS));
-            coursePanel.add(new JLabel(course));
+            JPanel coursePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 2));
+            coursePanel.setBackground(new Color(230, 240, 255));
+            coursePanel.setBorder(BorderFactory.createLineBorder(new Color(0, 127, 163), 1));
 
-            JButton courseButton = new JButton("X");
-            courseButton.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    setPreferencesController.removeCourse(course);
-                }
-            });
+            JLabel courseLabel = new JLabel(course);
+            courseLabel.setFont(new Font("Times New Roman", Font.PLAIN, 11)); // CHANGED: Times New Roman
+            coursePanel.add(courseLabel);
+
+            JButton courseButton = new JButton("✕");
+            courseButton.setFont(new Font("Times New Roman", Font.BOLD, 16)); // CHANGED: Times New Roman
+            courseButton.setMargin(new Insets(2, 8, 2, 8));
+            courseButton.setBackground(new Color(70, 70, 70));
+            courseButton.setForeground(Color.WHITE);
+            courseButton.setFocusPainted(false);
+            courseButton.setBorder(BorderFactory.createLineBorder(new Color(50, 50, 50), 1));
+            courseButton.addActionListener(e -> setPreferencesController.removeCourse(course));
             coursePanel.add(courseButton);
+
             coursesPanel.add(coursePanel);
         }
+
         coursesPanel.revalidate();
         coursesPanel.repaint();
     }
 
-    private void displayDegrees(ArrayList<String> coursesSelected) {
-        displayCourses(coursesSelected, null);
+    private void displayDegrees(ArrayList<String> degreesSelected) {
+        displayDegrees(degreesSelected, null);
     }
 
-    // updates degreesPanel when you add a course, triggered by propertyChange(), which is triggered by the Presenter
-    // displays an error message if you try to enter a course you already entered
     private void displayDegrees(ArrayList<String> degreesSelected, String errorMessage) {
-
         degreesPanel.removeAll();
 
         if (errorMessage != null) {
             JLabel errorMessageLabel = new JLabel(errorMessage);
             errorMessageLabel.setForeground(Color.RED);
+            errorMessageLabel.setFont(new Font("Times New Roman", Font.PLAIN, 11)); // CHANGED: Times New Roman
             degreesPanel.add(errorMessageLabel);
         }
 
         for (String degree: degreesSelected) {
-            JPanel degreePanel = new JPanel();
-            degreePanel.setLayout(new BoxLayout(degreePanel, BoxLayout.X_AXIS));
-            degreePanel.add(new JLabel(degree));
+            JPanel degreePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 2));
+            degreePanel.setBackground(new Color(230, 240, 255));
+            degreePanel.setBorder(BorderFactory.createLineBorder(new Color(0, 127, 163), 1));
 
-            JButton degreeButton = new JButton("X");
-            degreeButton.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    setPreferencesController.removeDegree(degree);
-                }
-            });
+            JLabel degreeLabel = new JLabel(degree);
+            degreeLabel.setFont(new Font("Times New Roman", Font.PLAIN, 11)); // CHANGED: Times New Roman
+            degreePanel.add(degreeLabel);
+
+            JButton degreeButton = new JButton("✕");
+            degreeButton.setFont(new Font("Times New Roman", Font.BOLD, 16)); // CHANGED: Times New Roman
+            degreeButton.setMargin(new Insets(2, 8, 2, 8));
+            degreeButton.setBackground(new Color(70, 70, 70));
+            degreeButton.setForeground(Color.WHITE);
+            degreeButton.setFocusPainted(false);
+            degreeButton.setBorder(BorderFactory.createLineBorder(new Color(50, 50, 50), 1));
+            degreeButton.addActionListener(e -> setPreferencesController.removeDegree(degree));
             degreePanel.add(degreeButton);
+
             degreesPanel.add(degreePanel);
         }
+
         degreesPanel.revalidate();
         degreesPanel.repaint();
     }
 
-    // whenever the ViewModel changes, this runs
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         final SetPreferencesState state = (SetPreferencesState) evt.getNewValue();
@@ -311,10 +505,6 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
         }
     }
 
-    /**
-     * @param e the event to be processed
-     * I don't actually know when this happens
-     */
     @Override
     public void actionPerformed(ActionEvent e) {
         JOptionPane.showMessageDialog(this, "sdfjvcxjvk");
@@ -323,7 +513,6 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
     public String getViewName() {
         return viewName;
     }
-
 
     public void setSetPreferencesController(SetPreferencesController setPreferencesController) {
         this.setPreferencesController = setPreferencesController;

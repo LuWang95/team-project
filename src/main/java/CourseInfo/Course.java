@@ -23,9 +23,14 @@ public class Course {
         this.practicalSections = practicalSections;
     }
 
+    public void setCourseCode(String courseCode) {
+        this.courseCode = courseCode;
+    }
+
     public String getCourseCode() {
         return courseCode;
     }
+
 
     public String getCourseTitle() {
         return courseTitle;
