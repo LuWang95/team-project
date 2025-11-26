@@ -14,7 +14,7 @@ public class RemoveDegreeInteractor implements RemoveDegreeInputBoundary {
 
     @Override
     public void execute(RemoveDegreeInputData removeDegreeInputData) {
-        final Degree degree = new Degree(removeDegreeInputData.getDegree(), null);
+        final Degree degree = new Degree(removeDegreeInputData.getDegree(), null, null);
         removeDegreeDataAccessObject.remove(degree);
 
         final RemoveDegreeOutputData removeDegreeOutputData = new RemoveDegreeOutputData(

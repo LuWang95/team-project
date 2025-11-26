@@ -18,4 +18,6 @@ public interface AddDegreeDataAccessInterface {
     boolean degreeExists(String degree);
 
     void add(Degree degree);
+
+    Degree getDegreeByCode(String degreeCode);
 }

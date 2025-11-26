@@ -73,7 +73,7 @@ public class SetPreferencesPresenter implements AddCourseOutputBoundary, RemoveC
     @Override
     public void prepareAddDegreeSuccessView(AddDegreeOutputData addDegreeOutputData) {
         final SetPreferencesState setPreferencesState = setPreferencesViewModel.getState();
-        setPreferencesState.getDegrees().add(addDegreeOutputData.getDegree());
+        setPreferencesState.getDegrees().add(addDegreeOutputData.getDegreeCode());
         setPreferencesState.setDegreeError(null);
         setPreferencesViewModel.firePropertyChange();
 

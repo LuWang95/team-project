@@ -1,6 +1,8 @@
 package Generator.UseCase.add_degree;
 
 import CourseInfo.Degree;
+import Generator.DataAccess.JsonDegreeDataAccess;
+import Generator.InterfaceAdapter.set_preferences.SetPreferencesState;
 
 public class AddDegreeInteractor implements AddDegreeInputBoundary {
     private final AddDegreeDataAccessInterface addDegreeDataAccessObject;
@@ -18,21 +20,28 @@ public class AddDegreeInteractor implements AddDegreeInputBoundary {
     @Override
     public void execute(AddDegreeInputData addDegreeInputData) {
         String input = addDegreeInputData.getDegree().trim().toUpperCase();
+        SetPreferencesState  setPreferencesState = new SetPreferencesState();
+
         if (input.isEmpty()) {
             addDegreePresenter.prepareAddDegreeFailureView("Enter a degree code");
         }
-        if (!addDegreeDataAccessObject.degreeExists(input)) {
+        else if (!addDegreeDataAccessObject.degreeExists(input)) {
             addDegreePresenter.prepareAddDegreeFailureView("Degree does not exist");
         }
         else if (addDegreeDataAccessObject.degreeAlreadyAdded(addDegreeInputData.getDegree())) {
             addDegreePresenter.prepareAddDegreeFailureView("Degree already selected");
+            System.out.println("I was here lol");
         }
         else {
-            final Degree degree = new Degree(addDegreeInputData.getDegree(), null);
+            final Degree degree = addDegreeDataAccessObject.getDegreeByCode(input);
             addDegreeDataAccessObject.add(degree);
-
-            final AddDegreeOutputData addDegreeOutputData = new AddDegreeOutputData(addDegreeInputData.getDegree());
+            final AddDegreeOutputData addDegreeOutputData = new AddDegreeOutputData(degree.getDegreeCode(),
+                    degree.getDegreeName(),
+                    degree.getCourses());
             addDegreePresenter.prepareAddDegreeSuccessView(addDegreeOutputData);
+            System.out.println(degree.getDegreeCode());
+            System.out.println(degree.getDegreeName());
+            System.out.println(degree.getCourses());
         }
     }
 }

@@ -111,6 +111,8 @@ public boolean degreeExists(String degree) {return jsonDegreeAccess.degreeExists
         return jsonAccess.getCoursebyCode(courseCode);
     }
 
+    @Override
+    public Degree getDegreeByCode(String degreeCode) { return jsonDegreeAccess.getDegreeByCode(degreeCode);}
 
     // adds course to the courses ArrayList
     @Override

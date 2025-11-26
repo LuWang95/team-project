@@ -1,8 +1,6 @@
 package Generator.DataAccess;
 
-import Generator.UseCase.generate_timetable.GenerateTimetableDataAccessInterface;
 import com.google.gson.Gson;
-import CourseInfo.Course;
 import CourseInfo.Degree;
 
 import java.io.FileReader;
@@ -14,8 +12,8 @@ public class JsonDegreeDataAccess {
 
     private static class JsonDegreeRecord {
         public String degreeCode;
-        public String degreeTitle;
-        public ArrayList<Course> degreecourses;
+        public String degreeName;
+        public ArrayList<String> courseCodes;
     }
 
     public JsonDegreeDataAccess(String jsonFilePath) {
@@ -40,17 +38,18 @@ public class JsonDegreeDataAccess {
         private void buildDomainDegrees(List<JsonDegreeRecord> rawList) {
             for (JsonDegreeRecord r : rawList) {
                 String degree_Code = r.degreeCode;
-
-
                 Degree degree = degreesByCode.get(degree_Code);
                 if (degree == null) {
                     degree = new Degree(
                             degree_Code,
-                            r.degreeTitle         // courseTitle
+                            r.degreeName,
+                            r.courseCodes// courseTitle
 /*                        new ArrayList<>(),       // 1st year courses
                         new ArrayList<>(),       // 2nd year courses
                         new ArrayList<>()        // 3rd year courses
-  */              );
+  */              )
+
+                    ;
                     degreesByCode.put(degree_Code, degree);
                 }
 
@@ -60,7 +59,7 @@ public class JsonDegreeDataAccess {
             return degreesByCode.containsKey(degreesCode);
         }
 
-        public Degree getDegreebyCode(String degreeCode) {
+        public Degree getDegreeByCode(String degreeCode) {
             return degreesByCode.get(degreeCode);
         }
 
