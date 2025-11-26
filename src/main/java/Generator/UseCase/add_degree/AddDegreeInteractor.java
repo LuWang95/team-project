@@ -17,7 +17,14 @@ public class AddDegreeInteractor implements AddDegreeInputBoundary {
     // if not, then records the added course in the files and then tells the presenter to display the added course
     @Override
     public void execute(AddDegreeInputData addDegreeInputData) {
-        if (addDegreeDataAccessObject.degreeAlreadyAdded(addDegreeInputData.getDegree())) {
+        String input = addDegreeInputData.getDegree().trim().toUpperCase();
+        if (input.isEmpty()) {
+            addDegreePresenter.prepareAddDegreeFailureView("Enter a degree code");
+        }
+        if (addDegreeDataAccessObject.degreeExists(input)) {
+            addDegreePresenter.prepareAddDegreeFailureView("Degree does not exist");
+        }
+        else if (addDegreeDataAccessObject.degreeAlreadyAdded(addDegreeInputData.getDegree())) {
             addDegreePresenter.prepareAddDegreeFailureView("Degree already selected");
         }
         else {

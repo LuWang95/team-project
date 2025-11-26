@@ -14,5 +14,7 @@ public class Main {
         application.pack();
         application.setLocationRelativeTo(null);
         application.setVisible(true);
+        System.out.println("");
     }
 }
+

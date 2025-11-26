@@ -42,7 +42,10 @@ public class AppBuilder {
     ViewManager viewManager = new ViewManager(cardPanel, cardLayout, viewManagerModel);
 
     final FileUserDataAccessObject userDataAccessObject =
-            new FileUserDataAccessObject("selectedPreferences.csv", "artsci_timetable.json");
+            new FileUserDataAccessObject("selectedPreferences.csv",
+                    "artsci_timetable.json",
+                    "Programs.json"
+            );
 
     private SetPreferencesView setPreferencesView;
     private SetPreferencesViewModel setPreferencesViewModel;
