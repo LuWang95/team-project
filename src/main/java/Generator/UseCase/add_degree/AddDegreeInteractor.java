@@ -21,7 +21,7 @@ public class AddDegreeInteractor implements AddDegreeInputBoundary {
         if (input.isEmpty()) {
             addDegreePresenter.prepareAddDegreeFailureView("Enter a degree code");
         }
-        if (addDegreeDataAccessObject.degreeExists(input)) {
+        if (!addDegreeDataAccessObject.degreeExists(input)) {
             addDegreePresenter.prepareAddDegreeFailureView("Degree does not exist");
         }
         else if (addDegreeDataAccessObject.degreeAlreadyAdded(addDegreeInputData.getDegree())) {
