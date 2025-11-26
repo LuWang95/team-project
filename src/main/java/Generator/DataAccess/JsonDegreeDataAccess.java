@@ -43,11 +43,10 @@ public class JsonDegreeDataAccess {
                     degree = new Degree(
                             degree_Code,
                             r.degreeName,
-                            r.courseCodes// courseTitle
-/*                        new ArrayList<>(),       // 1st year courses
-                        new ArrayList<>(),       // 2nd year courses
-                        new ArrayList<>()        // 3rd year courses
-  */              )
+                            r.courseCodes);
+                            for (String course : r.courseCodes) {
+                                degree.addCourse(course);
+                            }
 
                     ;
                     degreesByCode.put(degree_Code, degree);
