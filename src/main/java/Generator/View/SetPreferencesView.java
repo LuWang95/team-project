@@ -391,18 +391,26 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
                 final SetPreferencesState setPreferencesState = setPreferencesViewModel.getState();
                 setPreferencesState.setSelectedDegree(degreeInputField.getText());
                 setPreferencesViewModel.setState(setPreferencesState);
+                setPreferencesState.setSelectedCourse("ECO101H1F");
 
 
-                if (setPreferencesState.getYear()==1){
-                }
-
+/*                if (setPreferencesState.getYear()==1){
+                    for (String code : setPreferencesState.getDegrees()) {
+                        if (code.charAt(3)=='1') {
+                            setPreferencesState.setSelectedCourse(code);
+                            setPreferencesViewModel.setState(setPreferencesState);
+                        }
+                    }
+                setPreferencesState.setSelectedCourse("ECO101H1F");}
+*/
                 System.out.println(setPreferencesState.getYear());
+                System.out.println("getyear");
+                System.out.println(setPreferencesState.getCourses());
+                System.out.println("getCourse");
                 System.out.println(setPreferencesState.getDegrees());
+                System.out.println("getDegree");
 
             }
-
-
-
         });
     }
 
