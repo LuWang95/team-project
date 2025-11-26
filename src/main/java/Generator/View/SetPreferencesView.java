@@ -163,7 +163,7 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
 
         JPanel degreeInputPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         degreeInputPanel.setOpaque(false);
-        degreeInputField.setToolTipText("Enter degree and press Enter");
+        degreeInputField.setToolTipText("Enter degree, select year, and press enter");
         degreeInputField.setFont(new Font("Times New Roman", Font.PLAIN, 12)); // CHANGED: Times New Roman
         degreeInputField.addActionListener(e -> {
             final SetPreferencesState setPreferencesState = setPreferencesViewModel.getState();
@@ -357,6 +357,20 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
         });
     }
 
+    private void addYearListener() {
+        for (Enumeration<AbstractButton> e = yearButtons.getElements(); e.hasMoreElements();) {
+            JRadioButton yearButton = (JRadioButton) e.nextElement();
+            yearButton.addItemListener(new ItemListener() {
+                @Override
+                public void itemStateChanged(ItemEvent e) {
+                    final SetPreferencesState setPreferencesState = setPreferencesViewModel.getState();
+                    setPreferencesState.setYear(Integer.parseInt(yearButton.getText()));
+                    setPreferencesViewModel.setState(setPreferencesState);
+                }
+            });
+        }
+    }
+
     private void addDegreeListener() {
         degreeInputField.getDocument().addDocumentListener(new DocumentListener() {
             @Override
@@ -373,25 +387,23 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
             }
 
             private void documentListenerHelper() {
+
                 final SetPreferencesState setPreferencesState = setPreferencesViewModel.getState();
                 setPreferencesState.setSelectedDegree(degreeInputField.getText());
                 setPreferencesViewModel.setState(setPreferencesState);
-            }
-        });
-    }
 
-    private void addYearListener() {
-        for (Enumeration<AbstractButton> e = yearButtons.getElements(); e.hasMoreElements();) {
-            JRadioButton yearButton = (JRadioButton) e.nextElement();
-            yearButton.addItemListener(new ItemListener() {
-                @Override
-                public void itemStateChanged(ItemEvent e) {
-                    final SetPreferencesState setPreferencesState = setPreferencesViewModel.getState();
-                    setPreferencesState.setYear(Integer.parseInt(yearButton.getText()));
-                    setPreferencesViewModel.setState(setPreferencesState);
+
+                if (setPreferencesState.getYear()==1){
                 }
-            });
-        }
+
+                System.out.println(setPreferencesState.getYear());
+                System.out.println(setPreferencesState.getDegrees());
+
+            }
+
+
+
+        });
     }
 
     private void addTimeListener() {

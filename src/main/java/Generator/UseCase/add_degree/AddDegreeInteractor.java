@@ -3,6 +3,7 @@ package Generator.UseCase.add_degree;
 import CourseInfo.Degree;
 import Generator.DataAccess.JsonDegreeDataAccess;
 import Generator.InterfaceAdapter.set_preferences.SetPreferencesState;
+import Generator.InterfaceAdapter.set_preferences.SetPreferencesViewModel;
 
 public class AddDegreeInteractor implements AddDegreeInputBoundary {
     private final AddDegreeDataAccessInterface addDegreeDataAccessObject;
@@ -14,13 +15,16 @@ public class AddDegreeInteractor implements AddDegreeInputBoundary {
         this.addDegreePresenter = addDegreeOutputBoundary;
     }
 
-    // checks if the course to be added is already selected
+
+
+    // checks if the degree to be added is already selected
     // if so, then sends an error message to be displayed
-    // if not, then records the added course in the files and then tells the presenter to display the added course
+    // if not, then records the added degree in the files and then tells the presenter to display the added course
     @Override
     public void execute(AddDegreeInputData addDegreeInputData) {
         String input = addDegreeInputData.getDegree().trim().toUpperCase();
         SetPreferencesState  setPreferencesState = new SetPreferencesState();
+        System.out.println();
 
         if (input.isEmpty()) {
             addDegreePresenter.prepareAddDegreeFailureView("Enter a degree code");
@@ -30,7 +34,6 @@ public class AddDegreeInteractor implements AddDegreeInputBoundary {
         }
         else if (addDegreeDataAccessObject.degreeAlreadyAdded(addDegreeInputData.getDegree())) {
             addDegreePresenter.prepareAddDegreeFailureView("Degree already selected");
-            System.out.println("I was here lol");
         }
         else {
             final Degree degree = addDegreeDataAccessObject.getDegreeByCode(input);
