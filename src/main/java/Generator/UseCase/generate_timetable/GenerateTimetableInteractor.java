@@ -79,6 +79,7 @@ public class GenerateTimetableInteractor implements GenerateTimetableInputBounda
             courseCodes.add(code);
             courseCodes.add(code);
         }
+    }
 
         rawTimetables.clear();
         addAllCombination(allSections, new Timetable(), 0, courseCodes);
