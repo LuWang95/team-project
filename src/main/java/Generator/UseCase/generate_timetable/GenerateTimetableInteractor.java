@@ -4,7 +4,7 @@ import CourseInfo.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GenerateTimetableInteractor implements GenerateTimetableInputBoundary {
+public class  GenerateTimetableInteractor implements GenerateTimetableInputBoundary {
     private static final int LIMIT = 5000;
     private final GenerateTimetableOutputBoundary presenter;
     private final GenerateTimetableDataAccessInterface dataAccess;
