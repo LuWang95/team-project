@@ -1,13 +1,16 @@
 package Generator.UseCase.add_degree;
 
+import CourseInfo.Course;
 import CourseInfo.Degree;
 import Generator.DataAccess.JsonDegreeDataAccess;
 import Generator.InterfaceAdapter.set_preferences.SetPreferencesState;
 import Generator.InterfaceAdapter.set_preferences.SetPreferencesViewModel;
+import Generator.UseCase.add_course.*;
 
 public class AddDegreeInteractor implements AddDegreeInputBoundary {
     private final AddDegreeDataAccessInterface addDegreeDataAccessObject;
     private final AddDegreeOutputBoundary addDegreePresenter;
+
 
     public AddDegreeInteractor(AddDegreeDataAccessInterface addDegreeDataAccessObject,
                                AddDegreeOutputBoundary addDegreeOutputBoundary) {
@@ -42,9 +45,10 @@ public class AddDegreeInteractor implements AddDegreeInputBoundary {
                     degree.getDegreeName(),
                     degree.getCourses());
             addDegreePresenter.prepareAddDegreeSuccessView(addDegreeOutputData);
-/*            System.out.println(degree.getDegreeCode());
+            AddCourseInteractor addCourseInteractor = new AddCourseInteractor(null,null);
+            /*            System.out.println(degree.getDegreeCode());
             System.out.println(degree.getDegreeName());
             System.out.println(degree.getCourses());
-  */      }
+             */      }
     }
 }
