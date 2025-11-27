@@ -3,6 +3,9 @@ package Generator.View;
 import Generator.InterfaceAdapter.set_preferences.SetPreferencesController;
 import Generator.InterfaceAdapter.set_preferences.SetPreferencesState;
 import Generator.InterfaceAdapter.set_preferences.SetPreferencesViewModel;
+import Generator.UseCase.add_degree.AddDegreeDataAccessInterface;
+import Generator.UseCase.add_degree.AddDegreeInteractor;
+import Generator.UseCase.add_degree.AddDegreeOutputData;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -163,7 +166,7 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
 
         JPanel degreeInputPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         degreeInputPanel.setOpaque(false);
-        degreeInputField.setToolTipText("Enter degree and press Enter");
+        degreeInputField.setToolTipText("Enter degree, select year, and press enter");
         degreeInputField.setFont(new Font("Times New Roman", Font.PLAIN, 12)); // CHANGED: Times New Roman
         degreeInputField.addActionListener(e -> {
             final SetPreferencesState setPreferencesState = setPreferencesViewModel.getState();
@@ -357,6 +360,20 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
         });
     }
 
+    private void addYearListener() {
+        for (Enumeration<AbstractButton> e = yearButtons.getElements(); e.hasMoreElements();) {
+            JRadioButton yearButton = (JRadioButton) e.nextElement();
+            yearButton.addItemListener(new ItemListener() {
+                @Override
+                public void itemStateChanged(ItemEvent e) {
+                    final SetPreferencesState setPreferencesState = setPreferencesViewModel.getState();
+                    setPreferencesState.setYear(Integer.parseInt(yearButton.getText()));
+                    setPreferencesViewModel.setState(setPreferencesState);
+                }
+            });
+        }
+    }
+
     private void addDegreeListener() {
         degreeInputField.getDocument().addDocumentListener(new DocumentListener() {
             @Override
@@ -373,25 +390,32 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
             }
 
             private void documentListenerHelper() {
+
                 final SetPreferencesState setPreferencesState = setPreferencesViewModel.getState();
                 setPreferencesState.setSelectedDegree(degreeInputField.getText());
+                setPreferencesState.setSelectedCourse("ECO101H1F");
                 setPreferencesViewModel.setState(setPreferencesState);
+
+
+
+/*                if (setPreferencesState.getYear()==1){
+                    for (String code : setPreferencesState.getDegrees()) {
+                        if (code.charAt(3)=='1') {
+                            setPreferencesState.setSelectedCourse(code);
+                            setPreferencesViewModel.setState(setPreferencesState);
+                        }
+                    }
+                setPreferencesState.setSelectedCourse("ECO101H1F");}
+*/
+                System.out.println(setPreferencesState.getYear());
+                System.out.println("getyear");
+                System.out.println(setPreferencesState.getCourses());
+                System.out.println("getCourse");
+                System.out.println(setPreferencesState.getDegrees());
+                System.out.println("getDegree");
+
             }
         });
-    }
-
-    private void addYearListener() {
-        for (Enumeration<AbstractButton> e = yearButtons.getElements(); e.hasMoreElements();) {
-            JRadioButton yearButton = (JRadioButton) e.nextElement();
-            yearButton.addItemListener(new ItemListener() {
-                @Override
-                public void itemStateChanged(ItemEvent e) {
-                    final SetPreferencesState setPreferencesState = setPreferencesViewModel.getState();
-                    setPreferencesState.setYear(Integer.parseInt(yearButton.getText()));
-                    setPreferencesViewModel.setState(setPreferencesState);
-                }
-            });
-        }
     }
 
     private void addTimeListener() {
@@ -489,6 +513,9 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
 
         degreesPanel.revalidate();
         degreesPanel.repaint();
+  //      displayCourses(degreesSelected);
+        coursesPanel.revalidate();
+        coursesPanel.repaint();
     }
 
     @Override

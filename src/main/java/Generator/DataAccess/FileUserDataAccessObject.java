@@ -18,12 +18,14 @@ public class FileUserDataAccessObject implements AddCourseDataAccessInterface, R
     private final ArrayList<Course> courses;
     private final ArrayList<Degree> degrees;
     private final JsonCourseDataAccess jsonAccess;
+    private final JsonDegreeDataAccess jsonDegreeAccess;
 
-    public FileUserDataAccessObject(String userDataPath, String timetableDataPath) {
+    public FileUserDataAccessObject(String userDataPath, String timetableDataPath, String degreeDataPath) {
         csvFile = new File(userDataPath);
         courses = new ArrayList<>();
         degrees = new ArrayList<>();
         jsonAccess = new JsonCourseDataAccess(timetableDataPath);
+        jsonDegreeAccess = new JsonDegreeDataAccess(degreeDataPath);
         save();
 
 //        need to figure out how to load previous data from file into the view when the program restarts TODO
@@ -100,10 +102,17 @@ public class FileUserDataAccessObject implements AddCourseDataAccessInterface, R
         return jsonAccess.courseExists(courseCode);
     }
 
-    @Override
+
+@Override
+public boolean degreeExists(String degree) {return jsonDegreeAccess.degreeExists(degree);}
+
+@Override
     public Course getCoursebyCode(String courseCode) {
         return jsonAccess.getCoursebyCode(courseCode);
     }
+
+    @Override
+    public Degree getDegreeByCode(String degreeCode) { return jsonDegreeAccess.getDegreeByCode(degreeCode);}
 
     // adds course to the courses ArrayList
     @Override

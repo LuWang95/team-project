@@ -5,29 +5,30 @@ import java.util.ArrayList;
 // mostly a whatever implementation that works well enough for the set preferences ui.
 // i'm leaving it to franklin or smo else to make it better i believe in u lol
 public class Degree {
-    private final String degreeCode;
-    private final String degreeTitle;
-    private final ArrayList<Course> courses;
+     String degreeCode;
+     String degreeName;
+     ArrayList<String> courses;
 
-    public Degree(String degreeCode, String degreeTitle) {
+
+ public Degree(String degreeCode, String degreeName, ArrayList<String> courses) {
         this.degreeCode = degreeCode;
-        this.degreeTitle = degreeTitle;
-        this.courses = new ArrayList<>();
+        this.degreeName = degreeName;
+        this.courses = new ArrayList<String>();
     }
 
     public String getDegreeCode() {
         return degreeCode;
     }
 
-    public String getDegreeTitle() {
-        return degreeTitle;
+    public String getDegreeName() {
+        return degreeName;
     }
 
-    public ArrayList<Course> getCourses() {
+    public ArrayList<String> getCourses() {
         return courses;
     }
 
-    public void addCourse(Course course) {
+    public void addCourse(String course) {
         this.courses.add(course);
     }
 
