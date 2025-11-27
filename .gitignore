@@ -12,10 +12,6 @@ target/
 *.iml
 *.ipr
 
-### API Configs###
-/src/java/Generator/DataAccess/OpenRouteServiceConfig
-/src/java/Generator/DataAccess/GeoapifyConfig
-
 ### Eclipse ###
 .apt_generated
 .classpath
