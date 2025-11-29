@@ -3,9 +3,6 @@ package Generator.View;
 import Generator.InterfaceAdapter.set_preferences.SetPreferencesController;
 import Generator.InterfaceAdapter.set_preferences.SetPreferencesState;
 import Generator.InterfaceAdapter.set_preferences.SetPreferencesViewModel;
-import Generator.UseCase.add_degree.AddDegreeDataAccessInterface;
-import Generator.UseCase.add_degree.AddDegreeInteractor;
-import Generator.UseCase.add_degree.AddDegreeOutputData;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;

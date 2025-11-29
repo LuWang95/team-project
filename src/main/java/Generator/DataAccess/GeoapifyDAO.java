@@ -1,15 +1,22 @@
 package Generator.DataAccess;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class GeoapifyDAO {
-    public static final HashMap<String, String> BuildingCodeToAddress = new HashMap<>();
+    protected static final Map<String, String> BuildingCodeToAddress = new HashMap<>();
+    private final int SUCCESS_CODE = 200;
+
     static {
         BuildingCodeToAddress.put("DA", "1 Spadina Crescent");
         BuildingCodeToAddress.put("C1", "30 Charles Street West");
@@ -135,11 +142,17 @@ public class GeoapifyDAO {
         BuildingCodeToAddress.put("WY", "5 Hoskin Avenue");
     }
 
-    public ArrayList<Double> getCoordinates(String buildingCode) {
-        Client client = ClientBuilder.newClient();
-        String address = BuildingCodeToAddress.get(buildingCode);
+    /**
+     * Calls the geocoding API of Geoapify and return the coordinates of the building specified.
+     * @param buildingCode buliding code
+     * @return coordinates of the building
+     * @throws CoordinateNotFoundException if the coordinate can't be found (or if the API fails)
+     */
+    public List<Double> getCoordinates(String buildingCode) throws CoordinateNotFoundException {
+        final Client client = ClientBuilder.newClient();
+        final String address = BuildingCodeToAddress.get(buildingCode);
 
-        Response response = client.target(GeoapifyConfig.BASE_URL)
+        final Response response = client.target(GeoapifyConfig.BASE_URL)
                 .queryParam("text", address)
                 .queryParam("city", "Toronto")
                 .queryParam("country", "Canada")
@@ -147,56 +160,39 @@ public class GeoapifyDAO {
                 .request(MediaType.APPLICATION_JSON_TYPE)
                 .get();
 
-        int status = response.getStatus();
-        String body = response.readEntity(String.class);
-        JSONObject jsonBody = new JSONObject(body);
+        try {
+            final int status = response.getStatus();
+            final String body = response.readEntity(String.class);
+            final JSONObject jsonBody = new JSONObject(body);
 
-        ArrayList<Double> coordinates = new ArrayList<>();
-        coordinates.add(
-                jsonBody.getJSONArray("features")
-                        .getJSONObject(0)
-                        .getJSONObject("properties")
-                        .getDouble("lon")
-        );
-        coordinates.add(
-                jsonBody.getJSONArray("features")
-                        .getJSONObject(0)
-                        .getJSONObject("properties")
-                        .getDouble("lat")
-        );
-        return coordinates;
+            if (status == SUCCESS_CODE) {
+                final ArrayList<Double> coordinates = new ArrayList<>();
+                coordinates.add(
+                        jsonBody.getJSONArray("features")
+                                .getJSONObject(0)
+                                .getJSONObject("properties")
+                                .getDouble("lon")
+                );
+                coordinates.add(
+                        jsonBody.getJSONArray("features")
+                                .getJSONObject(0)
+                                .getJSONObject("properties")
+                                .getDouble("lat")
+                );
+                return coordinates;
+            }
+            else {
+                throw new CoordinateNotFoundException(buildingCode);
+            }
+        }
+        catch (JSONException exception) {
+            throw new CoordinateNotFoundException(buildingCode);
+        }
     }
 
-    public static void main(String[] args) {
-        String address = BuildingCodeToAddress.get("BA");
-
-        Client client = ClientBuilder.newClient();
-        Response response = client.target(GeoapifyConfig.BASE_URL)
-                .queryParam("text", address)
-                .queryParam("city", "Toronto")
-                .queryParam("country", "Canada")
-                .queryParam("apiKey", GeoapifyConfig.API_KEY)
-                .request(MediaType.APPLICATION_JSON_TYPE)
-                .get();
-
-        int status = response.getStatus();
-        String body = response.readEntity(String.class);
-        JSONObject jsonBody = new JSONObject(body);
-
-        ArrayList<Double> coordinates = new ArrayList<>();
-        coordinates.add(
-                jsonBody.getJSONArray("features")
-                        .getJSONObject(0)
-                        .getJSONObject("properties")
-                        .getDouble("lon")
-        );
-        coordinates.add(
-                jsonBody.getJSONArray("features")
-                        .getJSONObject(0)
-                        .getJSONObject("properties")
-                        .getDouble("lat")
-        );
-
-        System.out.println(coordinates);
+    static final class CoordinateNotFoundException extends Exception {
+        private CoordinateNotFoundException(String buildingCode) {
+            super("Coordinate not found for " + buildingCode);
+        }
     }
 }
