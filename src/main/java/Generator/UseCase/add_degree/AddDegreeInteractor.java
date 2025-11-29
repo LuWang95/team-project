@@ -1,10 +1,7 @@
 package Generator.UseCase.add_degree;
 
-import CourseInfo.Course;
 import CourseInfo.Degree;
-import Generator.DataAccess.JsonDegreeDataAccess;
 import Generator.InterfaceAdapter.set_preferences.SetPreferencesState;
-import Generator.InterfaceAdapter.set_preferences.SetPreferencesViewModel;
 import Generator.UseCase.add_course.*;
 
 public class AddDegreeInteractor implements AddDegreeInputBoundary {
