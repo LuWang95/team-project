@@ -407,13 +407,13 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
                     }
                 setPreferencesState.setSelectedCourse("ECO101H1F");}
 */
-                System.out.println(setPreferencesState.getYear());
+ /*               System.out.println(setPreferencesState.getYear());
                 System.out.println("getyear");
                 System.out.println(setPreferencesState.getCourses());
                 System.out.println("getCourse");
                 System.out.println(setPreferencesState.getDegrees());
                 System.out.println("getDegree");
-
+*/
             }
         });
     }

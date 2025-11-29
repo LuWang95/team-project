@@ -65,9 +65,9 @@ public class AddDegreeInteractor implements AddDegreeInputBoundary {
 //            }
 
       //      AddCourseInteractor addCourseInteractor = new AddCourseInteractor(addCourseDataAccessObject,addCoursePresenter);
-            System.out.println(degree.getDegreeCode());
-            System.out.println(degree.getDegreeName());
-            System.out.println(degree.getCourses());
+//            System.out.println(degree.getDegreeCode());
+  //          System.out.println(degree.getDegreeName());
+    //        System.out.println(degree.getCourses());
                    }
     }
 }
