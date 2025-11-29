@@ -38,13 +38,19 @@ public class AddDegreeInteractor implements AddDegreeInputBoundary {
         else if (!addDegreeDataAccessObject.degreeExists(input)) {
             addDegreePresenter.prepareAddDegreeFailureView("Degree does not exist");
         }
-        else if (addDegreeDataAccessObject.degreeAlreadyAdded(addDegreeInputData.getDegree())) {
+        else if (addDegreeDataAccessObject.degreeAlreadyAdded(input)) {
             addDegreePresenter.prepareAddDegreeFailureView("Degree already selected");
         }
         else {
             final Degree degree = addDegreeDataAccessObject.getDegreeByCode(input);
+            addDegreeDataAccessObject.add(degree);
+            AddDegreeOutputData addDegreeOutputData = new AddDegreeOutputData(degree.getDegreeCode(),
+                    degree.getDegreeName(),
+                    degree.getCourses());
+            addDegreePresenter.prepareAddDegreeSuccessView(addDegreeOutputData);
+
 //            for (String S : addDegreeDataAccessObject.getDegreeByCode(input).getCourses()) {
-            final Course course = addCourseDataAccessObject.getCoursebyCode("CSC108H1F");
+            Course course = addCourseDataAccessObject.getCoursebyCode("CSC108H1F");
                       AddCourseOutputData addCourseOutputData = new AddCourseOutputData(course.getCourseCode(),
                             course.getCourseTitle(), course.getLectureSections(), course.getTutorialSections(),
                             course.getPracticalSections(), course.getCredit(), String.valueOf(course.getSessionCode()));
@@ -53,15 +59,10 @@ public class AddDegreeInteractor implements AddDegreeInputBoundary {
             //        }
 //            }
 
-            addDegreeDataAccessObject.add(degree);
-            AddDegreeOutputData addDegreeOutputData = new AddDegreeOutputData(degree.getDegreeCode(),
-                    degree.getDegreeName(),
-                    degree.getCourses());
-            addDegreePresenter.prepareAddDegreeSuccessView(addDegreeOutputData);
-            AddCourseInteractor addCourseInteractor = new AddCourseInteractor(addCourseDataAccessObject,addCoursePresenter);
-            /*            System.out.println(degree.getDegreeCode());
+      //      AddCourseInteractor addCourseInteractor = new AddCourseInteractor(addCourseDataAccessObject,addCoursePresenter);
+            System.out.println(degree.getDegreeCode());
             System.out.println(degree.getDegreeName());
             System.out.println(degree.getCourses());
-             */      }
+                   }
     }
 }
