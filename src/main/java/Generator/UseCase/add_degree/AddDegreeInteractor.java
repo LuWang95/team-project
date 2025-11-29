@@ -10,12 +10,16 @@ import Generator.UseCase.add_course.*;
 public class AddDegreeInteractor implements AddDegreeInputBoundary {
     private final AddDegreeDataAccessInterface addDegreeDataAccessObject;
     private final AddDegreeOutputBoundary addDegreePresenter;
+    private final AddCourseDataAccessInterface addCourseDataAccessObject;
+    private final AddCourseOutputBoundary addCoursePresenter;
 
 
     public AddDegreeInteractor(AddDegreeDataAccessInterface addDegreeDataAccessObject,
-                               AddDegreeOutputBoundary addDegreeOutputBoundary) {
+                               AddDegreeOutputBoundary addDegreeOutputBoundary, AddCourseDataAccessInterface addCourseDataAccessObject, AddCourseOutputBoundary addCoursePresenter) {
         this.addDegreeDataAccessObject = addDegreeDataAccessObject;
         this.addDegreePresenter = addDegreeOutputBoundary;
+        this.addCoursePresenter = addCoursePresenter;
+        this.addCourseDataAccessObject = addCourseDataAccessObject;
     }
 
 
@@ -27,7 +31,6 @@ public class AddDegreeInteractor implements AddDegreeInputBoundary {
     public void execute(AddDegreeInputData addDegreeInputData) {
         String input = addDegreeInputData.getDegree().trim().toUpperCase();
         SetPreferencesState  setPreferencesState = new SetPreferencesState();
-        System.out.println();
 
         if (input.isEmpty()) {
             addDegreePresenter.prepareAddDegreeFailureView("Enter a degree code");
@@ -40,12 +43,22 @@ public class AddDegreeInteractor implements AddDegreeInputBoundary {
         }
         else {
             final Degree degree = addDegreeDataAccessObject.getDegreeByCode(input);
+//            for (String S : addDegreeDataAccessObject.getDegreeByCode(input).getCourses()) {
+            final Course course = addCourseDataAccessObject.getCoursebyCode("CSC108H1F");
+                      AddCourseOutputData addCourseOutputData = new AddCourseOutputData(course.getCourseCode(),
+                            course.getCourseTitle(), course.getLectureSections(), course.getTutorialSections(),
+                            course.getPracticalSections(), course.getCredit(), String.valueOf(course.getSessionCode()));
+                    addCoursePresenter.prepareAddCourseSuccessView(addCourseOutputData);
+                    addCourseDataAccessObject.add(course);
+            //        }
+//            }
+
             addDegreeDataAccessObject.add(degree);
-            final AddDegreeOutputData addDegreeOutputData = new AddDegreeOutputData(degree.getDegreeCode(),
+            AddDegreeOutputData addDegreeOutputData = new AddDegreeOutputData(degree.getDegreeCode(),
                     degree.getDegreeName(),
                     degree.getCourses());
             addDegreePresenter.prepareAddDegreeSuccessView(addDegreeOutputData);
-            AddCourseInteractor addCourseInteractor = new AddCourseInteractor(null,null);
+            AddCourseInteractor addCourseInteractor = new AddCourseInteractor(addCourseDataAccessObject,addCoursePresenter);
             /*            System.out.println(degree.getDegreeCode());
             System.out.println(degree.getDegreeName());
             System.out.println(degree.getCourses());

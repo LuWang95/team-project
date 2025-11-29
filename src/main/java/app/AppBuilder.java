@@ -82,7 +82,7 @@ public class AppBuilder {
         final AddDegreeOutputBoundary addDegreeOutputBoundary = new SetPreferencesPresenter(viewManagerModel,
                 setPreferencesViewModel, displayTimetableViewModel);
         final AddDegreeInputBoundary addDegreeInteractor = new AddDegreeInteractor(userDataAccessObject,
-                addDegreeOutputBoundary);
+                addDegreeOutputBoundary, userDataAccessObject, addCourseOutputBoundary);
         final RemoveDegreeOutputBoundary removeDegreeOutputBoundary = new SetPreferencesPresenter(viewManagerModel,
                 setPreferencesViewModel, displayTimetableViewModel);
         final RemoveDegreeInputBoundary removeDegreeInteractor = new RemoveDegreeInteractor(userDataAccessObject,
