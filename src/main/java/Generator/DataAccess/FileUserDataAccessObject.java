@@ -19,7 +19,7 @@ public class FileUserDataAccessObject implements
         AddDegreeDataAccessInterface,
         RemoveDegreeDataAccessInterface,
         GenerateTimetableDataAccessInterface,
-        Generator.DataAccess.SaveTimetableDataAccessInterface {   // ✅ NEW: implements SaveTimetableDataAccessInterface
+        Generator.DataAccess.SaveTimetableDataAccessInterface {
 
     private final File csvFile;
     private final ArrayList<Course> courses;
