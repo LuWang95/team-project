@@ -1,6 +1,5 @@
 package Generator.DataAccess;
 
-import Generator.UseCase.generate_timetable.GenerateTimetableDataAccessInterface;
 import com.google.gson.Gson;
 import CourseInfo.Course;
 import CourseInfo.Meeting;
