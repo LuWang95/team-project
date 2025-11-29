@@ -1,5 +1,9 @@
 package app;
 
+import java.awt.*;
+
+import javax.swing.*;
+
 import Generator.DataAccess.FileUserDataAccessObject;
 import Generator.InterfaceAdapter.*;
 import Generator.InterfaceAdapter.display_timetable.DisplayTimetableController;
@@ -11,6 +15,9 @@ import Generator.InterfaceAdapter.set_preferences.SetPreferencesViewModel;
 import Generator.UseCase.add_course.AddCourseInputBoundary;
 import Generator.UseCase.add_course.AddCourseInteractor;
 import Generator.UseCase.add_course.AddCourseOutputBoundary;
+import Generator.UseCase.add_degree.AddDegreeInputBoundary;
+import Generator.UseCase.add_degree.AddDegreeInteractor;
+import Generator.UseCase.add_degree.AddDegreeOutputBoundary;
 import Generator.UseCase.generate_timetable.GenerateTimetableInputBoundary;
 import Generator.UseCase.generate_timetable.GenerateTimetableInteractor;
 import Generator.UseCase.generate_timetable.GenerateTimetableOutputBoundary;
@@ -20,9 +27,6 @@ import Generator.UseCase.regenerate_timetable.RegenerateTimetableOutputBoundary;
 import Generator.UseCase.remove_course.RemoveCourseInputBoundary;
 import Generator.UseCase.remove_course.RemoveCourseInteractor;
 import Generator.UseCase.remove_course.RemoveCourseOutputBoundary;
-import Generator.UseCase.add_degree.AddDegreeInputBoundary;
-import Generator.UseCase.add_degree.AddDegreeInteractor;
-import Generator.UseCase.add_degree.AddDegreeOutputBoundary;
 import Generator.UseCase.remove_degree.RemoveDegreeInputBoundary;
 import Generator.UseCase.remove_degree.RemoveDegreeInteractor;
 import Generator.UseCase.remove_degree.RemoveDegreeOutputBoundary;
@@ -31,17 +35,14 @@ import Generator.UseCase.return_to_prefs.ReturnToPrefsInteractor;
 import Generator.UseCase.return_to_prefs.ReturnToPrefsOutputBoundary;
 import Generator.View.*;
 
-
-import javax.swing.*;
-import java.awt.*;
-
 public class AppBuilder {
+    private final int WIDTH = 1400;
+    private final int HEIGHT = 750;
     private final JPanel cardPanel = new JPanel();
     private final CardLayout cardLayout = new CardLayout();
-    final ViewManagerModel viewManagerModel = new ViewManagerModel();
-    ViewManager viewManager = new ViewManager(cardPanel, cardLayout, viewManagerModel);
-
-    final FileUserDataAccessObject userDataAccessObject =
+    private final ViewManagerModel viewManagerModel = new ViewManagerModel();
+    private final ViewManager viewManager = new ViewManager(cardPanel, cardLayout, viewManagerModel);
+    private final FileUserDataAccessObject userDataAccessObject =
             new FileUserDataAccessObject("selectedPreferences.csv",
                     "artsci_timetable.json",
                     "Programs.json"
@@ -87,30 +88,30 @@ public class AppBuilder {
                 setPreferencesViewModel, displayTimetableViewModel);
         final RemoveDegreeInputBoundary removeDegreeInteractor = new RemoveDegreeInteractor(userDataAccessObject,
                 removeDegreeOutputBoundary);
-        final GenerateTimetableOutputBoundary generateTimetableOutputBoundary
-                = new SetPreferencesPresenter(viewManagerModel, setPreferencesViewModel, displayTimetableViewModel);
-        final GenerateTimetableInputBoundary generateTimetableInteractor
-                = new GenerateTimetableInteractor(userDataAccessObject, generateTimetableOutputBoundary);
-        SetPreferencesController setPreferencesController = new SetPreferencesController(addCourseInteractor,
+        final GenerateTimetableOutputBoundary generateTimetableOutputBoundary =
+                new SetPreferencesPresenter(viewManagerModel, setPreferencesViewModel, displayTimetableViewModel);
+        final GenerateTimetableInputBoundary generateTimetableInteractor =
+                new GenerateTimetableInteractor(userDataAccessObject, generateTimetableOutputBoundary);
+        final SetPreferencesController setPreferencesController = new SetPreferencesController(addCourseInteractor,
                 removeCourseInteractor, addDegreeInteractor, removeDegreeInteractor, generateTimetableInteractor);
         setPreferencesView.setSetPreferencesController(setPreferencesController);
         return this;
     }
 
     public AppBuilder addDisplayTimetableUseCases() {
-        final GenerateTimetableOutputBoundary generateTimetableOutputBoundary
-                = new SetPreferencesPresenter(viewManagerModel, setPreferencesViewModel, displayTimetableViewModel);
-        final GenerateTimetableInputBoundary generateTimetableInteractor
-                = new GenerateTimetableInteractor(userDataAccessObject, generateTimetableOutputBoundary);
+        final GenerateTimetableOutputBoundary generateTimetableOutputBoundary =
+                new SetPreferencesPresenter(viewManagerModel, setPreferencesViewModel, displayTimetableViewModel);
+        final GenerateTimetableInputBoundary generateTimetableInteractor =
+                new GenerateTimetableInteractor(userDataAccessObject, generateTimetableOutputBoundary);
         final ReturnToPrefsOutputBoundary returnToPrefsOutputBoundary = new DisplayTimetablePresenter(viewManagerModel,
                 displayTimetableViewModel, setPreferencesViewModel);
-        final ReturnToPrefsInputBoundary returnToPrefsInteractor
-                = new ReturnToPrefsInteractor(returnToPrefsOutputBoundary);
+        final ReturnToPrefsInputBoundary returnToPrefsInteractor =
+                new ReturnToPrefsInteractor(returnToPrefsOutputBoundary);
         final RegenerateTimetableOutputBoundary regenerateTimetableOutputBoundary = new
                 DisplayTimetablePresenter(viewManagerModel, displayTimetableViewModel, setPreferencesViewModel);
         final RegenerateTimetableInputBoundary regenerateTimetableInteractor = new
                 RegenerateTimetableInteractor(regenerateTimetableOutputBoundary);
-        DisplayTimetableController displayTimetableController = new
+        final DisplayTimetableController displayTimetableController = new
                 DisplayTimetableController(generateTimetableInteractor, returnToPrefsInteractor,
                 regenerateTimetableInteractor);
         displayTimetableView.setDisplayTimetableController(displayTimetableController);
@@ -119,7 +120,7 @@ public class AppBuilder {
 
     public JFrame build() {
         final JFrame application = new JFrame("Timetable Builder, but better");
-        application.setMinimumSize(new Dimension(1500, 750));
+        application.setMinimumSize(new Dimension(WIDTH, HEIGHT));
         application.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         application.add(cardPanel);
@@ -129,6 +130,4 @@ public class AppBuilder {
 
         return application;
     }
-
-
 }
