@@ -41,4 +41,6 @@ build/
 ### Mac OS ###
 .DS_Store
 
+### Data Files ###
 selectedPreferences.csv
+saved_timetable.csv

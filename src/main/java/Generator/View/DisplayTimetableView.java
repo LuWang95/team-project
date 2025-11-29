@@ -13,6 +13,7 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.*;
+import Generator.InterfaceAdapter.save_timetable.SaveTimetableController;
 
 public class DisplayTimetableView extends JPanel implements ActionListener, PropertyChangeListener {
     private final String viewName = "Display Timetable";
@@ -35,6 +36,10 @@ public class DisplayTimetableView extends JPanel implements ActionListener, Prop
     private final JPanel bottomButtons = new JPanel();
     private final JButton back;
     private final JButton regenerate;
+
+    // NEW: controller + button for saving
+    private SaveTimetableController saveTimetableController;
+    private final JButton save;
 
     public DisplayTimetableView(DisplayTimetableViewModel displayTimetableViewModel) {
         this.displayTimetableViewModel = displayTimetableViewModel;
@@ -89,7 +94,9 @@ public class DisplayTimetableView extends JPanel implements ActionListener, Prop
         back.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                displayTimetableController.returnToPrefs();
+                if (displayTimetableController != null) {
+                    displayTimetableController.returnToPrefs();
+                }
             }
         });
         bottomButtons.add(back);
@@ -98,10 +105,25 @@ public class DisplayTimetableView extends JPanel implements ActionListener, Prop
         regenerate.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                displayTimetableController.regenerateTimetable();
+                if (displayTimetableController != null) {
+                    displayTimetableController.regenerateTimetable();
+                }
             }
         });
         bottomButtons.add(regenerate);
+
+        // NEW: Save button wiring
+        save = new JButton("Save");
+        save.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (saveTimetableController != null) {
+                    // For now, hard-code; you can later use JFileChooser etc.
+                    saveTimetableController.saveTimetable("saved_timetable.csv");
+                }
+            }
+        });
+        bottomButtons.add(save);
 
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         this.add(title);
@@ -163,9 +185,9 @@ public class DisplayTimetableView extends JPanel implements ActionListener, Prop
                     String block = table.get(i).get(j).get(0);
                     String courseCode = block.substring(0, 8);
                     String sessionCode = "";
-                    if(courseCode.charAt(6) == 'H'){
+                    if (courseCode.charAt(6) == 'H') {
                         sessionCode = block.substring(9);
-                    }else {
+                    } else {
                         sessionCode = block.substring(8);
                     }
                     if (!courses.contains(courseCode)) {
@@ -175,19 +197,15 @@ public class DisplayTimetableView extends JPanel implements ActionListener, Prop
                     Color sessionColour;
                     if (sessionCode.contains("LEC")) {
                         sessionColour = chooseColour(false, courses.indexOf(courseCode));
-                    }
-                    else {
+                    } else {
                         sessionColour = chooseColour(true, courses.indexOf(courseCode));
                     }
                     colorMap.replace(new Point(j, i + 1), sessionColour);
 
-                    if (j == 0 || !colorMap.get(new Point (j - 1, i + 1)).equals(sessionColour)) {
+                    if (j == 0 || !colorMap.get(new Point(j - 1, i + 1)).equals(sessionColour)) {
                         timetableTable.setValueAt(timetableString, j, i + 1);
                     }
                     alignMap.replace(new Point(j, i + 1), JLabel.CENTER);
-
-
-
                 }
             }
         }
@@ -204,7 +222,7 @@ public class DisplayTimetableView extends JPanel implements ActionListener, Prop
         coursesPanel.removeAll();
         coursesPanel.add(new JLabel("Courses:"));
         for (int i = 0; i < courseTitles.size(); i++) {
-            coursesPanel.add(new JLabel("     " + courseTitles.get(i) + " (" +  courseCodes.get(i) + ")"));
+            coursesPanel.add(new JLabel("     " + courseTitles.get(i) + " (" + courseCodes.get(i) + ")"));
         }
     }
 
@@ -236,5 +254,10 @@ public class DisplayTimetableView extends JPanel implements ActionListener, Prop
 
     public void setDisplayTimetableController(DisplayTimetableController displayTimetableController) {
         this.displayTimetableController = displayTimetableController;
+    }
+
+    // NEW: setter for the save controller
+    public void setSaveTimetableController(SaveTimetableController saveTimetableController) {
+        this.saveTimetableController = saveTimetableController;
     }
 }

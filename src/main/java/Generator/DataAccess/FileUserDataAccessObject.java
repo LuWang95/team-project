@@ -8,12 +8,19 @@ import Generator.UseCase.remove_course.RemoveCourseDataAccessInterface;
 import Generator.UseCase.remove_degree.RemoveDegreeDataAccessInterface;
 import Generator.UseCase.generate_timetable.GenerateTimetableDataAccessInterface;
 
+import Generator.UseCase.generate_timetable.TimetableDTO;               // ✅ NEW
 import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class FileUserDataAccessObject implements AddCourseDataAccessInterface, RemoveCourseDataAccessInterface,
-        AddDegreeDataAccessInterface, RemoveDegreeDataAccessInterface, GenerateTimetableDataAccessInterface {
+public class FileUserDataAccessObject implements
+        AddCourseDataAccessInterface,
+        RemoveCourseDataAccessInterface,
+        AddDegreeDataAccessInterface,
+        RemoveDegreeDataAccessInterface,
+        GenerateTimetableDataAccessInterface,
+        Generator.DataAccess.SaveTimetableDataAccessInterface {
+
     private final File csvFile;
     private final ArrayList<Course> courses;
     private final ArrayList<Degree> degrees;
@@ -28,25 +35,7 @@ public class FileUserDataAccessObject implements AddCourseDataAccessInterface, R
         jsonDegreeAccess = new JsonDegreeDataAccess(degreeDataPath);
         save();
 
-//        need to figure out how to load previous data from file into the view when the program restarts TODO
-//        when that figures out the commented out code here will be relevant
-//        for now the file just starts anew every time the program restarts
-
-//        if (csvFile.length() == 0) {
-//            save();
-//        }
-//        else {
-//            try (BufferedReader reader = new BufferedReader(new FileReader(csvFile))) {
-//                String courseLine = reader.readLine();
-//                String[] courses = courseLine.split(",");
-//                for (String course : courses) {
-//                    this.courses.add(new Course(course, null, 0, 0, null, null));
-//                }
-//            }
-//            catch (IOException ex) {
-//                throw new RuntimeException(ex);
-//            }
-//        }
+        // TODO: loading previous data from file if you want persistence between runs
     }
 
     // rewrites selectedCourses.csv in the following format:
@@ -87,13 +76,17 @@ public class FileUserDataAccessObject implements AddCourseDataAccessInterface, R
     // checks to see if specified course is already in the courses ArrayList
     @Override
     public boolean courseAlreadyAdded(String course) {
-        List<String> courseNames = courses.stream().map(Course::getCourseCode).collect(Collectors.toList());
+        List<String> courseNames = courses.stream()
+                .map(Course::getCourseCode)
+                .collect(Collectors.toList());
         return courseNames.contains(course);
     }
 
     @Override
     public boolean degreeAlreadyAdded(String degree) {
-        List<String> degreeNames = degrees.stream().map(Degree::getDegreeCode).collect(Collectors.toList());
+        List<String> degreeNames = degrees.stream()
+                .map(Degree::getDegreeCode)
+                .collect(Collectors.toList());
         return degreeNames.contains(degree);
     }
 
@@ -102,17 +95,20 @@ public class FileUserDataAccessObject implements AddCourseDataAccessInterface, R
         return jsonAccess.courseExists(courseCode);
     }
 
+    @Override
+    public boolean degreeExists(String degree) {
+        return jsonDegreeAccess.degreeExists(degree);
+    }
 
-@Override
-public boolean degreeExists(String degree) {return jsonDegreeAccess.degreeExists(degree);}
-
-@Override
+    @Override
     public Course getCoursebyCode(String courseCode) {
         return jsonAccess.getCoursebyCode(courseCode);
     }
 
     @Override
-    public Degree getDegreeByCode(String degreeCode) { return jsonDegreeAccess.getDegreeByCode(degreeCode);}
+    public Degree getDegreeByCode(String degreeCode) {
+        return jsonDegreeAccess.getDegreeByCode(degreeCode);
+    }
 
     // adds course to the courses ArrayList
     @Override
@@ -129,9 +125,6 @@ public boolean degreeExists(String degree) {return jsonDegreeAccess.degreeExists
     }
 
     // removes course from the courses ArrayList
-    // the implementation may need to be improved lmao
-    // simply using the remove method doesn't work because they'll be different course objects because the current
-    // Course class is kinda wack
     @Override
     public void remove(Course course) {
         for (int i = courses.size() - 1; i >= 0; i--) {
@@ -157,5 +150,41 @@ public boolean degreeExists(String degree) {return jsonDegreeAccess.degreeExists
     @Override
     public ArrayList<Course> getCourses() {
         return courses;
+    }
+
+    // ✅ NEW: SaveTimetableDataAccessInterface implementation
+    @Override
+    public void saveTimetable(TimetableDTO fallTimetable,
+                              TimetableDTO winterTimetable,
+                              String fileName) throws IOException {
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
+            writer.write("Fall Timetable");
+            writer.newLine();
+            writeTimetable(writer, fallTimetable);
+
+            writer.newLine();
+            writer.write("Winter Timetable");
+            writer.newLine();
+            writeTimetable(writer, winterTimetable);
+        }
+    }
+
+    // helper to write a single timetable table
+    private void writeTimetable(BufferedWriter writer, TimetableDTO timetable) throws IOException {
+        // TimetableDTO#getTable() is assumed to be ArrayList<ArrayList<ArrayList<String>>>
+        ArrayList<ArrayList<ArrayList<String>>> table = timetable.getTable();
+
+        for (ArrayList<ArrayList<String>> row : table) {
+            for (int col = 0; col < row.size(); col++) {
+                ArrayList<String> cell = row.get(col);
+                String cellText = String.join("/", cell);
+                writer.write(cellText);
+                if (col < row.size() - 1) {
+                    writer.write(",");
+                }
+            }
+            writer.newLine();
+        }
     }
 }
