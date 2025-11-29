@@ -1,5 +1,7 @@
 package CourseInfo;
 
+import Generator.DataAccess.JsonCourseDataAccess;
+
 import java.util.ArrayList;
 
 // mostly a whatever implementation that works well enough for the set preferences ui.
@@ -27,6 +29,12 @@ public class Degree {
     public ArrayList<String> getCourses() {
         return courses;
     }
+
+ //   public ArrayList<Course> getReqs() {
+   //  for (String course : courses) {
+     //    JsonCourseDataAccess jsonCourseDataAccess = new JsonCourseDataAccess(course);
+     //}}
+
 
     public void addCourse(String course) {
         this.courses.add(course);
