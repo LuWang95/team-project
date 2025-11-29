@@ -30,6 +30,13 @@ import Generator.UseCase.return_to_prefs.ReturnToPrefsInputBoundary;
 import Generator.UseCase.return_to_prefs.ReturnToPrefsInteractor;
 import Generator.UseCase.return_to_prefs.ReturnToPrefsOutputBoundary;
 import Generator.View.*;
+import Generator.InterfaceAdapter.save_timetable.SaveTimetableController;
+import Generator.InterfaceAdapter.save_timetable.SaveTimetablePresenter;
+import Generator.InterfaceAdapter.save_timetable.SaveTimetableViewModel;
+
+import Generator.UseCase.save_timetable.SaveTimetableInputBoundary;
+import Generator.UseCase.save_timetable.SaveTimetableInteractor;
+import Generator.UseCase.save_timetable.SaveTimetableOutputBoundary;
 
 
 import javax.swing.*;
@@ -98,24 +105,50 @@ public class AppBuilder {
     }
 
     public AppBuilder addDisplayTimetableUseCases() {
+        // Existing generate timetable wiring
         final GenerateTimetableOutputBoundary generateTimetableOutputBoundary
                 = new SetPreferencesPresenter(viewManagerModel, setPreferencesViewModel, displayTimetableViewModel);
         final GenerateTimetableInputBoundary generateTimetableInteractor
                 = new GenerateTimetableInteractor(userDataAccessObject, generateTimetableOutputBoundary);
-        final ReturnToPrefsOutputBoundary returnToPrefsOutputBoundary = new DisplayTimetablePresenter(viewManagerModel,
-                displayTimetableViewModel, setPreferencesViewModel);
-        final ReturnToPrefsInputBoundary returnToPrefsInteractor
-                = new ReturnToPrefsInteractor(returnToPrefsOutputBoundary);
-        final RegenerateTimetableOutputBoundary regenerateTimetableOutputBoundary = new
-                DisplayTimetablePresenter(viewManagerModel, displayTimetableViewModel, setPreferencesViewModel);
-        final RegenerateTimetableInputBoundary regenerateTimetableInteractor = new
-                RegenerateTimetableInteractor(regenerateTimetableOutputBoundary);
-        DisplayTimetableController displayTimetableController = new
-                DisplayTimetableController(generateTimetableInteractor, returnToPrefsInteractor,
-                regenerateTimetableInteractor);
+
+        // Existing return-to-prefs wiring
+        final ReturnToPrefsOutputBoundary returnToPrefsOutputBoundary =
+                new DisplayTimetablePresenter(viewManagerModel, displayTimetableViewModel, setPreferencesViewModel);
+        final ReturnToPrefsInputBoundary returnToPrefsInteractor =
+                new ReturnToPrefsInteractor(returnToPrefsOutputBoundary);
+
+        // Existing regenerate wiring
+        final RegenerateTimetableOutputBoundary regenerateTimetableOutputBoundary =
+                new DisplayTimetablePresenter(viewManagerModel, displayTimetableViewModel, setPreferencesViewModel);
+        final RegenerateTimetableInputBoundary regenerateTimetableInteractor =
+                new RegenerateTimetableInteractor(regenerateTimetableOutputBoundary);
+
+        // ---------- NEW: Save Timetable wiring ----------
+        final SaveTimetableViewModel saveTimetableViewModel = new SaveTimetableViewModel();
+        final SaveTimetableOutputBoundary saveTimetableOutputBoundary =
+                new SaveTimetablePresenter(saveTimetableViewModel);
+
+        // NOTE: userDataAccessObject must implement SaveTimetableDataAccessInterface
+        final SaveTimetableInputBoundary saveTimetableInteractor =
+                new SaveTimetableInteractor(userDataAccessObject, saveTimetableOutputBoundary);
+
+        final SaveTimetableController saveTimetableController =
+                new SaveTimetableController(saveTimetableInteractor, displayTimetableViewModel);
+        // -------------------------------------------------
+
+        // Existing display timetable controller
+        DisplayTimetableController displayTimetableController =
+                new DisplayTimetableController(generateTimetableInteractor,
+                        returnToPrefsInteractor,
+                        regenerateTimetableInteractor);
+
         displayTimetableView.setDisplayTimetableController(displayTimetableController);
+        // NEW: give the view the save controller as well
+        displayTimetableView.setSaveTimetableController(saveTimetableController);
+
         return this;
     }
+
 
     public JFrame build() {
         final JFrame application = new JFrame("Timetable Builder, but better");
