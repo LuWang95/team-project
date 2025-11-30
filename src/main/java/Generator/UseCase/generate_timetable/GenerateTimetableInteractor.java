@@ -155,8 +155,8 @@ public class  GenerateTimetableInteractor implements GenerateTimetableInputBound
     }
 
     /**
-     * Calculates a score for how well a timetable matches time preferences.
-     * Higher weight is given to earlier courses (more important).
+     * Calculates a score for how well a timetable matches time preferences. Higher weight is given to earlier courses
+     * (more important).
      * @param timetable the timetable to score
      * @param timePreferences the preferred time slots
      * @param courses the courses in priority order
@@ -181,10 +181,10 @@ public class  GenerateTimetableInteractor implements GenerateTimetableInputBound
     }
 
     /**
-     * Checks if a specific course appears in any of the preferred time slots.
-     * A course gets credit if ANY of its sessions (lecture, tutorial, etc.) are in preferred times.
+     * Checks if a specific course appears in any of the preferred time slots. A course gets credit if ANY of its
+     * sessions are in preferred times.
      * @param table the timetable grid
-     * @param courseCode the course code to check (e.g., "CSC207H1")
+     * @param courseCode the course code to check
      * @param timePreferences the preferred time slots
      * @return true if at least one session of the course is in a preferred time slot
      */
@@ -229,9 +229,9 @@ public class  GenerateTimetableInteractor implements GenerateTimetableInputBound
 
     /**
      * Checks if a specific hour slot is allowed based on time preferences.
-     * @param hour the hour index (0 = 9-10am, 11 = 8-9pm) based on the 2d array.
-     * @param timePreferences the list of allowed time preferences.
-     * @return true if the hour falls within any of the preferred time ranges.
+     * @param hour the hour index (0 = 9-10am, 11 = 8-9pm) based on the 2d array
+     * @param timePreferences the list of allowed time preferences
+     * @return true if the hour falls within any of the preferred time ranges
      */
     private boolean isTimeSlotAllowed(int hour, ArrayList<String> timePreferences) {
         for (String preference : timePreferences) {
