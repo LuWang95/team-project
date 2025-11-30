@@ -187,8 +187,10 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
         degreeInputPanel.add(degreeInputField);
         degreeInputPanel.add(addDegreeBtn);
 
-        degreesPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+        // DEGREES PANEL APPEARANCE
+        degreesPanel.setLayout(new BoxLayout(degreesPanel, BoxLayout.Y_AXIS));
         degreesPanel.setBackground(Color.WHITE);
+        degreesPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
         degreesPanel.setBorder(BorderFactory.createTitledBorder(
                 BorderFactory.createLineBorder(Color.GRAY),
                 "Selected Degrees",
@@ -236,7 +238,6 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
         degreeSection.add(container, BorderLayout.CENTER);
         degreeSection.add(degreeScroll, BorderLayout.SOUTH);
 
-
         // Courses section
         JPanel courseSection = new JPanel(new BorderLayout());
         courseSection.setOpaque(false);
@@ -267,8 +268,10 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
         courseInputPanel.add(courseInputField);
         courseInputPanel.add(addCourseBtn);
 
-        coursesPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+        // COURSES PANEL APPEARANCE
+        coursesPanel.setLayout(new BoxLayout(coursesPanel, BoxLayout.Y_AXIS));
         coursesPanel.setBackground(Color.WHITE);
+        coursesPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
         coursesPanel.setBorder(BorderFactory.createTitledBorder(
                 BorderFactory.createLineBorder(Color.GRAY),
                 "Selected Courses",
@@ -396,27 +399,7 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
 
                 final SetPreferencesState setPreferencesState = setPreferencesViewModel.getState();
                 setPreferencesState.setSelectedDegree(degreeInputField.getText());
-     //           setPreferencesState.setSelectedCourse("ECO101H1F");
                 setPreferencesViewModel.setState(setPreferencesState);
-
-
-
-/*                if (setPreferencesState.getYear()==1){
-                    for (String code : setPreferencesState.getDegrees()) {
-                        if (code.charAt(3)=='1') {
-                            setPreferencesState.setSelectedCourse(code);
-                            setPreferencesViewModel.setState(setPreferencesState);
-                        }
-                    }
-                setPreferencesState.setSelectedCourse("ECO101H1F");}
-*/
- /*               System.out.println(setPreferencesState.getYear());
-                System.out.println("getyear");
-                System.out.println(setPreferencesState.getCourses());
-                System.out.println("getCourse");
-                System.out.println(setPreferencesState.getDegrees());
-                System.out.println("getDegree");
-*/
             }
         });
     }
@@ -449,17 +432,24 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
             JLabel errorMessageLabel = new JLabel(errorMessage);
             errorMessageLabel.setForeground(Color.RED);
             errorMessageLabel.setFont(new Font("Times New Roman", Font.PLAIN, 11)); // CHANGED: Times New Roman
+            errorMessageLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
             coursesPanel.add(errorMessageLabel);
+            coursesPanel.add(Box.createVerticalStrut(5));
         }
 
-        for (String course: coursesSelected) {
-            JPanel coursePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 2));
+        for (String course : coursesSelected) {
+            JPanel coursePanel = new JPanel(new BorderLayout());
             coursePanel.setBackground(new Color(230, 240, 255));
-            coursePanel.setBorder(BorderFactory.createLineBorder(new Color(0, 127, 163), 1));
+            coursePanel.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(new Color(0, 127, 163), 1),
+                    new EmptyBorder(4, 8, 4, 8)
+            ));
+            coursePanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 32));
+            coursePanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
             JLabel courseLabel = new JLabel(course);
             courseLabel.setFont(new Font("Times New Roman", Font.PLAIN, 11)); // CHANGED: Times New Roman
-            coursePanel.add(courseLabel);
+            coursePanel.add(courseLabel, BorderLayout.WEST);
 
             JButton courseButton = new JButton("✕");
             courseButton.setFont(new Font("Times New Roman", Font.BOLD, 16)); // CHANGED: Times New Roman
@@ -469,9 +459,10 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
             courseButton.setFocusPainted(false);
             courseButton.setBorder(BorderFactory.createLineBorder(new Color(50, 50, 50), 1));
             courseButton.addActionListener(e -> setPreferencesController.removeCourse(course));
-            coursePanel.add(courseButton);
+            coursePanel.add(courseButton, BorderLayout.EAST);
 
             coursesPanel.add(coursePanel);
+            coursesPanel.add(Box.createVerticalStrut(4));
         }
 
         coursesPanel.revalidate();
@@ -489,17 +480,24 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
             JLabel errorMessageLabel = new JLabel(errorMessage);
             errorMessageLabel.setForeground(Color.RED);
             errorMessageLabel.setFont(new Font("Times New Roman", Font.PLAIN, 11)); // CHANGED: Times New Roman
+            errorMessageLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
             degreesPanel.add(errorMessageLabel);
+            degreesPanel.add(Box.createVerticalStrut(5));
         }
 
-        for (String degree: degreesSelected) {
-            JPanel degreePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 2));
+        for (String degree : degreesSelected) {
+            JPanel degreePanel = new JPanel(new BorderLayout());
             degreePanel.setBackground(new Color(230, 240, 255));
-            degreePanel.setBorder(BorderFactory.createLineBorder(new Color(0, 127, 163), 1));
+            degreePanel.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(new Color(0, 127, 163), 1),
+                    new EmptyBorder(4, 8, 4, 8)
+            ));
+            degreePanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 32));
+            degreePanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
             JLabel degreeLabel = new JLabel(degree);
             degreeLabel.setFont(new Font("Times New Roman", Font.PLAIN, 11)); // CHANGED: Times New Roman
-            degreePanel.add(degreeLabel);
+            degreePanel.add(degreeLabel, BorderLayout.WEST);
 
             JButton degreeButton = new JButton("✕");
             degreeButton.setFont(new Font("Times New Roman", Font.BOLD, 16)); // CHANGED: Times New Roman
@@ -509,14 +507,14 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
             degreeButton.setFocusPainted(false);
             degreeButton.setBorder(BorderFactory.createLineBorder(new Color(50, 50, 50), 1));
             degreeButton.addActionListener(e -> setPreferencesController.removeDegree(degree));
-            degreePanel.add(degreeButton);
+            degreePanel.add(degreeButton, BorderLayout.EAST);
 
             degreesPanel.add(degreePanel);
+            degreesPanel.add(Box.createVerticalStrut(4));
         }
 
         degreesPanel.revalidate();
         degreesPanel.repaint();
-  //      displayCourses(degreesSelected);
         coursesPanel.revalidate();
         coursesPanel.repaint();
     }
