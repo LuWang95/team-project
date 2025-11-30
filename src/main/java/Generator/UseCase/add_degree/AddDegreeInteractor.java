@@ -2,8 +2,13 @@ package Generator.UseCase.add_degree;
 
 import CourseInfo.Course;
 import CourseInfo.Degree;
+import Generator.DataAccess.FileUserDataAccessObject;
 import Generator.InterfaceAdapter.set_preferences.SetPreferencesState;
 import Generator.UseCase.add_course.*;
+import Generator.View.SetPreferencesView;
+
+import javax.swing.*;
+
 
 public class AddDegreeInteractor implements AddDegreeInputBoundary {
     private final AddDegreeDataAccessInterface addDegreeDataAccessObject;
@@ -27,44 +32,57 @@ public class AddDegreeInteractor implements AddDegreeInputBoundary {
     @Override
     public void execute(AddDegreeInputData addDegreeInputData) {
         final String input = addDegreeInputData.getDegree().trim().toUpperCase();
-        final SetPreferencesState setPreferencesState = new SetPreferencesState();
+
 
         if (input.isEmpty()) {
             addDegreePresenter.prepareAddDegreeFailureView("Enter a degree code");
-        }
-        else if (!addDegreeDataAccessObject.degreeExists(input)) {
+        } else if (!addDegreeDataAccessObject.degreeExists(input)) {
             addDegreePresenter.prepareAddDegreeFailureView("Degree does not exist");
-        }
-        else if (addDegreeDataAccessObject.degreeAlreadyAdded(input)) {
+        } else if (addDegreeDataAccessObject.degreeAlreadyAdded(input)) {
             addDegreePresenter.prepareAddDegreeFailureView("Degree already selected");
-        }
-        else {
+        } else {
+            System.out.println(FileUserDataAccessObject.Year);
             final Degree degree = addDegreeDataAccessObject.getDegreeByCode(input);
             addDegreeDataAccessObject.add(degree);
             final AddDegreeOutputData addDegreeOutputData = new AddDegreeOutputData(degree.getDegreeCode(),
                     degree.getDegreeName(),
                     degree.getCourses());
             addDegreePresenter.prepareAddDegreeSuccessView(addDegreeOutputData);
+            //       System.out.println(setPreferencesState.getYear());
 
             for (String str : addDegreeDataAccessObject.getDegreeByCode(input).getCourses()) {
-                if (str.charAt(6) == 'Y' && str.length() < 9) {
-                    final Course course = addCourseDataAccessObject.getCoursebyCode(str);
-                    final AddCourseOutputData addCourseOutputData = new AddCourseOutputData(course.getCourseCode(),
-                            course.getCourseTitle(), course.getLectureSections(), course.getTutorialSections(),
-                            course.getPracticalSections(), course.getCredit(), String.valueOf(course.getSessionCode()));
-                    addCoursePresenter.prepareAddCourseSuccessView(addCourseOutputData);
-                    addCourseDataAccessObject.add(course);
+                int yearCode = Character.getNumericValue(str.charAt(3));
+                if (yearCode == FileUserDataAccessObject.Year) {
+                    if (str.charAt(6) == 'Y' && str.length() < 9) {
+                        final Course course = addCourseDataAccessObject.getCoursebyCode(str);
+                        final AddCourseOutputData addCourseOutputData = new AddCourseOutputData(course.getCourseCode(),
+                                course.getCourseTitle(), course.getLectureSections(), course.getTutorialSections(),
+                                course.getPracticalSections(), course.getCredit(), String.valueOf(course.getSessionCode()));
+                        addCoursePresenter.prepareAddCourseSuccessView(addCourseOutputData);
+                        addCourseDataAccessObject.add(course);
+                    }
+                    if (str.charAt(6) == 'H' && str.length() < 9) {
+                        try {
+                            final String strF = str + "F";
+                            final Course course = addCourseDataAccessObject.getCoursebyCode(strF);
+                            final AddCourseOutputData addCourseOutputData = new AddCourseOutputData(course.getCourseCode(),
+                                    course.getCourseTitle(), course.getLectureSections(), course.getTutorialSections(),
+                                    course.getPracticalSections(), course.getCredit(), String.valueOf(course.getSessionCode()));
+                            addCourseDataAccessObject.add(course);
+                            addCoursePresenter.prepareAddCourseSuccessView(addCourseOutputData);
+                        } catch (NullPointerException e) {
+                            final String strS = str + "S";
+                            final Course course = addCourseDataAccessObject.getCoursebyCode(strS);
+                            final AddCourseOutputData addCourseOutputData = new AddCourseOutputData(course.getCourseCode(),
+                                    course.getCourseTitle(), course.getLectureSections(), course.getTutorialSections(),
+                                    course.getPracticalSections(), course.getCredit(), String.valueOf(course.getSessionCode()));
+                            addCourseDataAccessObject.add(course);
+                            addCoursePresenter.prepareAddCourseSuccessView(addCourseOutputData);
 
+                        }
+                    }
                 }
-                System.out.println(str);
             }
-            //        }
-//            }
-
-      //      AddCourseInteractor addCourseInteractor = new AddCourseInteractor(addCourseDataAccessObject,addCoursePresenter);
-//            System.out.println(degree.getDegreeCode());
-  //          System.out.println(degree.getDegreeName());
-    //        System.out.println(degree.getCourses());
-                   }
+        }
     }
 }

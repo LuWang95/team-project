@@ -19,9 +19,11 @@ public class FileUserDataAccessObject implements AddCourseDataAccessInterface, R
     private final ArrayList<Degree> degrees;
     private final JsonCourseDataAccess jsonAccess;
     private final JsonDegreeDataAccess jsonDegreeAccess;
+    public static int Year;
 
-    public FileUserDataAccessObject(String userDataPath, String timetableDataPath, String degreeDataPath) {
+    public FileUserDataAccessObject(String userDataPath, String timetableDataPath, String degreeDataPath, int year) {
         csvFile = new File(userDataPath);
+        Year = year;
         courses = new ArrayList<>();
         degrees = new ArrayList<>();
         jsonAccess = new JsonCourseDataAccess(timetableDataPath);
@@ -104,7 +106,8 @@ public class FileUserDataAccessObject implements AddCourseDataAccessInterface, R
 
 
 @Override
-public boolean degreeExists(String degree) {return jsonDegreeAccess.degreeExists(degree);}
+public boolean degreeExists(String degree) {
+        return jsonDegreeAccess.degreeExists(degree);}
 
 @Override
     public Course getCoursebyCode(String courseCode) {
@@ -157,5 +160,13 @@ public boolean degreeExists(String degree) {return jsonDegreeAccess.degreeExists
     @Override
     public ArrayList<Course> getCourses() {
         return courses;
+    }
+
+    public void setYear(int Year) {
+        this.Year = Year;
+    }
+
+    public int getYear() {
+        return Year;
     }
 }

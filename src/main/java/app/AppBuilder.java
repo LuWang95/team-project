@@ -45,7 +45,8 @@ public class AppBuilder {
     private final FileUserDataAccessObject userDataAccessObject =
             new FileUserDataAccessObject("selectedPreferences.csv",
                     "artsci_timetable.json",
-                    "Programs.json"
+                    "Programs.json",
+                    0
             );
 
     private SetPreferencesView setPreferencesView;
