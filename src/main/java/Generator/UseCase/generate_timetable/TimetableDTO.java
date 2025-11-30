@@ -13,7 +13,7 @@ import java.util.ArrayList;
  *   Access pattern:
  *      table.get(day).get(hour) → List<String> of course labels in that slot.
  *      day: 0=Mon, 1=Tue, ..., 4=Fri
- *      hour: 0=9am, 1=10am, ..., 11=9pm  (or whatever mapping your UI uses
+ *      hour: 0=9am, 1=10am, ..., 11=9pm  (or whatever mapping your UI uses)
  */
 public class TimetableDTO {
     private final ArrayList<ArrayList<ArrayList<String>>> table;

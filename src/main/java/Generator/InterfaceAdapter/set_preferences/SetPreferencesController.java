@@ -1,7 +1,11 @@
 package Generator.InterfaceAdapter.set_preferences;
+
+import java.util.ArrayList;
+
 import Generator.UseCase.add_course.*;
 import Generator.UseCase.add_degree.*;
 import Generator.UseCase.generate_timetable.GenerateTimetableInputBoundary;
+import Generator.UseCase.generate_timetable.GenerateTimetableInputData;
 import Generator.UseCase.remove_course.*;
 import Generator.UseCase.remove_degree.*;
 
@@ -61,7 +65,12 @@ public class SetPreferencesController {
         removeDegreeUseCaseInteractor.execute(removeDegreeInputData);
     }
 
-    public void displayTimetable() {
-        generateTimetableUseCaseInteractor.execute();
+    /**
+     * Executes displaying timetable with no time preference.
+     * @param timePreferences arraylist which stores the preferred time of the user
+     */
+    public void displayTimetable(ArrayList<String> timePreferences) {
+        final GenerateTimetableInputData generateTimetableInputData = new GenerateTimetableInputData(timePreferences);
+        generateTimetableUseCaseInteractor.execute(generateTimetableInputData);
     }
 }
