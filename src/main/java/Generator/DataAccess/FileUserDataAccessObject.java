@@ -26,11 +26,13 @@ public class FileUserDataAccessObject implements
     private final ArrayList<Degree> degrees;
     private final JsonCourseDataAccess jsonAccess;
     private final JsonDegreeDataAccess jsonDegreeAccess;
+    public static int Year;
 
     public FileUserDataAccessObject(String userDataPath, String timetableDataPath, String degreeDataPath) {
         csvFile = new File(userDataPath);
         courses = new ArrayList<>();
         degrees = new ArrayList<>();
+        Year = 0;
         jsonAccess = new JsonCourseDataAccess(timetableDataPath);
         jsonDegreeAccess = new JsonDegreeDataAccess(degreeDataPath);
         save();
