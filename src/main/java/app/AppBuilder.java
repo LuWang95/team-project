@@ -4,43 +4,53 @@ import java.awt.*;
 
 import javax.swing.*;
 
-import Generator.DataAccess.FileUserDataAccessObject;
-import Generator.InterfaceAdapter.*;
-import Generator.InterfaceAdapter.display_timetable.DisplayTimetableController;
-import Generator.InterfaceAdapter.display_timetable.DisplayTimetablePresenter;
-import Generator.InterfaceAdapter.display_timetable.DisplayTimetableViewModel;
-import Generator.InterfaceAdapter.set_preferences.SetPreferencesController;
-import Generator.InterfaceAdapter.set_preferences.SetPreferencesPresenter;
-import Generator.InterfaceAdapter.set_preferences.SetPreferencesViewModel;
-import Generator.UseCase.add_course.AddCourseInputBoundary;
-import Generator.UseCase.add_course.AddCourseInteractor;
-import Generator.UseCase.add_course.AddCourseOutputBoundary;
-import Generator.UseCase.add_degree.AddDegreeInputBoundary;
-import Generator.UseCase.add_degree.AddDegreeInteractor;
-import Generator.UseCase.add_degree.AddDegreeOutputBoundary;
-import Generator.UseCase.generate_timetable.GenerateTimetableInputBoundary;
-import Generator.UseCase.generate_timetable.GenerateTimetableInteractor;
-import Generator.UseCase.generate_timetable.GenerateTimetableOutputBoundary;
-import Generator.UseCase.regenerate_timetable.RegenerateTimetableInputBoundary;
-import Generator.UseCase.regenerate_timetable.RegenerateTimetableInteractor;
-import Generator.UseCase.regenerate_timetable.RegenerateTimetableOutputBoundary;
-import Generator.UseCase.remove_course.RemoveCourseInputBoundary;
-import Generator.UseCase.remove_course.RemoveCourseInteractor;
-import Generator.UseCase.remove_course.RemoveCourseOutputBoundary;
-import Generator.UseCase.remove_degree.RemoveDegreeInputBoundary;
-import Generator.UseCase.remove_degree.RemoveDegreeInteractor;
-import Generator.UseCase.remove_degree.RemoveDegreeOutputBoundary;
-import Generator.UseCase.return_to_prefs.ReturnToPrefsInputBoundary;
-import Generator.UseCase.return_to_prefs.ReturnToPrefsInteractor;
-import Generator.UseCase.return_to_prefs.ReturnToPrefsOutputBoundary;
-import Generator.View.*;
-import Generator.InterfaceAdapter.save_timetable.SaveTimetableController;
-import Generator.InterfaceAdapter.save_timetable.SaveTimetablePresenter;
-import Generator.InterfaceAdapter.save_timetable.SaveTimetableViewModel;
+import generator.dataaccess.FileUserDataAccessObject;
+import generator.interfaceadapter.*;
+import generator.interfaceadapter.display_timetable.DisplayTimetableController;
+import generator.interfaceadapter.display_timetable.DisplayTimetablePresenter;
+import generator.interfaceadapter.display_timetable.DisplayTimetableViewModel;
+import generator.interfaceadapter.set_preferences.SetPreferencesController;
+import generator.interfaceadapter.set_preferences.SetPreferencesPresenter;
+import generator.interfaceadapter.set_preferences.SetPreferencesViewModel;
+import generator.usecase.add_course.AddCourseInputBoundary;
+import generator.usecase.add_course.AddCourseInteractor;
+import generator.usecase.add_course.AddCourseOutputBoundary;
+import generator.usecase.add_degree.AddDegreeInputBoundary;
+import generator.usecase.add_degree.AddDegreeInteractor;
+import generator.usecase.add_degree.AddDegreeOutputBoundary;
+import generator.usecase.generate_timetable.GenerateTimetableInputBoundary;
+import generator.usecase.generate_timetable.GenerateTimetableInteractor;
+import generator.usecase.generate_timetable.GenerateTimetableOutputBoundary;
+import generator.usecase.regenerate_timetable.RegenerateTimetableInputBoundary;
+import generator.usecase.regenerate_timetable.RegenerateTimetableInteractor;
+import generator.usecase.regenerate_timetable.RegenerateTimetableOutputBoundary;
+import generator.usecase.remove_course.RemoveCourseInputBoundary;
+import generator.usecase.remove_course.RemoveCourseInteractor;
+import generator.usecase.remove_course.RemoveCourseOutputBoundary;
+import generator.usecase.remove_degree.RemoveDegreeInputBoundary;
+import generator.usecase.remove_degree.RemoveDegreeInteractor;
+import generator.usecase.remove_degree.RemoveDegreeOutputBoundary;
+import generator.usecase.return_to_prefs.ReturnToPrefsInputBoundary;
+import generator.usecase.return_to_prefs.ReturnToPrefsInteractor;
+import generator.usecase.return_to_prefs.ReturnToPrefsOutputBoundary;
+import generator.view.*;
+import generator.interfaceadapter.save_timetable.SaveTimetableController;
+import generator.interfaceadapter.save_timetable.SaveTimetablePresenter;
+import generator.interfaceadapter.save_timetable.SaveTimetableViewModel;
+import generator.usecase.save_timetable.SaveTimetableInputBoundary;
+import generator.usecase.save_timetable.SaveTimetableInteractor;
+import generator.usecase.save_timetable.SaveTimetableOutputBoundary;
 
-import Generator.UseCase.save_timetable.SaveTimetableInputBoundary;
-import Generator.UseCase.save_timetable.SaveTimetableInteractor;
-import Generator.UseCase.save_timetable.SaveTimetableOutputBoundary;
+import generator.interfaceadapter.load_timetable.LoadTimetableController;
+import generator.interfaceadapter.load_timetable.LoadTimetablePresenter;
+import generator.usecase.load_timetable.LoadTimetableInputBoundary;
+import generator.usecase.load_timetable.LoadTimetableInteractor;
+import generator.usecase.load_timetable.LoadTimetableOutputBoundary;
+
+import generator.dataaccess.DistanceDataAccessObject;
+import generator.usecase.sort_timetable.DistanceDataAccessInterface;
+import generator.usecase.sort_timetable.SortTimetableInputBoundary;
+import generator.usecase.sort_timetable.SortTimetableInteractor;
 
 public class AppBuilder {
     private final int WIDTH = 1400;
@@ -54,6 +64,8 @@ public class AppBuilder {
                     "artsci_timetable.json",
                     "Programs.json"
             );
+    private final DistanceDataAccessInterface distanceDataAccessObject =
+            new DistanceDataAccessObject();
 
     private SetPreferencesView setPreferencesView;
     private SetPreferencesViewModel setPreferencesViewModel;
@@ -97,28 +109,48 @@ public class AppBuilder {
                 removeDegreeOutputBoundary);
         final GenerateTimetableOutputBoundary generateTimetableOutputBoundary =
                 new SetPreferencesPresenter(viewManagerModel, setPreferencesViewModel, displayTimetableViewModel);
+
+        final SortTimetableInputBoundary sortTimetableInteractor =
+                new SortTimetableInteractor(userDataAccessObject, distanceDataAccessObject);
+
         final GenerateTimetableInputBoundary generateTimetableInteractor =
-                new GenerateTimetableInteractor(userDataAccessObject, generateTimetableOutputBoundary);
+                new GenerateTimetableInteractor(userDataAccessObject,
+                        generateTimetableOutputBoundary,
+                        sortTimetableInteractor);
+
+        final LoadTimetableOutputBoundary loadTimetableOutputBoundary =
+                new LoadTimetablePresenter(displayTimetableViewModel, viewManagerModel);
+        final LoadTimetableInputBoundary loadTimetableInteractor =
+                new LoadTimetableInteractor(loadTimetableOutputBoundary);
+        final LoadTimetableController loadTimetableController =
+                new LoadTimetableController(loadTimetableInteractor);
+
+        // UPDATED: Pass setPreferencesViewModel as last parameter
         final SetPreferencesController setPreferencesController = new SetPreferencesController(addCourseInteractor,
-                removeCourseInteractor, addDegreeInteractor, removeDegreeInteractor, generateTimetableInteractor);
+                removeCourseInteractor, addDegreeInteractor, removeDegreeInteractor, generateTimetableInteractor,
+                setPreferencesViewModel);
         setPreferencesView.setSetPreferencesController(setPreferencesController);
+        setPreferencesView.setLoadTimetableController(loadTimetableController);
+
         return this;
     }
 
     public AppBuilder addDisplayTimetableUseCases() {
-        // Existing generate timetable wiring
         final GenerateTimetableOutputBoundary generateTimetableOutputBoundary =
                 new SetPreferencesPresenter(viewManagerModel, setPreferencesViewModel, displayTimetableViewModel);
-        final GenerateTimetableInputBoundary generateTimetableInteractor =
-                new GenerateTimetableInteractor(userDataAccessObject, generateTimetableOutputBoundary);
+        final SortTimetableInputBoundary sortTimetableInteractor2 =
+                new SortTimetableInteractor(userDataAccessObject, distanceDataAccessObject);
 
-        // Existing return-to-prefs wiring
+        final GenerateTimetableInputBoundary generateTimetableInteractor =
+                new GenerateTimetableInteractor(userDataAccessObject,
+                        generateTimetableOutputBoundary,
+                        sortTimetableInteractor2);
+
         final ReturnToPrefsOutputBoundary returnToPrefsOutputBoundary = new DisplayTimetablePresenter(viewManagerModel,
                 displayTimetableViewModel, setPreferencesViewModel);
         final ReturnToPrefsInputBoundary returnToPrefsInteractor =
                 new ReturnToPrefsInteractor(returnToPrefsOutputBoundary);
 
-        // Existing regenerate wiring
         final RegenerateTimetableOutputBoundary regenerateTimetableOutputBoundary = new
                 DisplayTimetablePresenter(viewManagerModel, displayTimetableViewModel, setPreferencesViewModel);
         final RegenerateTimetableInputBoundary regenerateTimetableInteractor = new
@@ -128,20 +160,17 @@ public class AppBuilder {
         final SaveTimetableOutputBoundary saveTimetableOutputBoundary =
                 new SaveTimetablePresenter(saveTimetableViewModel);
 
-        // NOTE: userDataAccessObject must implement SaveTimetableDataAccessInterface
         final SaveTimetableInputBoundary saveTimetableInteractor =
                 new SaveTimetableInteractor(userDataAccessObject, saveTimetableOutputBoundary);
 
         final SaveTimetableController saveTimetableController =
                 new SaveTimetableController(saveTimetableInteractor, displayTimetableViewModel);
 
-        // Existing display timetable controller
         final DisplayTimetableController displayTimetableController = new
                 DisplayTimetableController(generateTimetableInteractor, returnToPrefsInteractor,
                 regenerateTimetableInteractor);
 
         displayTimetableView.setDisplayTimetableController(displayTimetableController);
-        // NEW: give the view the save controller as well
         displayTimetableView.setSaveTimetableController(saveTimetableController);
 
         return this;
