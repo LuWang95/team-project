@@ -13,8 +13,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class AddDegreeInteractorTest {
-
-
     /**
      * Tests if adding three distinct degrees successfully outputs to the presenter.
      */
@@ -26,15 +24,11 @@ public class AddDegreeInteractorTest {
                 "artsci_timetable.json",
                 "Programs.json"
         );
-
         AddDegreeOutputBoundary addDegreePresenter = new AddDegreeOutputBoundary() {
-
             private int degreesAdded = 0;
-
             @Override
             public void prepareAddDegreeSuccessView(AddDegreeOutputData addDegreeOutputData) {
                 degreesAdded++;
-
                 switch(degreesAdded) {
                     case 1:
                         assertEquals("ASSPE2676", addDegreeOutputData.getDegreeCode());
@@ -51,15 +45,12 @@ public class AddDegreeInteractorTest {
                         assertTrue(dataAccessInterface.degreeAlreadyAdded("ASSPE1689"));
                         assertTrue(dataAccessInterface.degreeAlreadyAdded("ASMIN1689"));
                 }
-
             }
-
             @Override
             public void prepareAddDegreeFailureView(String errorMessage) {
                 fail("Should be able to add ASSPE2676");
             }
         };
-
         AddDegreeInputBoundary interactor = new AddDegreeInteractor(dataAccessInterface, addDegreePresenter,null,null);
         for (String degreeName: inputData) {
             AddDegreeInputData addDegreeInputData = new AddDegreeInputData(degreeName);
@@ -78,11 +69,8 @@ public class AddDegreeInteractorTest {
                 "artsci_timetable.json",
                 "Programs.json"
         );
-
         AddDegreeOutputBoundary addDegreePresenter = new AddDegreeOutputBoundary() {
-
             private int degreesAdded = 0;
-
             @Override
             public void prepareAddDegreeSuccessView(AddDegreeOutputData addDegreeOutputData) {
                 degreesAdded++;

@@ -50,7 +50,6 @@ public class AddDegreeInteractor implements AddDegreeInputBoundary {
 
             /* Loop through degree's course codes and add them, defaulting to F sessions. */
             for (String str : addDegreeDataAccessObject.getDegreeByCode(input).getCourses()) {
-
                 if (str.length() > 8 ) {
                     String strCut = str.substring(0,8);
                     int yearCode = Character.getNumericValue(strCut.charAt(3));
