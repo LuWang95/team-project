@@ -1,11 +1,7 @@
 package Generator.DataAccess;
 
+import CourseInfo.*;
 import com.google.gson.Gson;
-import CourseInfo.Course;
-import CourseInfo.Meeting;
-import CourseInfo.LectureSection;
-import CourseInfo.TutorialSection;
-import CourseInfo.PracticalSection;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -61,23 +57,28 @@ public class JsonCourseDataAccess {
                         new ArrayList<>()        // practical_sections
                 );
                 coursesByCode.put(fullCode, course);
-             }
+            }
 
-            switch (r.component) {
-                case "LEC":
-                    course.getLectureSections().add(toLectureSection(r));
-                    break;
-                case "TUT":
-                    course.getTutorialSections().add(toTutorialSection(r));
-                    break;
-                case "PRA":
-                    course.getPracticalSections().add(toPracticalSection(r));
-                    break;
-                default:
-                    break;
+            ArrayList<Meeting> meetings = toMeetingList(r);
+
+            Section section;
+            try {
+                section = SectionFactory.createSection(r.section_code, meetings);
+            } catch (IllegalArgumentException e) {
+                System.err.println("Skipping record due to invalid section code: "
+                        + r.section_code + " (" + e.getMessage() + ")");
+                continue;
+            }
+            if (section instanceof LectureSection) {
+                course.getLectureSections().add((LectureSection) section);
+            } else if (section instanceof TutorialSection) {
+                course.getTutorialSections().add((TutorialSection) section);
+            } else if (section instanceof PracticalSection) {
+                course.getPracticalSections().add((PracticalSection) section);
             }
         }
     }
+
 
     private Meeting toDomainMeeting(JsonCourseRecord r, JsonMeeting jm) {
         String instructorName = "";
@@ -98,34 +99,14 @@ public class JsonCourseDataAccess {
         );
     }
 
-    private LectureSection toLectureSection(JsonCourseRecord r) {
+    private ArrayList<Meeting> toMeetingList(JsonCourseRecord r) {
         ArrayList<Meeting> list = new ArrayList<>();
         if (r.meetings != null) {
             for (JsonMeeting jm : r.meetings) {
                 list.add(toDomainMeeting(r, jm));
             }
         }
-        return new LectureSection(r.section_code, list);
-    }
-
-    private TutorialSection toTutorialSection(JsonCourseRecord r) {
-        ArrayList<Meeting> list = new ArrayList<>();
-        if (r.meetings != null) {
-            for (JsonMeeting jm : r.meetings) {
-                list.add(toDomainMeeting(r, jm));
-            }
-        }
-        return new TutorialSection(r.section_code, list);
-    }
-
-    private PracticalSection toPracticalSection(JsonCourseRecord r) {
-        ArrayList<Meeting> list = new ArrayList<>();
-        if (r.meetings != null) {
-            for (JsonMeeting jm : r.meetings) {
-                list.add(toDomainMeeting(r, jm));
-            }
-        }
-        return new PracticalSection(r.section_code, list);
+        return list;
     }
 
     public boolean courseExists(String coursesCode) {
