@@ -23,7 +23,7 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
     private final String viewName = "Set Preferences";
     private final SetPreferencesViewModel setPreferencesViewModel;
     private SetPreferencesController setPreferencesController = null;
-    private LoadTimetableController loadTimetableController = null;  // NEW
+    private LoadTimetableController loadTimetableController = null;
 
     // Professional Color Palette
     private static final Color PRIMARY_COLOR = new Color(0, 42, 92);
@@ -119,9 +119,9 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
         gbc.insets = new Insets(0, 0, 0, 0);
         contentPanel.add(rightPanel, gbc);
 
-        // Generate button
+        // Generate button with loading screen
         generate = createPrimaryButton("Generate Timetable");
-        generate.addActionListener(evt -> setPreferencesController.displayTimetable());
+        generate.addActionListener(evt -> showLoadingAndGenerate());
 
         JPanel buttonPanel = new JPanel(new GridBagLayout());
         buttonPanel.setOpaque(false);
@@ -150,6 +150,63 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
         addDegreeListener();
         addYearListener();
         addTimeListener();
+    }
+
+    // NEW: Loading screen method
+    private void showLoadingAndGenerate() {
+        // Create loading dialog
+        JDialog loadingDialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Generating Timetable", true);
+        JPanel loadingPanel = new JPanel();
+        loadingPanel.setLayout(new BoxLayout(loadingPanel, BoxLayout.Y_AXIS));
+        loadingPanel.setBorder(new EmptyBorder(40, 50, 40, 50));
+        loadingPanel.setBackground(Color.WHITE);
+
+        // Loading icon (indeterminate progress bar)
+        JProgressBar progressBar = new JProgressBar();
+        progressBar.setIndeterminate(true);
+        progressBar.setPreferredSize(new Dimension(300, 25));
+        progressBar.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // Loading text
+        JLabel loadingLabel = new JLabel("⏳ Generating your optimal timetable...");
+        loadingLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        loadingLabel.setForeground(PRIMARY_COLOR);
+        loadingLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JLabel subLabel = new JLabel("This may take a few moments");
+        subLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        subLabel.setForeground(TEXT_SECONDARY);
+        subLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        loadingPanel.add(loadingLabel);
+        loadingPanel.add(Box.createVerticalStrut(10));
+        loadingPanel.add(subLabel);
+        loadingPanel.add(Box.createVerticalStrut(20));
+        loadingPanel.add(progressBar);
+
+        loadingDialog.add(loadingPanel);
+        loadingDialog.setSize(450, 180);
+        loadingDialog.setLocationRelativeTo(this);
+        loadingDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+        loadingDialog.setUndecorated(true);
+        loadingDialog.getRootPane().setBorder(BorderFactory.createLineBorder(BORDER_COLOR, 2));
+
+        // Background worker
+        SwingWorker<Void, Void> worker = new SwingWorker<>() {
+            @Override
+            protected Void doInBackground() {
+                setPreferencesController.displayTimetable();
+                return null;
+            }
+
+            @Override
+            protected void done() {
+                loadingDialog.dispose();
+            }
+        };
+
+        worker.execute();
+        loadingDialog.setVisible(true);
     }
 
     private JPanel createLeftPanel() {
@@ -345,21 +402,20 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
             timeButtons[i] = radioTime;
         }
 
-        // NEW: Load Timetable Button
+        // Load Timetable Button
         JButton loadButton = createLoadTimetableButton();
         loadButton.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         rightPanel.add(sectionTitle);
         rightPanel.add(timeLabel);
         rightPanel.add(timeButtonsPanel);
-        rightPanel.add(Box.createVerticalStrut(30));  // Spacing
+        rightPanel.add(Box.createVerticalStrut(30));
         rightPanel.add(loadButton);
         rightPanel.add(Box.createVerticalGlue());
 
         return rightPanel;
     }
 
-    // NEW METHOD
     private JButton createLoadTimetableButton() {
         JButton loadButton = new JButton("📂 Load Saved Timetable");
         loadButton.setFont(BUTTON_FONT);
@@ -718,7 +774,6 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
         this.setPreferencesController = setPreferencesController;
     }
 
-    // NEW SETTER METHOD
     public void setLoadTimetableController(LoadTimetableController loadTimetableController) {
         this.loadTimetableController = loadTimetableController;
     }

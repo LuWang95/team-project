@@ -41,6 +41,13 @@ import Generator.UseCase.save_timetable.SaveTimetableInputBoundary;
 import Generator.UseCase.save_timetable.SaveTimetableInteractor;
 import Generator.UseCase.save_timetable.SaveTimetableOutputBoundary;
 
+// NEW IMPORTS FOR LOAD TIMETABLE
+import Generator.InterfaceAdapter.load_timetable.LoadTimetableController;
+import Generator.InterfaceAdapter.load_timetable.LoadTimetablePresenter;
+import Generator.UseCase.load_timetable.LoadTimetableInputBoundary;
+import Generator.UseCase.load_timetable.LoadTimetableInteractor;
+import Generator.UseCase.load_timetable.LoadTimetableOutputBoundary;
+
 import Generator.DataAccess.DistanceDataAccessObject;
 import Generator.UseCase.sort_timetable.DistanceDataAccessInterface;
 import Generator.UseCase.sort_timetable.SortTimetableInputBoundary;
@@ -111,6 +118,14 @@ public class AppBuilder {
                 new GenerateTimetableInteractor(userDataAccessObject,
                         generateTimetableOutputBoundary,
                         sortTimetableInteractor);
+
+        // NEW: Load Timetable Use Case (CREATE BEFORE USING IT!)
+        final LoadTimetableOutputBoundary loadTimetableOutputBoundary =
+                new LoadTimetablePresenter(displayTimetableViewModel, viewManagerModel);
+        final LoadTimetableInputBoundary loadTimetableInteractor =
+                new LoadTimetableInteractor(loadTimetableOutputBoundary);
+        final LoadTimetableController loadTimetableController =
+                new LoadTimetableController(loadTimetableInteractor);
 
         final SetPreferencesController setPreferencesController = new SetPreferencesController(addCourseInteractor,
                 removeCourseInteractor, addDegreeInteractor, removeDegreeInteractor, generateTimetableInteractor);
