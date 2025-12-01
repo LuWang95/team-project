@@ -37,7 +37,6 @@ public class FileUserDataAccessObject implements
         jsonDegreeAccess = new JsonDegreeDataAccess(degreeDataPath);
         save();
 
-        // TODO: loading previous data from file if you want persistence between runs
     }
 
     // rewrites selectedCourses.csv in the following format:

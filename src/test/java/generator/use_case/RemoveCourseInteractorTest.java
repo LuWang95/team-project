@@ -2,13 +2,12 @@
  * Tests the remove course interactor.
  */
 
-package Generator.UseCase;
+package generator.use_case;
 
-import Generator.DataAccess.FileUserDataAccessObject;
-import Generator.UseCase.add_course.AddCourseDataAccessInterface;
-import Generator.UseCase.remove_course.*;
+import generator.data_access.FileUserDataAccessObject;
+import generator.use_case.add_course.AddCourseDataAccessInterface;
+import generator.use_case.remove_course.*;
 import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 public class RemoveCourseInteractorTest {
