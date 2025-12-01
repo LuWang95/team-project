@@ -149,25 +149,38 @@ public class DisplayTimetableView extends JPanel implements ActionListener, Prop
         winterPanel.add(winterContentPanel);
         timetablesPanel.add(winterPanel);
 
-        // Courses + credits card
+        // Courses + credits card with scroll
         coursesPanel.setLayout(new BoxLayout(coursesPanel, BoxLayout.Y_AXIS));
         coursesPanel.setBackground(CARD_COLOR);
-        coursesPanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(BORDER_COLOR, 1),
-                new EmptyBorder(16, 24, 16, 24)
-        ));
-
-        JLabel coursesTitle = new JLabel("Enrolled Courses");
-        coursesTitle.setFont(SUBHEADING_FONT);
-        coursesTitle.setForeground(PRIMARY_COLOR);
-        coursesTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
-        coursesTitle.setBorder(new EmptyBorder(0, 0, 8, 0));
-        coursesPanel.add(coursesTitle);
+        coursesPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
 
         creditsLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
         creditsLabel.setForeground(PRIMARY_COLOR);
         creditsLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         creditsLabel.setBorder(new EmptyBorder(10, 0, 0, 0));
+
+        JPanel coursesCard = new JPanel(new BorderLayout());
+        coursesCard.setBackground(CARD_COLOR);
+        coursesCard.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(BORDER_COLOR, 1),
+                new EmptyBorder(16, 24, 16, 24)
+        ));
+
+        JLabel coursesCardTitle = new JLabel("Enrolled Courses");
+        coursesCardTitle.setFont(SUBHEADING_FONT);
+        coursesCardTitle.setForeground(PRIMARY_COLOR);
+        coursesCardTitle.setBorder(new EmptyBorder(0, 0, 12, 0));
+
+        JScrollPane coursesScrollPane = new JScrollPane(coursesPanel);
+        coursesScrollPane.setBorder(null);
+        coursesScrollPane.setBackground(CARD_COLOR);
+        coursesScrollPane.getViewport().setBackground(CARD_COLOR);
+        coursesScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        coursesScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        coursesScrollPane.setPreferredSize(new Dimension(0, 150));
+
+        coursesCard.add(coursesCardTitle, BorderLayout.NORTH);
+        coursesCard.add(coursesScrollPane, BorderLayout.CENTER);
 
         // Buttons row
         bottomButtons.setLayout(new FlowLayout(FlowLayout.CENTER, 16, 0));
@@ -182,7 +195,7 @@ public class DisplayTimetableView extends JPanel implements ActionListener, Prop
         });
         bottomButtons.add(back);
 
-        regenerate = createSecondaryButton("Regenerate");
+        regenerate = createSecondaryButton("🔄 Regenerate");
         regenerate.addActionListener(e -> {
             if (displayTimetableController != null) {
                 displayTimetableController.regenerateTimetable();
@@ -190,10 +203,36 @@ public class DisplayTimetableView extends JPanel implements ActionListener, Prop
         });
         bottomButtons.add(regenerate);
 
+        // Save CSV button with file chooser and success message
         save = createSecondaryButton("💾 Save CSV");
         save.addActionListener(e -> {
             if (saveTimetableController != null) {
-                saveTimetableController.saveTimetable("saved_timetable.csv");
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setDialogTitle("Save Timetable as CSV");
+                fileChooser.setFileFilter(new FileNameExtensionFilter("CSV Files", "csv"));
+                fileChooser.setSelectedFile(new File("timetable.csv"));
+                fileChooser.setCurrentDirectory(new File(System.getProperty("user.home") + "/Desktop"));
+
+                int userSelection = fileChooser.showSaveDialog(DisplayTimetableView.this);
+
+                if (userSelection == JFileChooser.APPROVE_OPTION) {
+                    File fileToSave = fileChooser.getSelectedFile();
+
+                    // Ensure .csv extension
+                    String filePath = fileToSave.getAbsolutePath();
+                    if (!filePath.toLowerCase().endsWith(".csv")) {
+                        filePath = filePath + ".csv";
+                    }
+
+                    saveTimetableController.saveTimetable(filePath);
+
+                    JOptionPane.showMessageDialog(
+                            DisplayTimetableView.this,
+                            "Timetable saved successfully to:\n" + filePath,
+                            "Save Successful",
+                            JOptionPane.INFORMATION_MESSAGE
+                    );
+                }
             } else {
                 JOptionPane.showMessageDialog(
                         DisplayTimetableView.this,
@@ -205,6 +244,7 @@ public class DisplayTimetableView extends JPanel implements ActionListener, Prop
         });
         bottomButtons.add(save);
 
+        // Export PNG button with file chooser and success message
         exportPng = createSecondaryButton("📸 Export PNG");
         exportPng.addActionListener(e -> exportTimetableAsPng());
         bottomButtons.add(exportPng);
@@ -213,7 +253,7 @@ public class DisplayTimetableView extends JPanel implements ActionListener, Prop
         JPanel centerPanel = new JPanel(new BorderLayout(0, 16));
         centerPanel.setOpaque(false);
         centerPanel.add(timetablesPanel, BorderLayout.NORTH);
-        centerPanel.add(coursesPanel, BorderLayout.CENTER);
+        centerPanel.add(coursesCard, BorderLayout.CENTER);
 
         this.add(headerPanel, BorderLayout.NORTH);
         this.add(centerPanel, BorderLayout.CENTER);
@@ -315,7 +355,7 @@ public class DisplayTimetableView extends JPanel implements ActionListener, Prop
     private void styleScrollPane(JScrollPane scrollPane) {
         scrollPane.setBorder(BorderFactory.createLineBorder(BORDER_COLOR, 1));
         scrollPane.getViewport().setBackground(Color.WHITE);
-        scrollPane.setPreferredSize(new Dimension(0, 380));  // Reduced from 520 to 380
+        scrollPane.setPreferredSize(new Dimension(0, 380));
     }
 
     private JButton createSecondaryButton(String text) {
@@ -348,9 +388,7 @@ public class DisplayTimetableView extends JPanel implements ActionListener, Prop
         return Color.getHSBColor(0.1f * id, 0.65f, 0.90f);
     }
 
-    /** Reset and display both fall + winter timetables. */
     private void displayCourses(TimetableDTO fallTTB, TimetableDTO winterTTB) {
-        // reset timetable colours and labels
         for (int row = 0; row < 12; row++) {
             for (int col = 0; col < 6; col++) {
                 Point point = new Point(row, col);
@@ -370,25 +408,18 @@ public class DisplayTimetableView extends JPanel implements ActionListener, Prop
         displayTimetable(winterTTB.getTable(), winterTimetable, winterColorMap, winterAlignMap, courses);
     }
 
-    /**
-     * Render a single term's timetable.
-     * Consecutive hour slots for the same course+section get the same colour,
-     * but the text label is only shown in the first (top) cell.
-     */
     private void displayTimetable(ArrayList<ArrayList<ArrayList<String>>> table,
                                   JTable timetableTable,
                                   HashMap<Point, Color> colorMap,
                                   HashMap<Point, Integer> alignMap,
                                   ArrayList<String> courses) {
 
-        // table.get(day).get(hour)
         for (int day = 0; day < table.size(); day++) {
             String lastKey = null;
-            Color lastColor = null;
 
             for (int hour = 0; hour < table.get(day).size(); hour++) {
                 if (!table.get(day).get(hour).isEmpty()) {
-                    String block = table.get(day).get(hour).get(0); // CSC207H1FLEC0101
+                    String block = table.get(day).get(hour).get(0);
                     String courseCode = block.substring(0, 8);
                     String sessionCode;
                     if (courseCode.charAt(6) == 'H') {
@@ -411,43 +442,33 @@ public class DisplayTimetableView extends JPanel implements ActionListener, Prop
                     }
 
                     int row = hour;
-                    int col = day + 1; // 0 is "Time"
+                    int col = day + 1;
 
                     Point point = new Point(row, col);
                     colorMap.put(point, sessionColour);
                     alignMap.put(point, JLabel.CENTER);
 
-                    // Only write label on the first cell of a continuous block
                     if (!key.equals(lastKey)) {
-                        String displayHtml = "<html><center><b>" + courseCode +
-                                "</b><br>" + sessionCode + "</center></html>";
+                        String displayHtml = "<html><b>" + courseCode +
+                                "</b><br>" + sessionCode + "</html>";
                         timetableTable.setValueAt(displayHtml, row, col);
                     } else {
-                        // Same block continuing: keep colour, but no new label
                         timetableTable.setValueAt("", row, col);
                     }
 
                     lastKey = key;
-                    lastColor = sessionColour;
                 } else {
-                    // gap breaks continuity
                     lastKey = null;
-                    lastColor = null;
                 }
             }
         }
     }
 
-    /** Course list + credits in the card below timetables. */
     private void updateCoursesCard(ArrayList<String> courseTitles,
                                    ArrayList<String> courseCodes,
                                    ArrayList<Double> credits) {
 
-        // Remove everything except the title (index 0)
-        Component[] components = coursesPanel.getComponents();
-        for (int i = components.length - 1; i >= 1; i--) {
-            coursesPanel.remove(i);
-        }
+        coursesPanel.removeAll();
 
         double totalCredits = 0.0;
 
@@ -488,8 +509,10 @@ public class DisplayTimetableView extends JPanel implements ActionListener, Prop
 
     private void exportTimetableAsPng() {
         JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("Save timetable as PNG");
+        fileChooser.setDialogTitle("Export Timetable as PNG");
         fileChooser.setFileFilter(new FileNameExtensionFilter("PNG Images", "png"));
+        fileChooser.setSelectedFile(new File("timetable.png"));
+        fileChooser.setCurrentDirectory(new File(System.getProperty("user.home") + "/Desktop"));
 
         int userSelection = fileChooser.showSaveDialog(this);
         if (userSelection == JFileChooser.APPROVE_OPTION) {
@@ -515,7 +538,7 @@ public class DisplayTimetableView extends JPanel implements ActionListener, Prop
                         JOptionPane.INFORMATION_MESSAGE);
             } catch (IOException ex) {
                 JOptionPane.showMessageDialog(this,
-                        "Error saving PNG: " + ex.getMessage(),
+                        "Error exporting PNG: " + ex.getMessage(),
                         "Export Error",
                         JOptionPane.ERROR_MESSAGE);
             }

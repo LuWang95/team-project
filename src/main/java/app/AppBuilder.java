@@ -37,10 +37,16 @@ import Generator.View.*;
 import Generator.InterfaceAdapter.save_timetable.SaveTimetableController;
 import Generator.InterfaceAdapter.save_timetable.SaveTimetablePresenter;
 import Generator.InterfaceAdapter.save_timetable.SaveTimetableViewModel;
-
 import Generator.UseCase.save_timetable.SaveTimetableInputBoundary;
 import Generator.UseCase.save_timetable.SaveTimetableInteractor;
 import Generator.UseCase.save_timetable.SaveTimetableOutputBoundary;
+
+// NEW IMPORTS FOR LOAD TIMETABLE
+import Generator.InterfaceAdapter.load_timetable.LoadTimetableController;
+import Generator.InterfaceAdapter.load_timetable.LoadTimetablePresenter;
+import Generator.UseCase.load_timetable.LoadTimetableInputBoundary;
+import Generator.UseCase.load_timetable.LoadTimetableInteractor;
+import Generator.UseCase.load_timetable.LoadTimetableOutputBoundary;
 
 public class AppBuilder {
     private final int WIDTH = 1400;
@@ -99,9 +105,22 @@ public class AppBuilder {
                 new SetPreferencesPresenter(viewManagerModel, setPreferencesViewModel, displayTimetableViewModel);
         final GenerateTimetableInputBoundary generateTimetableInteractor =
                 new GenerateTimetableInteractor(userDataAccessObject, generateTimetableOutputBoundary);
+
+        // NEW: Load Timetable Use Case
+        final LoadTimetableOutputBoundary loadTimetableOutputBoundary =
+                new LoadTimetablePresenter(displayTimetableViewModel, viewManagerModel);
+        final LoadTimetableInputBoundary loadTimetableInteractor =
+                new LoadTimetableInteractor(loadTimetableOutputBoundary);
+        final LoadTimetableController loadTimetableController =
+                new LoadTimetableController(loadTimetableInteractor);
+
         final SetPreferencesController setPreferencesController = new SetPreferencesController(addCourseInteractor,
                 removeCourseInteractor, addDegreeInteractor, removeDegreeInteractor, generateTimetableInteractor);
         setPreferencesView.setSetPreferencesController(setPreferencesController);
+
+        // NEW: Set the Load Timetable Controller
+        setPreferencesView.setLoadTimetableController(loadTimetableController);
+
         return this;
     }
 
@@ -128,7 +147,6 @@ public class AppBuilder {
         final SaveTimetableOutputBoundary saveTimetableOutputBoundary =
                 new SaveTimetablePresenter(saveTimetableViewModel);
 
-        // NOTE: userDataAccessObject must implement SaveTimetableDataAccessInterface
         final SaveTimetableInputBoundary saveTimetableInteractor =
                 new SaveTimetableInteractor(userDataAccessObject, saveTimetableOutputBoundary);
 
@@ -141,7 +159,6 @@ public class AppBuilder {
                 regenerateTimetableInteractor);
 
         displayTimetableView.setDisplayTimetableController(displayTimetableController);
-        // NEW: give the view the save controller as well
         displayTimetableView.setSaveTimetableController(saveTimetableController);
 
         return this;

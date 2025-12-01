@@ -1,6 +1,7 @@
 package Generator.View;
 
 import Generator.DataAccess.FileUserDataAccessObject;
+import Generator.InterfaceAdapter.load_timetable.LoadTimetableController;
 import Generator.InterfaceAdapter.set_preferences.SetPreferencesController;
 import Generator.InterfaceAdapter.set_preferences.SetPreferencesState;
 import Generator.InterfaceAdapter.set_preferences.SetPreferencesViewModel;
@@ -9,6 +10,7 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
@@ -21,18 +23,19 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
     private final String viewName = "Set Preferences";
     private final SetPreferencesViewModel setPreferencesViewModel;
     private SetPreferencesController setPreferencesController = null;
+    private LoadTimetableController loadTimetableController = null;  // NEW
 
     // Professional Color Palette
-    private static final Color PRIMARY_COLOR = new Color(0, 42, 92);        // UofT Blue
-    private static final Color SECONDARY_COLOR = new Color(0, 127, 163);    // Lighter Blue
-    private static final Color ACCENT_COLOR = new Color(232, 75, 56);       // Accent Red (unused but kept for consistency)
-    private static final Color BACKGROUND_COLOR = new Color(248, 249, 250); // Light Gray
+    private static final Color PRIMARY_COLOR = new Color(0, 42, 92);
+    private static final Color SECONDARY_COLOR = new Color(0, 127, 163);
+    private static final Color ACCENT_COLOR = new Color(232, 75, 56);
+    private static final Color BACKGROUND_COLOR = new Color(248, 249, 250);
     private static final Color CARD_COLOR = Color.WHITE;
     private static final Color INPUT_BACKGROUND = new Color(255, 255, 255);
     private static final Color BORDER_COLOR = new Color(218, 220, 224);
     private static final Color TEXT_PRIMARY = new Color(32, 33, 36);
     private static final Color TEXT_SECONDARY = new Color(95, 99, 104);
-    private static final Color SUCCESS_COLOR = new Color(52, 168, 83);      // currently unused
+    private static final Color SUCCESS_COLOR = new Color(52, 168, 83);
     private static final Color ERROR_COLOR = new Color(217, 48, 37);
     private static final Color HOVER_COLOR = new Color(241, 243, 244);
     private static final Color SELECTED_ITEM_BG = new Color(232, 240, 254);
@@ -121,7 +124,7 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
         generate.addActionListener(evt -> setPreferencesController.displayTimetable());
 
         JPanel buttonPanel = new JPanel(new GridBagLayout());
-        buttonPanel.setBackground(CARD_COLOR);
+        buttonPanel.setOpaque(false);
         buttonPanel.setBorder(new EmptyBorder(16, 0, 0, 0));
         buttonPanel.add(generate);
 
@@ -170,10 +173,6 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
         JPanel degreeSection = new JPanel(new BorderLayout());
         degreeSection.setOpaque(false);
         degreeSection.setBorder(new EmptyBorder(0, 0, 20, 0));
-
-        JPanel degreeInputPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        degreeInputPanel.setOpaque(false);
-        degreeInputPanel.setBorder(new EmptyBorder(0, 0, 12, 0));
 
         JLabel degreeLabel = new JLabel("Degree");
         degreeLabel.setFont(LABEL_FONT);
@@ -257,10 +256,6 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
         courseLabel.setFont(LABEL_FONT);
         courseLabel.setForeground(TEXT_PRIMARY);
         courseLabel.setBorder(new EmptyBorder(0, 0, 6, 0));
-
-        JPanel courseInputPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        courseInputPanel.setOpaque(false);
-        courseInputPanel.setBorder(new EmptyBorder(0, 0, 12, 0));
 
         styleTextField(courseInputField);
         courseInputField.addActionListener(e -> {
@@ -350,12 +345,64 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
             timeButtons[i] = radioTime;
         }
 
+        // NEW: Load Timetable Button
+        JButton loadButton = createLoadTimetableButton();
+        loadButton.setAlignmentX(Component.LEFT_ALIGNMENT);
+
         rightPanel.add(sectionTitle);
         rightPanel.add(timeLabel);
         rightPanel.add(timeButtonsPanel);
+        rightPanel.add(Box.createVerticalStrut(30));  // Spacing
+        rightPanel.add(loadButton);
         rightPanel.add(Box.createVerticalGlue());
 
         return rightPanel;
+    }
+
+    // NEW METHOD
+    private JButton createLoadTimetableButton() {
+        JButton loadButton = new JButton("📂 Load Saved Timetable");
+        loadButton.setFont(BUTTON_FONT);
+        loadButton.setForeground(SUCCESS_COLOR);
+        loadButton.setBackground(Color.WHITE);
+        loadButton.setFocusPainted(false);
+        loadButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        loadButton.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(SUCCESS_COLOR, 1),
+                new EmptyBorder(11, 20, 11, 20)
+        ));
+        loadButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+
+        loadButton.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent evt) {
+                loadButton.setBackground(new Color(237, 247, 237));
+            }
+
+            public void mouseExited(MouseEvent evt) {
+                loadButton.setBackground(Color.WHITE);
+            }
+        });
+
+        loadButton.addActionListener(e -> {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Load Timetable CSV");
+            fileChooser.setFileFilter(new FileNameExtensionFilter("CSV Files", "csv"));
+
+            int result = fileChooser.showOpenDialog(this);
+            if (result == JFileChooser.APPROVE_OPTION) {
+                String filePath = fileChooser.getSelectedFile().getAbsolutePath();
+                if (loadTimetableController != null) {
+                    loadTimetableController.loadTimetable(filePath);
+                } else {
+                    JOptionPane.showMessageDialog(this,
+                            "Load Timetable feature is not available.",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+        return loadButton;
     }
 
     private void styleTextField(JTextField textField) {
@@ -669,5 +716,10 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
 
     public void setSetPreferencesController(SetPreferencesController setPreferencesController) {
         this.setPreferencesController = setPreferencesController;
+    }
+
+    // NEW SETTER METHOD
+    public void setLoadTimetableController(LoadTimetableController loadTimetableController) {
+        this.loadTimetableController = loadTimetableController;
     }
 }
