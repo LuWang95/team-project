@@ -93,10 +93,16 @@ public class AddDegreeInteractor implements AddDegreeInputBoundary {
 //extracted method to add courses.
     private void addReqs(String str) {
         final Course course = addCourseDataAccessObject.getCoursebyCode(str);
-        final AddCourseOutputData addCourseOutputData = new AddCourseOutputData(course.getCourseCode(),
-                course.getCourseTitle(), course.getLectureSections(), course.getTutorialSections(),
-                course.getPracticalSections(), course.getCredit(), String.valueOf(course.getSessionCode()));
-        addCourseDataAccessObject.add(course);
-        addCoursePresenter.prepareAddCourseSuccessView(addCourseOutputData);
-    }
+        if (addCourseDataAccessObject.courseAlreadyAdded(str)) {
+            addCoursePresenter.prepareAddCourseFailureView(str + " already selected");
+        }
+        else {
+            final AddCourseOutputData addCourseOutputData = new AddCourseOutputData(course.getCourseCode(),
+                    course.getCourseTitle(), course.getLectureSections(), course.getTutorialSections(),
+                    course.getPracticalSections(), course.getCredit(), String.valueOf(course.getSessionCode()));
+            addCourseDataAccessObject.add(course);
+            addCoursePresenter.prepareAddCourseSuccessView(addCourseOutputData);
+        }
+        }
+
 }
