@@ -52,6 +52,7 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
     private final JTextField courseInputField = new JTextField(15);
     private final ButtonGroup yearButtons = new ButtonGroup();
     private final JRadioButton[] timeButtons = new JRadioButton[3];
+    private final JCheckBox sortTimetablesCheckbox = new JCheckBox("Sort timetables by walking distance");
 
     private final JPanel degreesPanel = new JPanel();
     private final JPanel coursesPanel = new JPanel();
@@ -150,24 +151,21 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
         addDegreeListener();
         addYearListener();
         addTimeListener();
+        addSortListener();
     }
 
-    // NEW: Loading screen method
     private void showLoadingAndGenerate() {
-        // Create loading dialog
         JDialog loadingDialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Generating Timetable", true);
         JPanel loadingPanel = new JPanel();
         loadingPanel.setLayout(new BoxLayout(loadingPanel, BoxLayout.Y_AXIS));
         loadingPanel.setBorder(new EmptyBorder(40, 50, 40, 50));
         loadingPanel.setBackground(Color.WHITE);
 
-        // Loading icon (indeterminate progress bar)
         JProgressBar progressBar = new JProgressBar();
         progressBar.setIndeterminate(true);
         progressBar.setPreferredSize(new Dimension(300, 25));
         progressBar.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Loading text
         JLabel loadingLabel = new JLabel("⏳ Generating your optimal timetable...");
         loadingLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
         loadingLabel.setForeground(PRIMARY_COLOR);
@@ -191,7 +189,6 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
         loadingDialog.setUndecorated(true);
         loadingDialog.getRootPane().setBorder(BorderFactory.createLineBorder(BORDER_COLOR, 2));
 
-        // Background worker
         SwingWorker<Void, Void> worker = new SwingWorker<>() {
             @Override
             protected Void doInBackground() {
@@ -218,7 +215,6 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
                 new EmptyBorder(24, 24, 24, 24)
         ));
 
-        // Section title (left-aligned)
         JLabel sectionTitle = new JLabel("Academic Information");
         sectionTitle.setFont(HEADING_FONT);
         sectionTitle.setHorizontalAlignment(SwingConstants.LEFT);
@@ -226,7 +222,6 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
         sectionTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
         sectionTitle.setBorder(new EmptyBorder(0, 0, 20, 0));
 
-        // Degrees section
         JPanel degreeSection = new JPanel(new BorderLayout());
         degreeSection.setOpaque(false);
         degreeSection.setBorder(new EmptyBorder(0, 0, 20, 0));
@@ -248,7 +243,6 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
             setPreferencesController.addDegree(setPreferencesState.getSelectedDegree());
         });
 
-        // Year selection
         JPanel yearPanel = new JPanel();
         yearPanel.setLayout(new BoxLayout(yearPanel, BoxLayout.Y_AXIS));
         yearPanel.setBackground(CARD_COLOR);
@@ -287,7 +281,6 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
         degreeInputContainer.add(degreeLabel);
         degreeInputContainer.add(inputRow);
 
-        // Degrees display
         degreesPanel.setLayout(new BoxLayout(degreesPanel, BoxLayout.Y_AXIS));
         degreesPanel.setBackground(CARD_COLOR);
         degreesPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -305,7 +298,6 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
         degreeSection.add(degreeInputContainer, BorderLayout.NORTH);
         degreeSection.add(degreeScroll, BorderLayout.CENTER);
 
-        // Courses section
         JPanel courseSection = new JPanel(new BorderLayout());
         courseSection.setOpaque(false);
 
@@ -402,14 +394,25 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
             timeButtons[i] = radioTime;
         }
 
-        // Load Timetable Button
+        sortTimetablesCheckbox.setFont(BODY_FONT);
+        sortTimetablesCheckbox.setForeground(TEXT_PRIMARY);
+        sortTimetablesCheckbox.setBackground(CARD_COLOR);
+        sortTimetablesCheckbox.setFocusPainted(false);
+        sortTimetablesCheckbox.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        sortTimetablesCheckbox.setAlignmentX(Component.LEFT_ALIGNMENT);
+        sortTimetablesCheckbox.setSelected(false);
+        sortTimetablesCheckbox.setBorder(new EmptyBorder(12, 0, 12, 0));
+        sortTimetablesCheckbox.setToolTipText("Enable to optimize for minimal walking distance (slower generation)");
+
         JButton loadButton = createLoadTimetableButton();
         loadButton.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         rightPanel.add(sectionTitle);
         rightPanel.add(timeLabel);
         rightPanel.add(timeButtonsPanel);
-        rightPanel.add(Box.createVerticalStrut(30));
+        rightPanel.add(Box.createVerticalStrut(20));
+        rightPanel.add(sortTimetablesCheckbox);
+        rightPanel.add(Box.createVerticalStrut(20));
         rightPanel.add(loadButton);
         rightPanel.add(Box.createVerticalGlue());
 
@@ -662,6 +665,17 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
         }
     }
 
+    private void addSortListener() {
+        sortTimetablesCheckbox.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                final SetPreferencesState setPreferencesState = setPreferencesViewModel.getState();
+                setPreferencesState.setSortEnabled(sortTimetablesCheckbox.isSelected());
+                setPreferencesViewModel.setState(setPreferencesState);
+            }
+        });
+    }
+
     private void displayCourses(ArrayList<String> coursesSelected) {
         displayCourses(coursesSelected, null);
     }
@@ -763,7 +777,6 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        // No default action
     }
 
     public String getViewName() {

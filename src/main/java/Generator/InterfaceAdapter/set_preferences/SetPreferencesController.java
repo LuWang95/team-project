@@ -1,7 +1,9 @@
 package Generator.InterfaceAdapter.set_preferences;
+
 import Generator.UseCase.add_course.*;
 import Generator.UseCase.add_degree.*;
 import Generator.UseCase.generate_timetable.GenerateTimetableInputBoundary;
+import Generator.UseCase.generate_timetable.GenerateTimetableInputData;
 import Generator.UseCase.remove_course.*;
 import Generator.UseCase.remove_degree.*;
 
@@ -12,17 +14,20 @@ public class SetPreferencesController {
     private final AddDegreeInputBoundary addDegreeUseCaseInteractor;
     private final RemoveDegreeInputBoundary removeDegreeUseCaseInteractor;
     private final GenerateTimetableInputBoundary generateTimetableUseCaseInteractor;
+    private final SetPreferencesViewModel viewModel;
 
     public SetPreferencesController(AddCourseInputBoundary addCourseUseCaseInteractor,
                                     RemoveCourseInputBoundary removeCourseUseCaseInteractor,
                                     AddDegreeInputBoundary addDegreeUseCaseInteractor,
                                     RemoveDegreeInputBoundary removeDegreeUseCaseInteractor,
-                                    GenerateTimetableInputBoundary generateTimetableUseCaseInteractor) {
+                                    GenerateTimetableInputBoundary generateTimetableUseCaseInteractor,
+                                    SetPreferencesViewModel viewModel) {
         this.addCourseUseCaseInteractor = addCourseUseCaseInteractor;
         this.removeCourseUseCaseInteractor = removeCourseUseCaseInteractor;
         this.addDegreeUseCaseInteractor = addDegreeUseCaseInteractor;
         this.removeDegreeUseCaseInteractor = removeDegreeUseCaseInteractor;
         this.generateTimetableUseCaseInteractor = generateTimetableUseCaseInteractor;
+        this.viewModel = viewModel;
     }
 
     /**
@@ -62,6 +67,8 @@ public class SetPreferencesController {
     }
 
     public void displayTimetable() {
-        generateTimetableUseCaseInteractor.execute();
+        boolean sortEnabled = viewModel.getState().isSortEnabled();
+        GenerateTimetableInputData inputData = new GenerateTimetableInputData(sortEnabled);
+        generateTimetableUseCaseInteractor.execute(inputData);
     }
 }

@@ -8,13 +8,12 @@ import Generator.UseCase.sort_timetable.SortTimetableInputBoundary;
 import Generator.UseCase.sort_timetable.SortTimetableInputData;
 import Generator.UseCase.sort_timetable.SortTimetableOutputData;
 
-public class  GenerateTimetableInteractor implements GenerateTimetableInputBoundary {
+public class GenerateTimetableInteractor implements GenerateTimetableInputBoundary {
     private static final int LIMIT = 5000;
     private final GenerateTimetableOutputBoundary presenter;
     private final GenerateTimetableDataAccessInterface dataAccess;
     private final List<Timetable> rawTimetables = new ArrayList<>();
     private final SortTimetableInputBoundary sortTimetableInteractor;
-
 
     public GenerateTimetableInteractor(GenerateTimetableDataAccessInterface dataAccess,
                                        GenerateTimetableOutputBoundary presenter,
@@ -25,7 +24,7 @@ public class  GenerateTimetableInteractor implements GenerateTimetableInputBound
     }
 
     @Override
-    public void execute() {
+    public void execute(GenerateTimetableInputData inputData) {
         List<Course> allCourses = dataAccess.getCourses();
         if (allCourses == null || allCourses.isEmpty()) {
             presenter.prepareGenerateTimetableFailureView("No added courses");
@@ -39,13 +38,16 @@ public class  GenerateTimetableInteractor implements GenerateTimetableInputBound
         ArrayList<TimetableDTO> fallList = (ArrayList<TimetableDTO>) generateTermTimetables(fallCourses);
         ArrayList<TimetableDTO> winterList = (ArrayList<TimetableDTO>) generateTermTimetables(winterCourses);
 
-        SortTimetableInputData sortInput =
-                new SortTimetableInputData(fallList, winterList);
-        SortTimetableOutputData sorted =
-                sortTimetableInteractor.sort(sortInput);
+        // CONDITIONAL SORTING - Only sort if checkbox is enabled
+        if (inputData.isSortEnabled()) {
+            SortTimetableInputData sortInput =
+                    new SortTimetableInputData(fallList, winterList);
+            SortTimetableOutputData sorted =
+                    sortTimetableInteractor.sort(sortInput);
 
-        fallList = new ArrayList<>(sorted.getFallTimetables());
-        winterList = new ArrayList<>(sorted.getWinterTimetables());
+            fallList = new ArrayList<>(sorted.getFallTimetables());
+            winterList = new ArrayList<>(sorted.getWinterTimetables());
+        }
 
         GenerateTimetableOutputData outputData =
                 new GenerateTimetableOutputData(fallList, winterList);
