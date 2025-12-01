@@ -2,10 +2,10 @@
  * Tests the add course interactor.
  */
 
-package generator.UseCase;
+package generator.use_case;
 
-import generator.UseCase.add_course.*;
-import generator.DataAccess.FileUserDataAccessObject;
+import generator.use_case.add_course.*;
+import generator.data_access.FileUserDataAccessObject;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
