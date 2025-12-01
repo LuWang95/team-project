@@ -7,20 +7,16 @@ import Generator.InterfaceAdapter.save_timetable.SaveTimetableController;
 import Generator.UseCase.generate_timetable.TimetableDTO;
 
 import javax.imageio.ImageIO;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTable;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableCellRenderer;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Graphics2D;
-import java.awt.Point;
+import javax.swing.table.JTableHeader;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -30,9 +26,31 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class DisplayTimetableView extends JPanel implements ActionListener, PropertyChangeListener {
+
     private final String viewName = "Display Timetable";
     private final DisplayTimetableViewModel displayTimetableViewModel;
     private DisplayTimetableController displayTimetableController;
+
+    // Colour palette
+    private static final Color PRIMARY_COLOR = new Color(0, 42, 92);
+    private static final Color SECONDARY_COLOR = new Color(0, 127, 163);
+    private static final Color BACKGROUND_COLOR = new Color(248, 249, 250);
+    private static final Color CARD_COLOR = Color.WHITE;
+    private static final Color BORDER_COLOR = new Color(218, 220, 224);
+    private static final Color TEXT_PRIMARY = new Color(32, 33, 36);
+    private static final Color TEXT_SECONDARY = new Color(95, 99, 104);
+    private static final Color HOVER_COLOR = new Color(241, 243, 244);
+    private static final Color TABLE_HEADER_BG = new Color(245, 247, 250);
+    private static final Color TABLE_GRID = new Color(234, 236, 240);
+
+    // Typography
+    private static final Font TITLE_FONT = new Font("Segoe UI", Font.BOLD, 28);
+    private static final Font HEADING_FONT = new Font("Segoe UI", Font.BOLD, 16);
+    private static final Font SUBHEADING_FONT = new Font("Segoe UI", Font.BOLD, 14);
+    private static final Font BODY_FONT = new Font("Segoe UI", Font.PLAIN, 13);
+    private static final Font TABLE_FONT = new Font("Segoe UI", Font.PLAIN, 12);
+    private static final Font TABLE_HEADER_FONT = new Font("Segoe UI", Font.BOLD, 12);
+    private static final Font BUTTON_FONT = new Font("Segoe UI", Font.BOLD, 13);
 
     private final HashMap<Point, Color> fallColorMap = new HashMap<>();
     private final HashMap<Point, Integer> fallAlignMap = new HashMap<>();
@@ -45,127 +63,183 @@ public class DisplayTimetableView extends JPanel implements ActionListener, Prop
     private final JPanel fallPanel = new JPanel();
     private final JPanel winterPanel = new JPanel();
     private final JPanel coursesPanel = new JPanel();
-    private final JLabel creditsLabel = new JLabel("Credits: ");
+    private final JLabel creditsLabel = new JLabel("Total Credits: ");
 
     private final JPanel bottomButtons = new JPanel();
     private final JButton back;
     private final JButton regenerate;
 
-    // Save use case controller + button
     private SaveTimetableController saveTimetableController;
     private final JButton save;
-
-    // PNG export button
     private final JButton exportPng;
 
     public DisplayTimetableView(DisplayTimetableViewModel displayTimetableViewModel) {
         this.displayTimetableViewModel = displayTimetableViewModel;
         displayTimetableViewModel.addPropertyChangeListener(this);
 
-        final JLabel title = new JLabel("Your Timetable");
-        title.setAlignmentX(JLabel.CENTER);
+        // Main panel
+        this.setBackground(BACKGROUND_COLOR);
+        this.setLayout(new BorderLayout(0, 0));
+        this.setBorder(new EmptyBorder(20, 40, 20, 40));
 
-        final String[][] fallTimetableData = new String[12][6];
-        final String[][] winterTimetableData = new String[12][6];
+        JPanel headerPanel = createHeaderPanel();
+
+        // Base data
+        String[][] fallTimetableData = new String[12][6];
+        String[][] winterTimetableData = new String[12][6];
         for (int i = 0; i < 12; i++) {
             fallTimetableData[i][0] = (i + 9) + ":00";
             winterTimetableData[i][0] = (i + 9) + ":00";
         }
+        String[] columnHeaders =
+                {"Time", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"};
 
-        final String[] columnHeaders = {"Time", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"};
         fallTimetable = new JTable(fallTimetableData, columnHeaders);
         winterTimetable = new JTable(winterTimetableData, columnHeaders);
 
         setupTimetable(fallTimetable, fallColorMap, fallAlignMap);
         setupTimetable(winterTimetable, winterColorMap, winterAlignMap);
 
-        timetablesPanel.setLayout(new javax.swing.BoxLayout(
-                timetablesPanel, javax.swing.BoxLayout.X_AXIS));
+        // Timetables card layout
+        timetablesPanel.setLayout(new GridLayout(1, 2, 24, 0));
+        timetablesPanel.setOpaque(false);
+        timetablesPanel.setBorder(new EmptyBorder(0, 0, 16, 0));
 
-        fallPanel.setLayout(new javax.swing.BoxLayout(
-                fallPanel, javax.swing.BoxLayout.Y_AXIS));
-        final JLabel fallTitle = new JLabel("Fall Timetable");
-        fallTitle.setAlignmentX(JLabel.CENTER);
-        fallPanel.add(fallTitle);
-        fallPanel.add(fallTimetable.getTableHeader());
-        fallPanel.add(fallTimetable);
+        // Fall card
+        fallPanel.setLayout(new BorderLayout());
+        fallPanel.setBackground(CARD_COLOR);
+        fallPanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(BORDER_COLOR, 1),
+                new EmptyBorder(20, 20, 20, 20)
+        ));
+        JLabel fallTitle = new JLabel("Fall Semester");
+        fallTitle.setFont(HEADING_FONT);
+        fallTitle.setForeground(PRIMARY_COLOR);
+        fallTitle.setBorder(new EmptyBorder(0, 0, 12, 0));
+
+        JPanel fallContentPanel = new JPanel(new BorderLayout());
+        fallContentPanel.setOpaque(false);
+        fallContentPanel.add(fallTitle, BorderLayout.NORTH);
+
+        JScrollPane fallScrollPane = new JScrollPane(fallTimetable);
+        styleScrollPane(fallScrollPane);
+        fallContentPanel.add(fallScrollPane, BorderLayout.CENTER);
+        fallPanel.add(fallContentPanel);
         timetablesPanel.add(fallPanel);
 
-        timetablesPanel.add(new JLabel(" "));
+        // Winter card
+        winterPanel.setLayout(new BorderLayout());
+        winterPanel.setBackground(CARD_COLOR);
+        winterPanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(BORDER_COLOR, 1),
+                new EmptyBorder(20, 20, 20, 20)
+        ));
+        JLabel winterTitle = new JLabel("Winter Semester");
+        winterTitle.setFont(HEADING_FONT);
+        winterTitle.setForeground(PRIMARY_COLOR);
+        winterTitle.setBorder(new EmptyBorder(0, 0, 12, 0));
 
-        winterPanel.setLayout(new javax.swing.BoxLayout(
-                winterPanel, javax.swing.BoxLayout.Y_AXIS));
-        final JLabel winterTitle = new JLabel("Winter Timetable");
-        winterTitle.setAlignmentX(JLabel.CENTER);
-        winterPanel.add(winterTitle);
-        winterPanel.add(winterTimetable.getTableHeader());
-        winterPanel.add(winterTimetable);
+        JPanel winterContentPanel = new JPanel(new BorderLayout());
+        winterContentPanel.setOpaque(false);
+        winterContentPanel.add(winterTitle, BorderLayout.NORTH);
+
+        JScrollPane winterScrollPane = new JScrollPane(winterTimetable);
+        styleScrollPane(winterScrollPane);
+        winterContentPanel.add(winterScrollPane, BorderLayout.CENTER);
+        winterPanel.add(winterContentPanel);
         timetablesPanel.add(winterPanel);
 
-        coursesPanel.setLayout(new javax.swing.BoxLayout(
-                coursesPanel, javax.swing.BoxLayout.Y_AXIS));
-        coursesPanel.add(new JLabel("Courses:"));
-        coursesPanel.setAlignmentX(JLabel.CENTER);
-        creditsLabel.setAlignmentX(JLabel.CENTER);
+        // Courses + credits card
+        coursesPanel.setLayout(new BoxLayout(coursesPanel, BoxLayout.Y_AXIS));
+        coursesPanel.setBackground(CARD_COLOR);
+        coursesPanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(BORDER_COLOR, 1),
+                new EmptyBorder(16, 24, 16, 24)
+        ));
 
-        bottomButtons.setLayout(new javax.swing.BoxLayout(
-                bottomButtons, javax.swing.BoxLayout.X_AXIS));
-        bottomButtons.setAlignmentX(JLabel.CENTER);
+        JLabel coursesTitle = new JLabel("Enrolled Courses");
+        coursesTitle.setFont(SUBHEADING_FONT);
+        coursesTitle.setForeground(PRIMARY_COLOR);
+        coursesTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
+        coursesTitle.setBorder(new EmptyBorder(0, 0, 8, 0));
+        coursesPanel.add(coursesTitle);
 
-        back = new JButton("Back");
-        back.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (displayTimetableController != null) {
-                    displayTimetableController.returnToPrefs();
-                }
+        creditsLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        creditsLabel.setForeground(PRIMARY_COLOR);
+        creditsLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        creditsLabel.setBorder(new EmptyBorder(10, 0, 0, 0));
+
+        // Buttons row
+        bottomButtons.setLayout(new FlowLayout(FlowLayout.CENTER, 16, 0));
+        bottomButtons.setOpaque(false);
+        bottomButtons.setBorder(new EmptyBorder(16, 0, 0, 0));
+
+        back = createSecondaryButton("← Back");
+        back.addActionListener(e -> {
+            if (displayTimetableController != null) {
+                displayTimetableController.returnToPrefs();
             }
         });
         bottomButtons.add(back);
 
-        regenerate = new JButton("Regenerate");
-        regenerate.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (displayTimetableController != null) {
-                    displayTimetableController.regenerateTimetable();
-                }
+        regenerate = createSecondaryButton("Regenerate");
+        regenerate.addActionListener(e -> {
+            if (displayTimetableController != null) {
+                displayTimetableController.regenerateTimetable();
             }
         });
         bottomButtons.add(regenerate);
 
-        // Save timetable as CSV (via use case)
-        save = new JButton("Save");
-        save.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (saveTimetableController != null) {
-                    saveTimetableController.saveTimetable("saved_timetable.csv");
-                } else {
-                    JOptionPane.showMessageDialog(
-                            DisplayTimetableView.this,
-                            "SaveTimetableController is not set.");
-                }
+        save = createSecondaryButton("💾 Save CSV");
+        save.addActionListener(e -> {
+            if (saveTimetableController != null) {
+                saveTimetableController.saveTimetable("saved_timetable.csv");
+            } else {
+                JOptionPane.showMessageDialog(
+                        DisplayTimetableView.this,
+                        "SaveTimetableController is not set.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE
+                );
             }
         });
         bottomButtons.add(save);
 
-        // Export timetable panel as PNG (pure UI)
-        exportPng = new JButton("Export PNG");
-        exportPng.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                exportTimetableAsPng();
-            }
-        });
+        exportPng = createSecondaryButton("📸 Export PNG");
+        exportPng.addActionListener(e -> exportTimetableAsPng());
         bottomButtons.add(exportPng);
 
-        this.setLayout(new javax.swing.BoxLayout(this, javax.swing.BoxLayout.Y_AXIS));
-        this.add(title);
-        this.add(timetablesPanel);
-        this.add(coursesPanel);
-        this.add(creditsLabel);
-        this.add(bottomButtons);
+        // Center layout: timetables on top, courses card at bottom
+        JPanel centerPanel = new JPanel(new BorderLayout(0, 16));
+        centerPanel.setOpaque(false);
+        centerPanel.add(timetablesPanel, BorderLayout.NORTH);
+        centerPanel.add(coursesPanel, BorderLayout.CENTER);
+
+        this.add(headerPanel, BorderLayout.NORTH);
+        this.add(centerPanel, BorderLayout.CENTER);
+        this.add(bottomButtons, BorderLayout.SOUTH);
+    }
+
+    private JPanel createHeaderPanel() {
+        JPanel headerPanel = new JPanel();
+        headerPanel.setLayout(new BoxLayout(headerPanel, BoxLayout.Y_AXIS));
+        headerPanel.setOpaque(false);
+        headerPanel.setBorder(new EmptyBorder(0, 0, 20, 0));
+
+        JLabel title = new JLabel("Your Timetable");
+        title.setFont(TITLE_FONT);
+        title.setForeground(PRIMARY_COLOR);
+        title.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JLabel subtitle = new JLabel("Review your personalized schedule");
+        subtitle.setFont(BODY_FONT);
+        subtitle.setForeground(TEXT_SECONDARY);
+        subtitle.setAlignmentX(Component.CENTER_ALIGNMENT);
+        subtitle.setBorder(new EmptyBorder(6, 0, 0, 0));
+
+        headerPanel.add(title);
+        headerPanel.add(subtitle);
+        return headerPanel;
     }
 
     private void setupTimetable(JTable timetableTable,
@@ -173,9 +247,41 @@ public class DisplayTimetableView extends JPanel implements ActionListener, Prop
                                 HashMap<Point, Integer> alignMap) {
 
         timetableTable.setDefaultEditor(Object.class, null);
-        timetableTable.setShowHorizontalLines(false);
-        timetableTable.setRowHeight(32);
-        timetableTable.getColumnModel().getColumn(0).setPreferredWidth(15);
+        timetableTable.setFont(TABLE_FONT);
+        timetableTable.setForeground(TEXT_PRIMARY);
+        timetableTable.setRowHeight(38);
+        timetableTable.setShowGrid(true);
+        timetableTable.setGridColor(TABLE_GRID);
+        timetableTable.setIntercellSpacing(new Dimension(1, 1));
+        timetableTable.getColumnModel().getColumn(0).setPreferredWidth(80);
+        timetableTable.setSelectionBackground(HOVER_COLOR);
+        timetableTable.setSelectionForeground(TEXT_PRIMARY);
+
+        JTableHeader header = timetableTable.getTableHeader();
+        header.setFont(TABLE_HEADER_FONT);
+        header.setBackground(TABLE_HEADER_BG);
+        header.setForeground(TEXT_PRIMARY);
+        header.setPreferredSize(new Dimension(header.getWidth(), 40));
+        header.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, BORDER_COLOR));
+
+        header.setDefaultRenderer(new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table,
+                                                           Object value,
+                                                           boolean isSelected,
+                                                           boolean hasFocus,
+                                                           int row,
+                                                           int column) {
+                JLabel label = new JLabel(value.toString());
+                label.setFont(TABLE_HEADER_FONT);
+                label.setForeground(TEXT_PRIMARY);
+                label.setBackground(TABLE_HEADER_BG);
+                label.setOpaque(true);
+                label.setHorizontalAlignment(JLabel.CENTER);
+                label.setBorder(new EmptyBorder(8, 12, 8, 12));
+                return label;
+            }
+        });
 
         timetableTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
             @Override
@@ -185,151 +291,254 @@ public class DisplayTimetableView extends JPanel implements ActionListener, Prop
                                                            boolean hasFocus,
                                                            int row,
                                                            int column) {
-                final Component component = super.getTableCellRendererComponent(
+                Component component = super.getTableCellRendererComponent(
                         table, value, isSelected, hasFocus, row, column);
-                final Point point = new Point(row, column);
+                Point point = new Point(row, column);
 
-                component.setBackground(colorMap.getOrDefault(point, Color.WHITE));
-                super.setHorizontalAlignment(alignMap.getOrDefault(point, JLabel.LEFT));
+                if (column == 0) {
+                    component.setBackground(TABLE_HEADER_BG);
+                    component.setForeground(TEXT_SECONDARY);
+                    component.setFont(TABLE_FONT);
+                } else {
+                    Color bgColor = colorMap.getOrDefault(point, Color.WHITE);
+                    component.setBackground(bgColor);
+                    component.setForeground(TEXT_PRIMARY);
+                    component.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+                }
+                super.setHorizontalAlignment(alignMap.getOrDefault(point, JLabel.CENTER));
+                super.setBorder(new EmptyBorder(6, 10, 6, 10));
                 return component;
             }
         });
     }
 
+    private void styleScrollPane(JScrollPane scrollPane) {
+        scrollPane.setBorder(BorderFactory.createLineBorder(BORDER_COLOR, 1));
+        scrollPane.getViewport().setBackground(Color.WHITE);
+        scrollPane.setPreferredSize(new Dimension(0, 380));  // Reduced from 520 to 380
+    }
+
+    private JButton createSecondaryButton(String text) {
+        JButton button = new JButton(text);
+        button.setFont(BUTTON_FONT);
+        button.setForeground(SECONDARY_COLOR);
+        button.setBackground(Color.WHITE);
+        button.setFocusPainted(false);
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        button.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(SECONDARY_COLOR, 1),
+                new EmptyBorder(11, 24, 11, 24)
+        ));
+
+        button.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent evt) {
+                button.setBackground(HOVER_COLOR);
+            }
+            public void mouseExited(MouseEvent evt) {
+                button.setBackground(Color.WHITE);
+            }
+        });
+        return button;
+    }
+
+    private Color chooseColour(boolean lighter, int id) {
+        if (lighter) {
+            return Color.getHSBColor(0.1f * id, 0.40f, 0.95f);
+        }
+        return Color.getHSBColor(0.1f * id, 0.65f, 0.90f);
+    }
+
+    /** Reset and display both fall + winter timetables. */
     private void displayCourses(TimetableDTO fallTTB, TimetableDTO winterTTB) {
-        // reset timetable colours
-        for (int i = 0; i < 12; i++) {
-            for (int j = 0; j < 6; j++) {
-                final Point point = new Point(i, j);
+        // reset timetable colours and labels
+        for (int row = 0; row < 12; row++) {
+            for (int col = 0; col < 6; col++) {
+                Point point = new Point(row, col);
                 fallColorMap.put(point, Color.WHITE);
-                fallAlignMap.put(point, JLabel.RIGHT);
+                fallAlignMap.put(point, JLabel.CENTER);
                 winterColorMap.put(point, Color.WHITE);
-                winterAlignMap.put(point, JLabel.RIGHT);
-                if (j != 0) {
-                    this.fallTimetable.setValueAt("", i, j);
-                    this.winterTimetable.setValueAt("", i, j);
+                winterAlignMap.put(point, JLabel.CENTER);
+                if (col != 0) {
+                    fallTimetable.setValueAt("", row, col);
+                    winterTimetable.setValueAt("", row, col);
                 }
             }
         }
 
-        final ArrayList<String> courses = new ArrayList<>();
+        ArrayList<String> courses = new ArrayList<>();
         displayTimetable(fallTTB.getTable(), fallTimetable, fallColorMap, fallAlignMap, courses);
         displayTimetable(winterTTB.getTable(), winterTimetable, winterColorMap, winterAlignMap, courses);
     }
 
+    /**
+     * Render a single term's timetable.
+     * Consecutive hour slots for the same course+section get the same colour,
+     * but the text label is only shown in the first (top) cell.
+     */
     private void displayTimetable(ArrayList<ArrayList<ArrayList<String>>> table,
                                   JTable timetableTable,
                                   HashMap<Point, Color> colorMap,
                                   HashMap<Point, Integer> alignMap,
                                   ArrayList<String> courses) {
 
-        for (int i = 0; i < table.size(); i++) {
-            for (int j = 0; j < table.get(0).size(); j++) {
-                if (!table.get(i).get(j).isEmpty()) {
-                    final String block = table.get(i).get(j).get(0);
-                    final String courseCode = block.substring(0, 8);
-                    final String sessionCode;
+        // table.get(day).get(hour)
+        for (int day = 0; day < table.size(); day++) {
+            String lastKey = null;
+            Color lastColor = null;
+
+            for (int hour = 0; hour < table.get(day).size(); hour++) {
+                if (!table.get(day).get(hour).isEmpty()) {
+                    String block = table.get(day).get(hour).get(0); // CSC207H1FLEC0101
+                    String courseCode = block.substring(0, 8);
+                    String sessionCode;
                     if (courseCode.charAt(6) == 'H') {
                         sessionCode = block.substring(9);
                     } else {
                         sessionCode = block.substring(8);
                     }
+
                     if (!courses.contains(courseCode)) {
                         courses.add(courseCode);
                     }
-                    final String timetableString = courseCode + " " + sessionCode;
-                    final Color sessionColour;
+
+                    String key = courseCode + "|" + sessionCode;
+
+                    Color sessionColour;
                     if (sessionCode.contains("LEC")) {
                         sessionColour = chooseColour(false, courses.indexOf(courseCode));
                     } else {
                         sessionColour = chooseColour(true, courses.indexOf(courseCode));
                     }
-                    final Point point = new Point(j, i + 1);
-                    colorMap.replace(point, sessionColour);
 
-                    final Point leftPoint = new Point(j - 1, i + 1);
-                    if (j == 0 || !colorMap.get(leftPoint).equals(sessionColour)) {
-                        timetableTable.setValueAt(timetableString, j, i + 1);
+                    int row = hour;
+                    int col = day + 1; // 0 is "Time"
+
+                    Point point = new Point(row, col);
+                    colorMap.put(point, sessionColour);
+                    alignMap.put(point, JLabel.CENTER);
+
+                    // Only write label on the first cell of a continuous block
+                    if (!key.equals(lastKey)) {
+                        String displayHtml = "<html><center><b>" + courseCode +
+                                "</b><br>" + sessionCode + "</center></html>";
+                        timetableTable.setValueAt(displayHtml, row, col);
+                    } else {
+                        // Same block continuing: keep colour, but no new label
+                        timetableTable.setValueAt("", row, col);
                     }
-                    alignMap.replace(point, JLabel.CENTER);
+
+                    lastKey = key;
+                    lastColor = sessionColour;
+                } else {
+                    // gap breaks continuity
+                    lastKey = null;
+                    lastColor = null;
                 }
             }
         }
     }
 
-    private Color chooseColour(boolean lighter, int id) {
-        if (lighter) {
-            return Color.getHSBColor(0.1f * id, 0.50f, 0.90f);
-        }
-        return Color.getHSBColor(0.1f * id, 0.75f, 0.90f);
-    }
+    /** Course list + credits in the card below timetables. */
+    private void updateCoursesCard(ArrayList<String> courseTitles,
+                                   ArrayList<String> courseCodes,
+                                   ArrayList<Double> credits) {
 
-    private void updateCoursesLabel(ArrayList<String> courseTitles, ArrayList<String> courseCodes) {
-        coursesPanel.removeAll();
-        coursesPanel.add(new JLabel("Courses:"));
+        // Remove everything except the title (index 0)
+        Component[] components = coursesPanel.getComponents();
+        for (int i = components.length - 1; i >= 1; i--) {
+            coursesPanel.remove(i);
+        }
+
+        double totalCredits = 0.0;
+
         for (int i = 0; i < courseTitles.size(); i++) {
-            coursesPanel.add(new JLabel(
-                    "     " + courseTitles.get(i) + " (" + courseCodes.get(i) + ")"));
-        }
-    }
-
-    private void updateCreditsLabel(ArrayList<Double> credits) {
-        double totalCredits = 0;
-        for (Double credit : credits) {
+            String title = courseTitles.get(i);
+            String code = courseCodes.get(i);
+            double credit = (i < credits.size()) ? credits.get(i) : 0.0;
             totalCredits += credit;
+
+            JPanel courseItem = new JPanel(new BorderLayout(8, 0));
+            courseItem.setOpaque(false);
+            courseItem.setAlignmentX(Component.LEFT_ALIGNMENT);
+            courseItem.setBorder(new EmptyBorder(4, 0, 4, 0));
+
+            JPanel colorBox = new JPanel();
+            colorBox.setPreferredSize(new Dimension(6, 22));
+            colorBox.setBackground(chooseColour(false, i));
+
+            JLabel courseLabel = new JLabel(
+                    String.format("%s (%s) – %.1f credits", title, code, credit)
+            );
+            courseLabel.setFont(BODY_FONT);
+            courseLabel.setForeground(TEXT_PRIMARY);
+
+            courseItem.add(colorBox, BorderLayout.WEST);
+            courseItem.add(courseLabel, BorderLayout.CENTER);
+            coursesPanel.add(courseItem);
         }
+
+        coursesPanel.add(Box.createVerticalStrut(8));
+
         creditsLabel.setText("Total Credits: " + totalCredits);
+        coursesPanel.add(creditsLabel);
+
+        coursesPanel.revalidate();
+        coursesPanel.repaint();
     }
 
-    /**
-     * Export the timetable panel as a PNG image.
-     * This is a pure UI operation and does not touch any use cases.
-     */
     private void exportTimetableAsPng() {
-        final JFileChooser fileChooser = new JFileChooser();
+        JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Save timetable as PNG");
         fileChooser.setFileFilter(new FileNameExtensionFilter("PNG Images", "png"));
 
-        final int userSelection = fileChooser.showSaveDialog(this);
-
+        int userSelection = fileChooser.showSaveDialog(this);
         if (userSelection == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
             if (!file.getName().toLowerCase().endsWith(".png")) {
                 file = new File(file.getParentFile(), file.getName() + ".png");
             }
 
-            final BufferedImage image = new BufferedImage(
+            BufferedImage image = new BufferedImage(
                     timetablesPanel.getWidth(),
                     timetablesPanel.getHeight(),
-                    BufferedImage.TYPE_INT_ARGB);
-
-            final Graphics2D graphics2D = image.createGraphics();
-            timetablesPanel.printAll(graphics2D);
-            graphics2D.dispose();
+                    BufferedImage.TYPE_INT_ARGB
+            );
+            Graphics2D g2 = image.createGraphics();
+            timetablesPanel.printAll(g2);
+            g2.dispose();
 
             try {
                 ImageIO.write(image, "png", file);
                 JOptionPane.showMessageDialog(this,
-                        "Timetable exported to:\n" + file.getAbsolutePath());
+                        "Timetable exported successfully to:\n" + file.getAbsolutePath(),
+                        "Export Successful",
+                        JOptionPane.INFORMATION_MESSAGE);
             } catch (IOException ex) {
                 JOptionPane.showMessageDialog(this,
-                        "Error saving PNG: " + ex.getMessage());
+                        "Error saving PNG: " + ex.getMessage(),
+                        "Export Error",
+                        JOptionPane.ERROR_MESSAGE);
             }
         }
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        System.out.println("hello");
+        // no-op
     }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        final DisplayTimetableState state = (DisplayTimetableState) evt.getNewValue();
-        updateCoursesLabel(state.getCourseNames(), state.getCourses());
-        updateCreditsLabel(state.getCredit());
-        displayCourses(state.getFallTimetables().get(state.getFallIndex()),
-                state.getWinterTimetables().get(state.getWinterIndex()));
+        DisplayTimetableState state = (DisplayTimetableState) evt.getNewValue();
+
+        updateCoursesCard(state.getCourseNames(),
+                state.getCourses(),
+                state.getCredit());
+
+        displayCourses(
+                state.getFallTimetables().get(state.getFallIndex()),
+                state.getWinterTimetables().get(state.getWinterIndex())
+        );
     }
 
     public String getViewName() {
