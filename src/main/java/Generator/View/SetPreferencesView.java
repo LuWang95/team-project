@@ -1,5 +1,15 @@
 package Generator.View;
 
+import Generator.DataAccess.FileUserDataAccessObject;
+import Generator.InterfaceAdapter.set_preferences.SetPreferencesController;
+import Generator.InterfaceAdapter.set_preferences.SetPreferencesState;
+import Generator.InterfaceAdapter.set_preferences.SetPreferencesViewModel;
+
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -380,6 +390,7 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
                     final SetPreferencesState setPreferencesState = setPreferencesViewModel.getState();
                     setPreferencesState.setYear(Integer.parseInt(yearButton.getText()));
                     setPreferencesViewModel.setState(setPreferencesState);
+                    FileUserDataAccessObject.Year=setPreferencesState.getYear();
                 }
             });
         }
