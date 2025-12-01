@@ -42,6 +42,11 @@ import Generator.UseCase.save_timetable.SaveTimetableInputBoundary;
 import Generator.UseCase.save_timetable.SaveTimetableInteractor;
 import Generator.UseCase.save_timetable.SaveTimetableOutputBoundary;
 
+import Generator.DataAccess.DistanceDataAccessObject;
+import Generator.UseCase.sort_timetable.DistanceDataAccessInterface;
+import Generator.UseCase.sort_timetable.SortTimetableInputBoundary;
+import Generator.UseCase.sort_timetable.SortTimetableInteractor;
+
 public class AppBuilder {
     private final int WIDTH = 1400;
     private final int HEIGHT = 750;
@@ -54,6 +59,8 @@ public class AppBuilder {
                     "artsci_timetable.json",
                     "Programs.json"
             );
+    private final DistanceDataAccessInterface distanceDataAccessObject =
+            new DistanceDataAccessObject();
 
     private SetPreferencesView setPreferencesView;
     private SetPreferencesViewModel setPreferencesViewModel;
@@ -97,8 +104,15 @@ public class AppBuilder {
                 removeDegreeOutputBoundary);
         final GenerateTimetableOutputBoundary generateTimetableOutputBoundary =
                 new SetPreferencesPresenter(viewManagerModel, setPreferencesViewModel, displayTimetableViewModel);
+
+        final SortTimetableInputBoundary sortTimetableInteractor =
+                new SortTimetableInteractor(userDataAccessObject, distanceDataAccessObject);
+
         final GenerateTimetableInputBoundary generateTimetableInteractor =
-                new GenerateTimetableInteractor(userDataAccessObject, generateTimetableOutputBoundary);
+                new GenerateTimetableInteractor(userDataAccessObject,
+                        generateTimetableOutputBoundary,
+                        sortTimetableInteractor);
+
         final SetPreferencesController setPreferencesController = new SetPreferencesController(addCourseInteractor,
                 removeCourseInteractor, addDegreeInteractor, removeDegreeInteractor, generateTimetableInteractor);
         setPreferencesView.setSetPreferencesController(setPreferencesController);
@@ -109,8 +123,13 @@ public class AppBuilder {
         // Existing generate timetable wiring
         final GenerateTimetableOutputBoundary generateTimetableOutputBoundary =
                 new SetPreferencesPresenter(viewManagerModel, setPreferencesViewModel, displayTimetableViewModel);
+        final SortTimetableInputBoundary sortTimetableInteractor2 =
+                new SortTimetableInteractor(userDataAccessObject, distanceDataAccessObject);
+
         final GenerateTimetableInputBoundary generateTimetableInteractor =
-                new GenerateTimetableInteractor(userDataAccessObject, generateTimetableOutputBoundary);
+                new GenerateTimetableInteractor(userDataAccessObject,
+                        generateTimetableOutputBoundary,
+                        sortTimetableInteractor2);
 
         // Existing return-to-prefs wiring
         final ReturnToPrefsOutputBoundary returnToPrefsOutputBoundary = new DisplayTimetablePresenter(viewManagerModel,

@@ -4,16 +4,24 @@ import CourseInfo.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import Generator.UseCase.sort_timetable.SortTimetableInputBoundary;
+import Generator.UseCase.sort_timetable.SortTimetableInputData;
+import Generator.UseCase.sort_timetable.SortTimetableOutputData;
+
 public class  GenerateTimetableInteractor implements GenerateTimetableInputBoundary {
     private static final int LIMIT = 5000;
     private final GenerateTimetableOutputBoundary presenter;
     private final GenerateTimetableDataAccessInterface dataAccess;
     private final List<Timetable> rawTimetables = new ArrayList<>();
+    private final SortTimetableInputBoundary sortTimetableInteractor;
+
 
     public GenerateTimetableInteractor(GenerateTimetableDataAccessInterface dataAccess,
-                                       GenerateTimetableOutputBoundary presenter) {
+                                       GenerateTimetableOutputBoundary presenter,
+                                       SortTimetableInputBoundary sortTimetableInteractor) {
         this.presenter = presenter;
         this.dataAccess = dataAccess;
+        this.sortTimetableInteractor = sortTimetableInteractor;
     }
 
     @Override
@@ -31,7 +39,16 @@ public class  GenerateTimetableInteractor implements GenerateTimetableInputBound
         ArrayList<TimetableDTO> fallList = (ArrayList<TimetableDTO>) generateTermTimetables(fallCourses);
         ArrayList<TimetableDTO> winterList = (ArrayList<TimetableDTO>) generateTermTimetables(winterCourses);
 
-        GenerateTimetableOutputData outputData = new GenerateTimetableOutputData((ArrayList<TimetableDTO>) fallList, (ArrayList<TimetableDTO>) winterList);
+        SortTimetableInputData sortInput =
+                new SortTimetableInputData(fallList, winterList);
+        SortTimetableOutputData sorted =
+                sortTimetableInteractor.sort(sortInput);
+
+        fallList = new ArrayList<>(sorted.getFallTimetables());
+        winterList = new ArrayList<>(sorted.getWinterTimetables());
+
+        GenerateTimetableOutputData outputData =
+                new GenerateTimetableOutputData(fallList, winterList);
         presenter.prepareGenerateTimetableSuccessView(outputData);
     }
 
