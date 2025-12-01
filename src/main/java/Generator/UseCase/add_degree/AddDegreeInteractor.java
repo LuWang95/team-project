@@ -49,34 +49,65 @@ public class AddDegreeInteractor implements AddDegreeInputBoundary {
 
             /* Loop through degree's course codes and add them, defaulting to F sessions. */
             for (String str : addDegreeDataAccessObject.getDegreeByCode(input).getCourses()) {
+
+                if (str.length() > 8 ) {
+                    String strCut = str.substring(0,8);
+                    int yearCode = Character.getNumericValue(strCut.charAt(3));
+                    if (yearCode == FileUserDataAccessObject.Year) {
+                        if (strCut.charAt(6) == 'Y') {
+                            addReqs(strCut);
+                        }
+                        if (strCut.charAt(6) == 'H') {
+                            try {
+                                final String strF = strCut + "F";
+                                addReqs(strF);
+                            } catch (NullPointerException e) {
+                                try {
+                                    final String strS = strCut + "S";
+                                    addReqs(strS);
+                                } catch (NullPointerException e2) {
+                                    addCoursePresenter.prepareAddCourseFailureView( str +" Not Found");
+                                }
+                            }
+                        }}
+                }
+                else {
                 int yearCode = Character.getNumericValue(str.charAt(3));
                 if (yearCode == FileUserDataAccessObject.Year) {
-                    if (str.charAt(6) == 'Y' && str.length() < 9) {
-                        final Course course = addCourseDataAccessObject.getCoursebyCode(str);
+                    if (str.charAt(6) == 'Y') {
                         addReqs(str);
                     }
-                    if (str.charAt(6) == 'H' && str.length() < 9) {
+                    if (str.charAt(6) == 'H') {
                         try {
                             final String strF = str + "F";
                             addReqs(strF);
                         } catch (NullPointerException e) {
-                            final String strS = str + "S";
-                            addReqs(strS);
-
+                            try {
+                                final String strS = str + "S";
+                                addReqs(strS);
+                            } catch (NullPointerException f) {
+                                addCoursePresenter.prepareAddCourseFailureView( str + " Not Found");
+                            }
                         }
                     }
                 }
-            }
+            }}
         }
     }
 
 //extracted method to add courses.
-    private void addReqs(String strS) {
-        final Course course = addCourseDataAccessObject.getCoursebyCode(strS);
-        final AddCourseOutputData addCourseOutputData = new AddCourseOutputData(course.getCourseCode(),
-                course.getCourseTitle(), course.getLectureSections(), course.getTutorialSections(),
-                course.getPracticalSections(), course.getCredit(), String.valueOf(course.getSessionCode()));
-        addCourseDataAccessObject.add(course);
-        addCoursePresenter.prepareAddCourseSuccessView(addCourseOutputData);
-    }
+    private void addReqs(String str) {
+        final Course course = addCourseDataAccessObject.getCoursebyCode(str);
+        if (addCourseDataAccessObject.courseAlreadyAdded(str)) {
+            addCoursePresenter.prepareAddCourseFailureView(str + " already selected");
+        }
+        else {
+            final AddCourseOutputData addCourseOutputData = new AddCourseOutputData(course.getCourseCode(),
+                    course.getCourseTitle(), course.getLectureSections(), course.getTutorialSections(),
+                    course.getPracticalSections(), course.getCredit(), String.valueOf(course.getSessionCode()));
+            addCourseDataAccessObject.add(course);
+            addCoursePresenter.prepareAddCourseSuccessView(addCourseOutputData);
+        }
+        }
+
 }

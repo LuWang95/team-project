@@ -6,4 +6,6 @@ import java.util.ArrayList;
 
 public interface GenerateTimetableDataAccessInterface {
     ArrayList<Course> getCourses();
+
+    Course getCoursebyCode(String courseCode);
 }

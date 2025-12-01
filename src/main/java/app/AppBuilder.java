@@ -41,12 +41,10 @@ import Generator.UseCase.save_timetable.SaveTimetableInputBoundary;
 import Generator.UseCase.save_timetable.SaveTimetableInteractor;
 import Generator.UseCase.save_timetable.SaveTimetableOutputBoundary;
 
-// NEW IMPORTS FOR LOAD TIMETABLE
-import Generator.InterfaceAdapter.load_timetable.LoadTimetableController;
-import Generator.InterfaceAdapter.load_timetable.LoadTimetablePresenter;
-import Generator.UseCase.load_timetable.LoadTimetableInputBoundary;
-import Generator.UseCase.load_timetable.LoadTimetableInteractor;
-import Generator.UseCase.load_timetable.LoadTimetableOutputBoundary;
+import Generator.DataAccess.DistanceDataAccessObject;
+import Generator.UseCase.sort_timetable.DistanceDataAccessInterface;
+import Generator.UseCase.sort_timetable.SortTimetableInputBoundary;
+import Generator.UseCase.sort_timetable.SortTimetableInteractor;
 
 public class AppBuilder {
     private final int WIDTH = 1400;
@@ -60,6 +58,8 @@ public class AppBuilder {
                     "artsci_timetable.json",
                     "Programs.json"
             );
+    private final DistanceDataAccessInterface distanceDataAccessObject =
+            new DistanceDataAccessObject();
 
     private SetPreferencesView setPreferencesView;
     private SetPreferencesViewModel setPreferencesViewModel;
@@ -103,16 +103,14 @@ public class AppBuilder {
                 removeDegreeOutputBoundary);
         final GenerateTimetableOutputBoundary generateTimetableOutputBoundary =
                 new SetPreferencesPresenter(viewManagerModel, setPreferencesViewModel, displayTimetableViewModel);
-        final GenerateTimetableInputBoundary generateTimetableInteractor =
-                new GenerateTimetableInteractor(userDataAccessObject, generateTimetableOutputBoundary);
 
-        // NEW: Load Timetable Use Case
-        final LoadTimetableOutputBoundary loadTimetableOutputBoundary =
-                new LoadTimetablePresenter(displayTimetableViewModel, viewManagerModel);
-        final LoadTimetableInputBoundary loadTimetableInteractor =
-                new LoadTimetableInteractor(loadTimetableOutputBoundary);
-        final LoadTimetableController loadTimetableController =
-                new LoadTimetableController(loadTimetableInteractor);
+        final SortTimetableInputBoundary sortTimetableInteractor =
+                new SortTimetableInteractor(userDataAccessObject, distanceDataAccessObject);
+
+        final GenerateTimetableInputBoundary generateTimetableInteractor =
+                new GenerateTimetableInteractor(userDataAccessObject,
+                        generateTimetableOutputBoundary,
+                        sortTimetableInteractor);
 
         final SetPreferencesController setPreferencesController = new SetPreferencesController(addCourseInteractor,
                 removeCourseInteractor, addDegreeInteractor, removeDegreeInteractor, generateTimetableInteractor);
@@ -128,8 +126,13 @@ public class AppBuilder {
         // Existing generate timetable wiring
         final GenerateTimetableOutputBoundary generateTimetableOutputBoundary =
                 new SetPreferencesPresenter(viewManagerModel, setPreferencesViewModel, displayTimetableViewModel);
+        final SortTimetableInputBoundary sortTimetableInteractor2 =
+                new SortTimetableInteractor(userDataAccessObject, distanceDataAccessObject);
+
         final GenerateTimetableInputBoundary generateTimetableInteractor =
-                new GenerateTimetableInteractor(userDataAccessObject, generateTimetableOutputBoundary);
+                new GenerateTimetableInteractor(userDataAccessObject,
+                        generateTimetableOutputBoundary,
+                        sortTimetableInteractor2);
 
         // Existing return-to-prefs wiring
         final ReturnToPrefsOutputBoundary returnToPrefsOutputBoundary = new DisplayTimetablePresenter(viewManagerModel,
