@@ -62,9 +62,12 @@ public class AddDegreeInteractor implements AddDegreeInputBoundary {
                                 final String strF = strCut + "F";
                                 addReqs(strF);
                             } catch (NullPointerException e) {
-                                final String strS = strCut + "S";
-                                addReqs(strS);
-
+                                try {
+                                    final String strS = strCut + "S";
+                                    addReqs(strS);
+                                } catch (NullPointerException e2) {
+                                    addCoursePresenter.prepareAddCourseFailureView( str +" Not Found");
+                                }
                             }
                         }}
                 }
@@ -79,9 +82,12 @@ public class AddDegreeInteractor implements AddDegreeInputBoundary {
                             final String strF = str + "F";
                             addReqs(strF);
                         } catch (NullPointerException e) {
-                            final String strS = str + "S";
-                            addReqs(strS);
-
+                            try {
+                                final String strS = str + "S";
+                                addReqs(strS);
+                            } catch (NullPointerException f) {
+                                addCoursePresenter.prepareAddCourseFailureView( str + " Not Found");
+                            }
                         }
                     }
                 }
