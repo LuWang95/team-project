@@ -49,7 +49,6 @@ public class AddDegreeInteractor implements AddDegreeInputBoundary {
 
             /* Loop through degree's course codes and add them, defaulting to F sessions. */
             for (String str : addDegreeDataAccessObject.getDegreeByCode(input).getCourses()) {
-                String choices = "";
 
                 if (str.length() > 8 ) {
                     String strCut = str.substring(0,8);
@@ -63,9 +62,12 @@ public class AddDegreeInteractor implements AddDegreeInputBoundary {
                                 final String strF = strCut + "F";
                                 addReqs(strF);
                             } catch (NullPointerException e) {
-                                final String strS = strCut + "S";
-                                addReqs(strS);
-
+                                try {
+                                    final String strS = strCut + "S";
+                                    addReqs(strS);
+                                } catch (NullPointerException e2) {
+                                    addCoursePresenter.prepareAddCourseFailureView( str +" Not Found");
+                                }
                             }
                         }}
                 }
@@ -80,9 +82,12 @@ public class AddDegreeInteractor implements AddDegreeInputBoundary {
                             final String strF = str + "F";
                             addReqs(strF);
                         } catch (NullPointerException e) {
-                            final String strS = str + "S";
-                            addReqs(strS);
-
+                            try {
+                                final String strS = str + "S";
+                                addReqs(strS);
+                            } catch (NullPointerException f) {
+                                addCoursePresenter.prepareAddCourseFailureView( str + " Not Found");
+                            }
                         }
                     }
                 }
