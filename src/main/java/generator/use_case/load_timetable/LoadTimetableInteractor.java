@@ -1,5 +1,7 @@
 package generator.use_case.load_timetable;
 
+import course_info.Course;
+import generator.use_case.generate_timetable.GenerateTimetableDataAccessInterface;
 import generator.use_case.generate_timetable.TimetableDTO;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -10,9 +12,12 @@ import java.util.HashSet;
 public class LoadTimetableInteractor implements LoadTimetableInputBoundary {
 
     private final LoadTimetableOutputBoundary presenter;
+    private final GenerateTimetableDataAccessInterface courseDataAccess;
 
-    public LoadTimetableInteractor(LoadTimetableOutputBoundary presenter) {
+    public LoadTimetableInteractor(LoadTimetableOutputBoundary presenter,
+                                   GenerateTimetableDataAccessInterface courseDataAccess) {
         this.presenter = presenter;
+        this.courseDataAccess = courseDataAccess;
     }
 
     @Override
@@ -70,11 +75,34 @@ public class LoadTimetableInteractor implements LoadTimetableInputBoundary {
             extractCoursesFromTable(fallTable, uniqueCodes);
             extractCoursesFromTable(winterTable, uniqueCodes);
 
-            // Add to lists
-            for (String code : uniqueCodes) {
-                if (code.length() >= 8) {
-                    String courseCode = code.substring(0, 8);
-                    if (!courseCodes.contains(courseCode)) {
+            // Add to lists with REAL course names from database
+            for (String fullCode : uniqueCodes) {
+                if (fullCode.length() >= 8) {
+                    // Extract base course code (handle both CSC207H1F and CSC110Y1 formats)
+                    String courseCode;
+                    if (fullCode.length() >= 9 && (fullCode.charAt(8) == 'F' || fullCode.charAt(8) == 'S')) {
+                        // Fall/Winter half course: CSC207H1F -> CSC207H1F
+                        courseCode = fullCode.substring(0, 9);
+                    } else {
+                        // Full year or basic code: CSC110Y1 -> CSC110Y1
+                        courseCode = fullCode.substring(0, 8);
+                    }
+
+                    // Skip if already added
+                    if (courseCodes.contains(courseCode)) {
+                        continue;
+                    }
+
+                    // Try to get the real course from database
+                    Course course = courseDataAccess.getCoursebyCode(courseCode);
+
+                    if (course != null) {
+                        // Real course found in database
+                        courseCodes.add(courseCode);
+                        courseNames.add(course.getCourseTitle());  // ✅ CORRECT METHOD
+                        credits.add(course.getCredit());           // ✅ USE REAL CREDIT
+                    } else {
+                        // Fallback if course not found in database
                         courseCodes.add(courseCode);
                         courseNames.add(extractCourseName(courseCode));
                         credits.add(0.5);
@@ -155,17 +183,18 @@ public class LoadTimetableInteractor implements LoadTimetableInputBoundary {
         }
     }
 
+    // Fallback method if course not found in database
     private String extractCourseName(String courseCode) {
         if (courseCode.startsWith("CSC")) {
-            return "Computer Science Course";
+            return "Computer Science Course (" + courseCode + ")";
         } else if (courseCode.startsWith("MAT")) {
-            return "Mathematics Course";
+            return "Mathematics Course (" + courseCode + ")";
         } else if (courseCode.startsWith("STA")) {
-            return "Statistics Course";
+            return "Statistics Course (" + courseCode + ")";
         } else if (courseCode.startsWith("ECO")) {
-            return "Economics Course";
+            return "Economics Course (" + courseCode + ")";
         } else {
-            return "Course";
+            return "Course (" + courseCode + ")";
         }
     }
 }
