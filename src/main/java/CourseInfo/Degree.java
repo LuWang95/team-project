@@ -1,6 +1,5 @@
 package CourseInfo;
 
-import Generator.DataAccess.JsonCourseDataAccess;
 
 import java.util.ArrayList;
 
