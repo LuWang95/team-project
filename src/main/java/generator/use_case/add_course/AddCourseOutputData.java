@@ -31,12 +31,15 @@ public class AddCourseOutputData {
     public String getCourseCode() {
         return courseCode;
     }
+
     public ArrayList<Section> getLectureSection() {
         return lectureSection;
     }
+
     public ArrayList<Section> getTutorialSection() {
         return tutorialSection;
     }
+
     public ArrayList<Section> getPracticalSection() {
         return practicalSection;
     }
@@ -44,6 +47,7 @@ public class AddCourseOutputData {
     public double getCredit() {
         return credit;
     }
+
     public String getSessionCode() {
         return sessionCode;
     }

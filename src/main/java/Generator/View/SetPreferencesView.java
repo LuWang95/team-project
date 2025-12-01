@@ -1,3 +1,4 @@
+
 package generator.view;
 
 import generator.data_access.FileUserDataAccessObject;
