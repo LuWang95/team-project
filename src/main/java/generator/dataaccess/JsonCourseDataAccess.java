@@ -37,7 +37,7 @@ public class JsonCourseDataAccess {
             String baseCode = r.course_code.trim().toUpperCase();
             String fullCode = baseCode;
             if (r.course_code.charAt(6) == 'H'){
-                if(Integer.parseInt(r.session)==20259){
+                if(Integer.parseInt(r.session) == 20259){
                     fullCode = baseCode + "F";
                 }else{
                     fullCode = baseCode + "S";
