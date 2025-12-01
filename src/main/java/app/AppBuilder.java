@@ -118,14 +118,15 @@ public class AppBuilder {
                         generateTimetableOutputBoundary,
                         sortTimetableInteractor);
 
+        // Load Timetable Use Case - PASS userDataAccessObject as 2nd parameter
         final LoadTimetableOutputBoundary loadTimetableOutputBoundary =
                 new LoadTimetablePresenter(displayTimetableViewModel, viewManagerModel);
         final LoadTimetableInputBoundary loadTimetableInteractor =
-                new LoadTimetableInteractor(loadTimetableOutputBoundary);
+                new LoadTimetableInteractor(loadTimetableOutputBoundary, userDataAccessObject);
         final LoadTimetableController loadTimetableController =
                 new LoadTimetableController(loadTimetableInteractor);
 
-        // UPDATED: Pass setPreferencesViewModel as last parameter
+        // SetPreferencesController with setPreferencesViewModel as 6th parameter
         final SetPreferencesController setPreferencesController = new SetPreferencesController(addCourseInteractor,
                 removeCourseInteractor, addDegreeInteractor, removeDegreeInteractor, generateTimetableInteractor,
                 setPreferencesViewModel);
