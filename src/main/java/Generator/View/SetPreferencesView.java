@@ -1,4 +1,3 @@
-
 package generator.view;
 
 import generator.data_access.FileUserDataAccessObject;
@@ -52,6 +51,7 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
     private final JTextField degreeInputField = new JTextField(15);
     private final JTextField courseInputField = new JTextField(15);
     private final ButtonGroup yearButtons = new ButtonGroup();
+    private final ButtonGroup timeButtonGroup = new ButtonGroup();
     private final JRadioButton[] timeButtons = new JRadioButton[3];
     private final JCheckBox sortTimetablesCheckbox = new JCheckBox("Sort timetables by walking distance");
 
@@ -193,7 +193,7 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
         SwingWorker<Void, Void> worker = new SwingWorker<>() {
             @Override
             protected Void doInBackground() {
-                setPreferencesController.displayTimetable();
+                setPreferencesController.displayTimetable(setPreferencesViewModel.getState().getTimes());
                 return null;
             }
 
@@ -393,6 +393,7 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
             radioTime.setBorder(new EmptyBorder(6, 0, 6, 0));
             timeButtonsPanel.add(radioTime);
             timeButtons[i] = radioTime;
+            timeButtonGroup.add(radioTime);
         }
 
         sortTimetablesCheckbox.setFont(BODY_FONT);
