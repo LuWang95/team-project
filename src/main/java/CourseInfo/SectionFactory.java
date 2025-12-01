@@ -3,7 +3,7 @@ package CourseInfo;
 import java.util.ArrayList;
 
 public  class SectionFactory {
-    public Section createSection(String sectionCode, ArrayList<Meeting> meetings) {
+    public static Section createSection(String sectionCode, ArrayList<Meeting> meetings) {
         String sectionType = sectionCode.substring(0, 3);
         switch (sectionType){
             case "LEC":
