@@ -3,6 +3,7 @@ package generator.use_case.generate_timetable;
 import java.util.ArrayList;
 
 public class GenerateTimetableInputData {
+    private boolean sortEnabled;
     private ArrayList<String> timePreferences;
 
     public GenerateTimetableInputData(boolean sortEnabled, ArrayList<String> timePreferences) {
