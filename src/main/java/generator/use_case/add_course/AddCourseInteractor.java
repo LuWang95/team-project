@@ -1,6 +1,6 @@
 package generator.use_case.add_course;
 
-import courseinfo.Course;
+import course_info.Course;
 
 public class AddCourseInteractor implements AddCourseInputBoundary {
     private final AddCourseDataAccessInterface addCourseDataAccessObject;

@@ -1,7 +1,7 @@
 package generator.data_access;
 
 import com.google.gson.Gson;
-import courseinfo.Degree;
+import course_info.Degree;
 
 import java.io.FileReader;
 import java.io.IOException;

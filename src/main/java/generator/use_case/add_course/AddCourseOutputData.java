@@ -1,6 +1,6 @@
 package generator.use_case.add_course;
 
-import courseinfo.Section;
+import course_info.Section;
 
 import java.util.ArrayList;
 

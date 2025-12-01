@@ -1,8 +1,8 @@
 package generator.use_case.sort_timetable;
 
-import courseinfo.Course;
-import courseinfo.Meeting;
-import courseinfo.Section;
+import course_info.Course;
+import course_info.Meeting;
+import course_info.Section;
 import generator.use_case.generate_timetable.GenerateTimetableDataAccessInterface;
 import generator.use_case.generate_timetable.TimetableDTO;
 

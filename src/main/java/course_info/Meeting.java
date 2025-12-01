@@ -1,4 +1,4 @@
-package courseinfo;
+package course_info;
 
 public class Meeting {
     String instructor;

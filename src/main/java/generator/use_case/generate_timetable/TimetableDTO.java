@@ -1,6 +1,6 @@
 package generator.use_case.generate_timetable;
 
-import courseinfo.Timetable;
+import course_info.Timetable;
 
 import java.util.ArrayList;
 

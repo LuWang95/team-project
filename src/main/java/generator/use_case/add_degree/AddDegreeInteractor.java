@@ -1,7 +1,7 @@
 package generator.use_case.add_degree;
 
-import courseinfo.Course;
-import courseinfo.Degree;
+import course_info.Course;
+import course_info.Degree;
 import generator.data_access.FileUserDataAccessObject;
 import generator.use_case.add_course.*;
 

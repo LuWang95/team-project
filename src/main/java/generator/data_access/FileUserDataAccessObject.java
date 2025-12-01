@@ -1,8 +1,8 @@
 package generator.data_access;
 
-import courseinfo.Degree;
+import course_info.Degree;
 import generator.use_case.add_course.AddCourseDataAccessInterface;
-import courseinfo.Course;
+import course_info.Course;
 import generator.use_case.add_degree.AddDegreeDataAccessInterface;
 import generator.use_case.remove_course.RemoveCourseDataAccessInterface;
 import generator.use_case.remove_degree.RemoveDegreeDataAccessInterface;

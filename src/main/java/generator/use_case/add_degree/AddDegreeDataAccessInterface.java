@@ -1,5 +1,5 @@
 package generator.use_case.add_degree;
-import courseinfo.Degree;
+import course_info.Degree;
 
 public interface AddDegreeDataAccessInterface {
 

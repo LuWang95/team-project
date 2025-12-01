@@ -1,6 +1,6 @@
 package generator.use_case.remove_degree;
 
-import courseinfo.Degree;
+import course_info.Degree;
 
 public class RemoveDegreeInteractor implements RemoveDegreeInputBoundary {
     private final RemoveDegreeDataAccessInterface removeDegreeDataAccessObject;

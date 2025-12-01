@@ -1,4 +1,4 @@
-package courseinfo;
+package course_info;
 
 import java.util.ArrayList;
 public class PracticalSection extends Section {

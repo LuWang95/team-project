@@ -1,6 +1,6 @@
 package generator.data_access;
 
-import courseinfo.*;
+import course_info.*;
 import com.google.gson.Gson;
 
 import java.io.FileReader;

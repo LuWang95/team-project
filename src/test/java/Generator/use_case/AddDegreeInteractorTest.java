@@ -1,6 +1,6 @@
 package generator.use_case;
 
-import courseinfo.Degree;
+import course_info.Degree;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;

@@ -1,6 +1,6 @@
 package generator.use_case.remove_course;
 
-import courseinfo.Course;
+import course_info.Course;
 
 public class RemoveCourseInteractor implements RemoveCourseInputBoundary {
     private final RemoveCourseDataAccessInterface removeCourseDataAccessObject;
