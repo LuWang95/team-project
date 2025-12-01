@@ -1,6 +1,6 @@
 package generator.view;
 
-import generator.interfaceadapter.ViewManagerModel;
+import generator.interface_adapter.ViewManagerModel;
 import javax.swing.*;
 import java.awt.*;
 import java.beans.PropertyChangeEvent;

@@ -1,10 +1,10 @@
 package generator.view;
 
-import generator.dataaccess.FileUserDataAccessObject;
-import generator.interfaceadapter.load_timetable.LoadTimetableController;
-import generator.interfaceadapter.set_preferences.SetPreferencesController;
-import generator.interfaceadapter.set_preferences.SetPreferencesState;
-import generator.interfaceadapter.set_preferences.SetPreferencesViewModel;
+import generator.data_access.FileUserDataAccessObject;
+import generator.interface_adapter.load_timetable.LoadTimetableController;
+import generator.interface_adapter.set_preferences.SetPreferencesController;
+import generator.interface_adapter.set_preferences.SetPreferencesState;
+import generator.interface_adapter.set_preferences.SetPreferencesViewModel;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
