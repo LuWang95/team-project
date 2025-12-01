@@ -144,9 +144,11 @@ public class  GenerateTimetableInteractor implements GenerateTimetableInputBound
             scoredTimetables.add(new ScoredTimetable(timetable, score));
         }
 
+        // sorts the arraylist in descending order
         scoredTimetables.sort((first, second) -> Integer.compare(second.score, first.score));
 
         final ArrayList<TimetableDTO> result = new ArrayList<>();
+        // converts the ScoreTimetable helper class back into TimetableDTO
         for (ScoredTimetable scored : scoredTimetables) {
             result.add(scored.timetable);
         }
@@ -156,7 +158,7 @@ public class  GenerateTimetableInteractor implements GenerateTimetableInputBound
 
     /**
      * Calculates a score for how well a timetable matches time preferences. Higher weight is given to earlier courses
-     * (more important).
+     * (more important). Lectures are prioritized over tutorials/practicals.
      * @param timetable the timetable to score
      * @param timePreferences the preferred time slots
      * @param courses the courses in priority order
@@ -172,28 +174,30 @@ public class  GenerateTimetableInteractor implements GenerateTimetableInputBound
             final String courseCode = courses.get(courseIndex).getCourseCode();
             final int weight = courses.size() - courseIndex;
 
-            if (isCourseInPreferredTime(table, courseCode, timePreferences)) {
-                score += weight * 100;
-            }
+            final int lectureScore = getCourseComponentScore(table, courseCode, timePreferences, "LEC");
+            final int tutorialScore = getCourseComponentScore(table, courseCode, timePreferences, "TUT");
+            final int practicalScore = getCourseComponentScore(table, courseCode, timePreferences, "PRA");
+
+            // Lectures weighted 3x, tutorials/practicals weighted 1x
+            score += weight * (lectureScore * 3 + tutorialScore + practicalScore);
         }
 
         return score;
     }
 
     /**
-     * Checks if a specific course appears in any of the preferred time slots. A course gets credit if ANY of its
-     * sessions are in preferred times.
+     * Calculates score for a specific component type (LEC, TUT, or PRA) of a course. Returns 100 if the component is
+     * in a preferred time slot, 0 otherwise.
      * @param table the timetable grid
      * @param courseCode the course code to check
      * @param timePreferences the preferred time slots
-     * @return true if at least one session of the course is in a preferred time slot
+     * @param componentType the component type to check ("LEC", "TUT", or "PRA")
+     * @return 100 if component is in preferred time, 0 otherwise
      */
-    private boolean isCourseInPreferredTime(ArrayList<ArrayList<ArrayList<String>>> table,
-                                             String courseCode,
-                                             ArrayList<String> timePreferences) {
-        boolean foundCourse = false;
-        boolean foundInPreferredTime = false;
-
+    private int getCourseComponentScore(ArrayList<ArrayList<ArrayList<String>>> table,
+                                         String courseCode,
+                                         ArrayList<String> timePreferences,
+                                         String componentType) {
         for (int day = 0; day < 5; day++) {
             final ArrayList<ArrayList<String>> daySchedule = table.get(day);
 
@@ -201,17 +205,18 @@ public class  GenerateTimetableInteractor implements GenerateTimetableInputBound
                 final ArrayList<String> slot = daySchedule.get(hour);
 
                 for (String entry : slot) {
-                    if (entry.startsWith(courseCode)) {
-                        foundCourse = true;
+                    // Check if this entry matches the course code and component type
+                    // Format is: "MAT137Y1LEC5101" or "MAT137Y1TUT0101"
+                    if (entry.startsWith(courseCode) && entry.contains(componentType)) {
                         if (isTimeSlotAllowed(hour, timePreferences)) {
-                            foundInPreferredTime = true;
+                            return 100;
                         }
                     }
                 }
             }
         }
 
-        return foundCourse && foundInPreferredTime;
+        return 0;
     }
 
     /**
