@@ -1,11 +1,12 @@
+
 package Generator.UseCase.add_degree;
 
 import CourseInfo.Course;
 import CourseInfo.Degree;
 import Generator.DataAccess.FileUserDataAccessObject;
-import Generator.UseCase.add_course.*;
-
-
+import Generator.UseCase.add_course.AddCourseDataAccessInterface;
+import Generator.UseCase.add_course.AddCourseOutputBoundary;
+import Generator.UseCase.add_course.AddCourseOutputData;
 
 public class AddDegreeInteractor implements AddDegreeInputBoundary {
     private final AddDegreeDataAccessInterface addDegreeDataAccessObject;
@@ -50,9 +51,9 @@ public class AddDegreeInteractor implements AddDegreeInputBoundary {
             /* Loop through degree's course codes and add them, defaulting to F sessions. */
             for (String str : addDegreeDataAccessObject.getDegreeByCode(input).getCourses()) {
 
-                if (str.length() > 8 ) {
-                    String strCut = str.substring(0,8);
-                    int yearCode = Character.getNumericValue(strCut.charAt(3));
+                if (str.length() > 8) {
+                    final String strCut = str.substring(0, 8);
+                    final int yearCode = Character.getNumericValue(strCut.charAt(3));
                     if (yearCode == FileUserDataAccessObject.Year) {
                         if (strCut.charAt(6) == 'Y') {
                             addReqs(strCut);
@@ -61,41 +62,47 @@ public class AddDegreeInteractor implements AddDegreeInputBoundary {
                             try {
                                 final String strF = strCut + "F";
                                 addReqs(strF);
-                            } catch (NullPointerException e) {
+                            }
+                            catch (NullPointerException e) {
                                 try {
                                     final String strS = strCut + "S";
                                     addReqs(strS);
-                                } catch (NullPointerException e2) {
-                                    addCoursePresenter.prepareAddCourseFailureView( str +" Not Found");
                                 }
-                            }
-                        }}
-                }
-                else {
-                int yearCode = Character.getNumericValue(str.charAt(3));
-                if (yearCode == FileUserDataAccessObject.Year) {
-                    if (str.charAt(6) == 'Y') {
-                        addReqs(str);
-                    }
-                    if (str.charAt(6) == 'H') {
-                        try {
-                            final String strF = str + "F";
-                            addReqs(strF);
-                        } catch (NullPointerException e) {
-                            try {
-                                final String strS = str + "S";
-                                addReqs(strS);
-                            } catch (NullPointerException f) {
-                                addCoursePresenter.prepareAddCourseFailureView( str + " Not Found");
+                                catch (NullPointerException e2) {
+                                    addCoursePresenter.prepareAddCourseFailureView(str + " Not Found");
+                                }
                             }
                         }
                     }
                 }
-            }}
+                else {
+                    final int yearCode = Character.getNumericValue(str.charAt(3));
+                    if (yearCode == FileUserDataAccessObject.Year) {
+                        if (str.charAt(6) == 'Y') {
+                            addReqs(str);
+                        }
+                        if (str.charAt(6) == 'H') {
+                            try {
+                                final String strF = str + "F";
+                                addReqs(strF);
+                            }
+                            catch (NullPointerException e) {
+                                try {
+                                    final String strS = str + "S";
+                                    addReqs(strS);
+                                }
+                                catch (NullPointerException f) {
+                                addCoursePresenter.prepareAddCourseFailureView(str + " Not Found");
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
-//extracted method to add courses.
+    // extracted method to add courses.
     private void addReqs(String str) {
         final Course course = addCourseDataAccessObject.getCoursebyCode(str);
         if (addCourseDataAccessObject.courseAlreadyAdded(str)) {
@@ -108,6 +115,6 @@ public class AddDegreeInteractor implements AddDegreeInputBoundary {
             addCourseDataAccessObject.add(course);
             addCoursePresenter.prepareAddCourseSuccessView(addCourseOutputData);
         }
-        }
+    }
 
 }

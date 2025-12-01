@@ -17,9 +17,8 @@
             "MAT136H1",
             "MAT137Y1",
             "MAT157Y1",
-            "ECO204Y1/ECO206Y1; ECO220Y1/ECO227Y1/( STA220H1, STA255H1)*/( STA237H1, STA238H1)/( STA257H1, STA261H1)",
-            "ECO204Y1",
-            "ECO206Y1",
+            "ECO204Y1/ECO206Y1",
+			"ECO220Y1/ECO227Y1/(STA220H1, STA255H1)*/( STA237H1, STA238H1)/( STA257H1, STA261H1)",
             "ECO227Y1",
             "STA237H1",
             "STA238H1",
@@ -48,9 +47,7 @@
             "RSM426H1",
             "ECO220Y1",
             "STA220H1",
-            "STA255H1",
-            "MGT100H1",
-            "RSM100H1"
+            "STA255H1"
         ]
     },
     {
