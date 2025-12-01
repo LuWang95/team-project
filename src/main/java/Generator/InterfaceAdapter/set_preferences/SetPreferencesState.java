@@ -12,6 +12,7 @@ public class SetPreferencesState {
     private String noSelectedCoursesError;
     private int year;
     private ArrayList<String> times;
+    private boolean sortEnabled = false;
 
     public ArrayList<String> getCourses() {
         return courses;
@@ -85,6 +86,14 @@ public class SetPreferencesState {
         this.noSelectedCoursesError = noSelectedCoursesError;
     }
 
+    public boolean isSortEnabled() {
+        return sortEnabled;
+    }
+
+    public void setSortEnabled(boolean sortEnabled) {
+        this.sortEnabled = sortEnabled;
+    }
+
     @Override
     public String toString() {
         return "AddCourseState{"
@@ -96,6 +105,7 @@ public class SetPreferencesState {
                 + ", morning='" + times.contains("Morning") + '\''
                 + ", afternoon='" + times.contains("Afternoon") + '\''
                 + ", evening='" + times.contains("Evening") + '\''
+                + ", sortEnabled='" + sortEnabled + '\''
                 + '}';
     }
 }
