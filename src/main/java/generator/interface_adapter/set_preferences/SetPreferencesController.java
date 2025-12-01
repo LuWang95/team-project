@@ -1,5 +1,7 @@
 package generator.interface_adapter.set_preferences;
 
+import java.util.ArrayList;
+
 import generator.use_case.add_course.*;
 import generator.use_case.add_degree.*;
 import generator.use_case.generate_timetable.GenerateTimetableInputBoundary;
@@ -66,9 +68,13 @@ public class SetPreferencesController {
         removeDegreeUseCaseInteractor.execute(removeDegreeInputData);
     }
 
-    public void displayTimetable() {
+    /**
+     * Executes displaying timetable with no time preference.
+     * @param timePreferences arraylist which stores the preferred time of the user
+     */
+    public void displayTimetable(ArrayList<String> timePreferences) {
         boolean sortEnabled = viewModel.getState().isSortEnabled();
-        GenerateTimetableInputData inputData = new GenerateTimetableInputData(sortEnabled);
+        final GenerateTimetableInputData inputData = new GenerateTimetableInputData(sortEnabled, timePreferences);
         generateTimetableUseCaseInteractor.execute(inputData);
     }
 }
