@@ -119,7 +119,9 @@ public class SortTimetableInteractor implements SortTimetableInputBoundary {
     }
 
     private Section findSectionByCode(List<Section> sections, String code) {
-        if (sections == null) return null;
+        if (sections == null) {
+            return null;
+        }
         for (Section s : sections) {
             if (s.getSectionCode().equals(code)) {
                 return s;

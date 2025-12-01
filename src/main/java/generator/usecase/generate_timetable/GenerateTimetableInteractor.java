@@ -110,7 +110,9 @@ public class GenerateTimetableInteractor implements GenerateTimetableInputBounda
     }
 
     private void addAllCombination(List<ArrayList<Section>> allSections, Timetable curTimetable, int index, List<String> courseCodes) {
-        if (rawTimetables.size() >= LIMIT) return;
+        if (rawTimetables.size() >= LIMIT) {
+            return;
+        }
         if (index == allSections.size()) {
             rawTimetables.add(new Timetable(curTimetable));
             return;
