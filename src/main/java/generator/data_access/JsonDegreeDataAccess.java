@@ -46,7 +46,7 @@ public class JsonDegreeDataAccess {
                             r.courseCodes);
                             for (String course : r.courseCodes) {
                                 degree.addCourse(course);
-                            };
+                            }
                     degreesByCode.put(degree_Code, degree);
                 }
 

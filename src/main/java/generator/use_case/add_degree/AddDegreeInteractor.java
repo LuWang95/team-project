@@ -25,7 +25,8 @@ public class AddDegreeInteractor implements AddDegreeInputBoundary {
 
     // checks if the degree to be added is already selected
     // if so, then sends an error message to be displayed
-    // if not, then records the added degree in the files and then tells the presenter to display the added course
+    // if not, then records the added degree in the files
+    // and then tells the presenter to display the added degree and courses
     @Override
     public void execute(AddDegreeInputData addDegreeInputData) {
         final String input = addDegreeInputData.getDegree().trim().toUpperCase();
@@ -49,7 +50,6 @@ public class AddDegreeInteractor implements AddDegreeInputBoundary {
 
             /* Loop through degree's course codes and add them, defaulting to F sessions. */
             for (String str : addDegreeDataAccessObject.getDegreeByCode(input).getCourses()) {
-
                 if (str.length() > 8 ) {
                     String strCut = str.substring(0,8);
                     int yearCode = Character.getNumericValue(strCut.charAt(3));
