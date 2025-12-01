@@ -20,16 +20,6 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Enumeration;
 
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.TitledBorder;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-
-import Generator.InterfaceAdapter.set_preferences.SetPreferencesController;
-import Generator.InterfaceAdapter.set_preferences.SetPreferencesState;
-import Generator.InterfaceAdapter.set_preferences.SetPreferencesViewModel;
-
 public class SetPreferencesView extends JPanel implements ActionListener, PropertyChangeListener {
 
     private final String viewName = "Set Preferences";
@@ -39,7 +29,6 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
     private final JTextField degreeInputField = new JTextField(15);
     private final JTextField courseInputField = new JTextField(15);
     private final ButtonGroup yearButtons = new ButtonGroup();
-    private final ButtonGroup timeButtonGroup = new ButtonGroup();
     private final JRadioButton[] timeButtons = new JRadioButton[3];
 
     private final JPanel degreesPanel = new JPanel();
@@ -203,7 +192,8 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
         degreeInputPanel.add(degreeInputField);
         degreeInputPanel.add(addDegreeBtn);
 
-        degreesPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+        // DEGREES PANEL APPEARANCE
+        degreesPanel.setLayout(new BoxLayout(degreesPanel, BoxLayout.Y_AXIS));
         degreesPanel.setBackground(Color.WHITE);
         degreesPanel.setBorder(BorderFactory.createTitledBorder(
                 BorderFactory.createLineBorder(Color.GRAY),
@@ -282,8 +272,10 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
         courseInputPanel.add(courseInputField);
         courseInputPanel.add(addCourseBtn);
 
-        coursesPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+        // COURSES PANEL APPEARANCE
+        coursesPanel.setLayout(new BoxLayout(coursesPanel, BoxLayout.Y_AXIS));
         coursesPanel.setBackground(Color.WHITE);
+        coursesPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
         coursesPanel.setBorder(BorderFactory.createTitledBorder(
                 BorderFactory.createLineBorder(Color.GRAY),
                 "Selected Courses",
@@ -340,11 +332,10 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
         timeButtonsPanel.setBackground(Color.WHITE);
         final String[] possibleTimes = {"Morning", "Afternoon", "Evening"};
         for (int i = 0; i < possibleTimes.length; i++) {
-            final JRadioButton radioTime = new JRadioButton(possibleTimes[i]);
+            JRadioButton radioTime = new JRadioButton(possibleTimes[i]);
             radioTime.setBackground(Color.WHITE);
-            radioTime.setFont(new Font("Times New Roman", Font.PLAIN, 12));
+            radioTime.setFont(new Font("Times New Roman", Font.PLAIN, 12)); // CHANGED: Times New Roman
             timeButtonsPanel.add(radioTime);
-            timeButtonGroup.add(radioTime);
             timeButtons[i] = radioTime;
         }
         timePanel.add(timeButtonsPanel);
@@ -362,12 +353,10 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
             public void insertUpdate(DocumentEvent e) {
                 documentListenerHelper();
             }
-
             @Override
             public void removeUpdate(DocumentEvent e) {
                 documentListenerHelper();
             }
-
             @Override
             public void changedUpdate(DocumentEvent e) {
                 documentListenerHelper();
@@ -383,7 +372,7 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
 
     private void addYearListener() {
         for (Enumeration<AbstractButton> e = yearButtons.getElements(); e.hasMoreElements();) {
-            final JRadioButton yearButton = (JRadioButton) e.nextElement();
+            JRadioButton yearButton = (JRadioButton) e.nextElement();
             yearButton.addItemListener(new ItemListener() {
                 @Override
                 public void itemStateChanged(ItemEvent e) {
@@ -402,12 +391,10 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
             public void insertUpdate(DocumentEvent e) {
                 documentListenerHelper();
             }
-
             @Override
             public void removeUpdate(DocumentEvent e) {
                 documentListenerHelper();
             }
-
             @Override
             public void changedUpdate(DocumentEvent e) {
                 documentListenerHelper();
@@ -417,25 +404,7 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
 
                 final SetPreferencesState setPreferencesState = setPreferencesViewModel.getState();
                 setPreferencesState.setSelectedDegree(degreeInputField.getText());
-     //         setPreferencesState.setSelectedCourse("ECO101H1F");
                 setPreferencesViewModel.setState(setPreferencesState);
-
-/*                if (setPreferencesState.getYear()==1){
-                    for (String code : setPreferencesState.getDegrees()) {
-                        if (code.charAt(3)=='1') {
-                            setPreferencesState.setSelectedCourse(code);
-                            setPreferencesViewModel.setState(setPreferencesState);
-                        }
-                    }
-                setPreferencesState.setSelectedCourse("ECO101H1F");}
-*/
- /*               System.out.println(setPreferencesState.getYear());
-                System.out.println("getyear");
-                System.out.println(setPreferencesState.getCourses());
-                System.out.println("getCourse");
-                System.out.println(setPreferencesState.getDegrees());
-                System.out.println("getDegree");
-*/
             }
         });
     }
@@ -446,11 +415,11 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
                 @Override
                 public void itemStateChanged(ItemEvent e) {
                     final SetPreferencesState setPreferencesState = setPreferencesViewModel.getState();
-                    final String timeOfDay = timeButton.getText();
-                    if (timeButton.isSelected()) {
-                        setPreferencesState.getTimes().clear();
+                    String timeOfDay = timeButton.getText();
+                    if (timeButton.isSelected())
                         setPreferencesState.getTimes().add(timeOfDay);
-                    }
+                    else
+                        setPreferencesState.getTimes().remove(timeOfDay);
                     setPreferencesViewModel.setState(setPreferencesState);
                 }
             });
@@ -465,18 +434,19 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
         coursesPanel.removeAll();
 
         if (errorMessage != null) {
-            final JLabel errorMessageLabel = new JLabel(errorMessage);
+            JLabel errorMessageLabel = new JLabel(errorMessage);
             errorMessageLabel.setForeground(Color.RED);
-            errorMessageLabel.setFont(new Font("Times New Roman", Font.PLAIN, 11));
+            errorMessageLabel.setFont(new Font("Times New Roman", Font.PLAIN, 11)); // CHANGED: Times New Roman
+            errorMessageLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
             coursesPanel.add(errorMessageLabel);
         }
 
         for (String course: coursesSelected) {
-            final JPanel coursePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 2));
+            final JPanel coursePanel = new JPanel(new BorderLayout());
             coursePanel.setBackground(new Color(230, 240, 255));
             coursePanel.setBorder(BorderFactory.createLineBorder(new Color(0, 127, 163), 1));
 
-            final JLabel courseLabel = new JLabel(course);
+            JLabel courseLabel = new JLabel(course);
             courseLabel.setFont(new Font("Times New Roman", Font.PLAIN, 11)); // CHANGED: Times New Roman
             coursePanel.add(courseLabel);
 
@@ -505,23 +475,30 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
         degreesPanel.removeAll();
 
         if (errorMessage != null) {
-            final JLabel errorMessageLabel = new JLabel(errorMessage);
+            JLabel errorMessageLabel = new JLabel(errorMessage);
             errorMessageLabel.setForeground(Color.RED);
             errorMessageLabel.setFont(new Font("Times New Roman", Font.PLAIN, 11));
+            errorMessageLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
             degreesPanel.add(errorMessageLabel);
+            degreesPanel.add(Box.createVerticalStrut(5));
         }
 
         for (String degree: degreesSelected) {
-            final JPanel degreePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 2));
+            final JPanel degreePanel = new JPanel(new BorderLayout());
             degreePanel.setBackground(new Color(230, 240, 255));
-            degreePanel.setBorder(BorderFactory.createLineBorder(new Color(0, 127, 163), 1));
+            degreePanel.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(new Color(0, 127, 163), 1),
+                    new EmptyBorder(4, 8, 4, 8)
+            ));
+            degreePanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 32));
+            degreePanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
             final JLabel degreeLabel = new JLabel(degree);
             degreeLabel.setFont(new Font("Times New Roman", Font.PLAIN, 11));
-            degreePanel.add(degreeLabel);
+            degreePanel.add(degreeLabel, BorderLayout.WEST);
 
-            final JButton degreeButton = new JButton("✕");
-            degreeButton.setFont(new Font("Times New Roman", Font.BOLD, 16));
+            JButton degreeButton = new JButton("✕");
+            degreeButton.setFont(new Font("Times New Roman", Font.BOLD, 16)); // CHANGED: Times New Roman
             degreeButton.setMargin(new Insets(2, 8, 2, 8));
             degreeButton.setBackground(new Color(70, 70, 70));
             degreeButton.setForeground(Color.WHITE);
@@ -535,7 +512,6 @@ public class SetPreferencesView extends JPanel implements ActionListener, Proper
 
         degreesPanel.revalidate();
         degreesPanel.repaint();
-  //    displayCourses(degreesSelected);
         coursesPanel.revalidate();
         coursesPanel.repaint();
     }
