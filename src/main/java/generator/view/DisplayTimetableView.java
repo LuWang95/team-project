@@ -1,10 +1,10 @@
 package generator.view;
 
-import generator.interfaceadapter.display_timetable.DisplayTimetableController;
-import generator.interfaceadapter.display_timetable.DisplayTimetableState;
-import generator.interfaceadapter.display_timetable.DisplayTimetableViewModel;
-import generator.interfaceadapter.save_timetable.SaveTimetableController;
-import generator.usecase.generate_timetable.TimetableDTO;
+import generator.interface_adapter.display_timetable.DisplayTimetableController;
+import generator.interface_adapter.display_timetable.DisplayTimetableState;
+import generator.interface_adapter.display_timetable.DisplayTimetableViewModel;
+import generator.interface_adapter.save_timetable.SaveTimetableController;
+import generator.use_case.generate_timetable.TimetableDTO;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
