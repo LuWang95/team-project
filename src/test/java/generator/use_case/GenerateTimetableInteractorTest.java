@@ -165,6 +165,41 @@ public class GenerateTimetableInteractorTest {
     }
 
     @Test
+    public void testGenerateTimetable_sortDisabled_twoNonConflictingFallCourses_with_csc110y1() {
+        List<Course> courses = new ArrayList<>();
+        courses.add(createSimpleFallCourse("CSC207H1", 1, 600, 660));   // Mon 10-11
+        courses.add(createSimpleFallCourse("CSC110Y1", 2, 840, 900));   // Tue 14-15
+
+        FakeDataAccess dao = new FakeDataAccess(courses);
+        PresenterSpy presenter = new PresenterSpy();
+        SortSpy sortSpy = new SortSpy();
+
+        GenerateTimetableInteractor interactor =
+                new GenerateTimetableInteractor(dao, presenter, sortSpy);
+        ArrayList<String> timePreference = new ArrayList<>(List.of(""));
+
+        GenerateTimetableInputData inputData = new GenerateTimetableInputData(false, timePreference);
+
+        interactor.execute(inputData);
+
+        assertFalse("Failure view should NOT be called", presenter.failureCalled);
+        assertNotNull("Success data must exist", presenter.successData);
+
+        List<TimetableDTO> fall = presenter.successData.getFallTimeTables();
+        List<TimetableDTO> winter = presenter.successData.getWinterTimeTables();
+
+        assertNotNull("Fall timetables cannot be null", fall);
+        assertTrue("There should be at least 1 valid fall timetable", fall.size() > 0);
+
+        assertNotNull("Winter timetables cannot be null", winter);
+        assertEquals("When there are no winter courses, we get exactly 1 empty timetable",
+                1, winter.size());
+
+        assertFalse("Sort interactor should NOT be called when sort is disabled", sortSpy.called);
+    }
+
+
+    @Test
     public void testGenerateTimetable_sortDisabled_noCourses_failure() {
         FakeDataAccess dao = new FakeDataAccess(new ArrayList<>());
         PresenterSpy presenter = new PresenterSpy();

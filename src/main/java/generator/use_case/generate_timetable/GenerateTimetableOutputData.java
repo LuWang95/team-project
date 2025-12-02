@@ -21,8 +21,4 @@ public class GenerateTimetableOutputData {
         return fallTimeTables;
     }
 
-    public void setAllTimeTables (ArrayList<TimetableDTO> timeTables) {
-        this.winterTimeTables = timeTables;
-        this.fallTimeTables = timeTables;
-    }
 }
