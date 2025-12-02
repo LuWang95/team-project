@@ -8,9 +8,7 @@ import generator.data_access.FileUserDataAccessObject;
 import generator.use_case.add_course.AddCourseDataAccessInterface;
 import generator.use_case.remove_course.*;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class RemoveCourseInteractorTest {
 
