@@ -142,8 +142,9 @@ public class GenerateTimetableInteractorTest {
 
         GenerateTimetableInteractor interactor =
                 new GenerateTimetableInteractor(dao, presenter, sortSpy);
+        ArrayList<String> timePreference = new ArrayList<>(List.of(""));
 
-        GenerateTimetableInputData inputData = new GenerateTimetableInputData(false);
+        GenerateTimetableInputData inputData = new GenerateTimetableInputData(false, timePreference);
 
         interactor.execute(inputData);
 
@@ -171,8 +172,9 @@ public class GenerateTimetableInteractorTest {
 
         GenerateTimetableInteractor interactor =
                 new GenerateTimetableInteractor(dao, presenter, sortSpy);
+        ArrayList<String> timePreference = new ArrayList<>(List.of(""));
 
-        GenerateTimetableInputData inputData = new GenerateTimetableInputData(false);
+        GenerateTimetableInputData inputData = new GenerateTimetableInputData(false, timePreference);
 
         interactor.execute(inputData);
 
@@ -192,8 +194,9 @@ public class GenerateTimetableInteractorTest {
 
         GenerateTimetableInteractor interactor =
                 new GenerateTimetableInteractor(dao, presenter, sortSpy);
+        ArrayList<String> timePreference = new ArrayList<>(List.of(""));
 
-        GenerateTimetableInputData inputData = new GenerateTimetableInputData(false);
+        GenerateTimetableInputData inputData = new GenerateTimetableInputData(false, timePreference);
 
         interactor.execute(inputData);
 
@@ -229,8 +232,9 @@ public class GenerateTimetableInteractorTest {
 
         GenerateTimetableInteractor interactor =
                 new GenerateTimetableInteractor(dao, presenter, sortSpy);
+        ArrayList<String> timePreference = new ArrayList<>(List.of(""));
 
-        GenerateTimetableInputData inputData = new GenerateTimetableInputData(true);
+        GenerateTimetableInputData inputData = new GenerateTimetableInputData(true, timePreference);
 
         interactor.execute(inputData);
 
@@ -259,8 +263,9 @@ public class GenerateTimetableInteractorTest {
 
         GenerateTimetableInteractor interactor =
                 new GenerateTimetableInteractor(dao, presenter, sortSpy);
+        ArrayList<String> timePreference = new ArrayList<>(List.of(""));
 
-        GenerateTimetableInputData inputData = new GenerateTimetableInputData(true);
+        GenerateTimetableInputData inputData = new GenerateTimetableInputData(true, timePreference);
 
         interactor.execute(inputData);
 
@@ -280,8 +285,9 @@ public class GenerateTimetableInteractorTest {
 
         GenerateTimetableInteractor interactor =
                 new GenerateTimetableInteractor(dao, presenter, sortSpy);
+        ArrayList<String> timePreference = new ArrayList<>(List.of(""));
 
-        GenerateTimetableInputData inputData = new GenerateTimetableInputData(true);
+        GenerateTimetableInputData inputData = new GenerateTimetableInputData(true, timePreference);
 
         interactor.execute(inputData);
 

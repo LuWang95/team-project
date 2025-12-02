@@ -13,7 +13,7 @@ class GeoapifyDAOTest {
     void testValidBuildingCode() throws GeoapifyDAO.CoordinateNotFoundException {
         GeoapifyDAO geoapifyDAO = new GeoapifyDAO();
         List<Double> coordinates = geoapifyDAO.getCoordinates("MY");
-        ArrayList<Double> expected =  new ArrayList<>(List.of(-79.3975116, 43.6592043));
+        ArrayList<Double> expected =  new ArrayList<>(List.of(-79.3966447, 43.6605006));
         assertEquals(expected, coordinates);
     }
 

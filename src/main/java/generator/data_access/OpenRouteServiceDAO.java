@@ -1,6 +1,7 @@
 package generator.data_access;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -24,6 +25,10 @@ public class OpenRouteServiceDAO {
     public double getDistance(ArrayList<Double> startCoords, ArrayList<Double> endCoords)
             throws NoDistanceFoundException {
         final Client client = ClientBuilder.newClient();
+
+        if (startCoords.isEmpty() || endCoords.isEmpty()) {
+            throw new NoDistanceFoundException(startCoords, endCoords);
+        }
 
         // Takes in longtitude then latitude
         final Response response = client.target(OpenRouteServiceConfig.BASE_URL)
