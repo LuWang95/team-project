@@ -50,49 +50,82 @@ public class SortTimetableInteractor implements SortTimetableInputBoundary {
         double total = 0.0;
         ArrayList<ArrayList<ArrayList<String>>> table = dto.getTable();
 
-        for (int day = 0; day < table.size(); day++) {
-            ArrayList<ArrayList<String>> dayRow = table.get(day);
-
-            String prevBuilding = null;
-            boolean havePrev = false;
-
-            for (int slot = 0; slot < dayRow.size(); slot++) {
-                ArrayList<String> cell = dayRow.get(slot);
-                if (cell.isEmpty()) {
-                    continue;
-                }
-
-                String block = cell.get(0);              // e.g. "CSC207H1FLEC0101"
-
-                // Safely parse courseCode + sectionCode from block
-                String courseCode;
-                String sectionCode;
-
-                // base code is always 8 chars like "CSC207H1" or "CSC110Y1"
-                if (block.length() >= 8 && block.charAt(6) == 'H'
-                        && block.length() >= 9
-                        && (block.charAt(8) == 'F' || block.charAt(8) == 'S')) {
-                    // half course with F/S: "CSC207H1F"
-                    courseCode = block.substring(0, 9);
-                    sectionCode = block.substring(9);
-                } else {
-                    // full-year or anything else: "CSC110Y1"
-                    courseCode = block.substring(0, 8);
-                    sectionCode = block.substring(8);
-                }
-
-                String building = findBuilding(courseCode, sectionCode);
-
-                if (havePrev && prevBuilding != null && building != null
-                        && !prevBuilding.equals(building)) {
-                    total += distanceDataAccess.getWalkingDistance(prevBuilding, building);
-                }
-                prevBuilding = building;
-                havePrev = true;
-            }
+        for (ArrayList<ArrayList<String>> dayRow : table) {
+            total += computeDayWalkingDistance(dayRow);
         }
 
         return total;
+    }
+
+    /**
+     * Computes walking distance for a single day’s row in the timetable.
+     */
+    private double computeDayWalkingDistance(List<ArrayList<String>> dayRow)
+            throws DistanceDataAccessInterface.DistanceLookupException {
+
+        double total = 0.0;
+        String prevBuilding = null;
+        boolean havePrev = false;
+
+        for (ArrayList<String> cell : dayRow) {
+            if (cell.isEmpty()) {
+                continue;
+            }
+
+            String block = cell.get(0); // e.g. "CSC207H1FLEC0101"
+            ParsedBlock parsed = parseCourseBlock(block);
+            String building = findBuilding(parsed.courseCode, parsed.sectionCode);
+
+            if (shouldAddDistance(havePrev, prevBuilding, building)) {
+                total += distanceDataAccess.getWalkingDistance(prevBuilding, building);
+            }
+
+            prevBuilding = building;
+            havePrev = true;
+        }
+
+        return total;
+    }
+
+    private boolean shouldAddDistance(boolean havePrev, String prevBuilding, String currentBuilding) {
+        return havePrev
+                && prevBuilding != null
+                && currentBuilding != null
+                && !prevBuilding.equals(currentBuilding);
+    }
+
+    /**
+     * Safely parse courseCode + sectionCode from a block like "CSC207H1FLEC0101".
+     */
+    private ParsedBlock parseCourseBlock(String block) {
+        String courseCode;
+        String sectionCode;
+
+        // base code is always 8 chars like "CSC207H1" or "CSC110Y1"
+        if (block.length() >= 8
+                && block.charAt(6) == 'H'
+                && block.length() >= 9
+                && (block.charAt(8) == 'F' || block.charAt(8) == 'S')) {
+            // half course with F/S: "CSC207H1F"
+            courseCode = block.substring(0, 9);
+            sectionCode = block.substring(9);
+        } else {
+            // full-year or anything else: "CSC110Y1"
+            courseCode = block.substring(0, 8);
+            sectionCode = block.substring(8);
+        }
+
+        return new ParsedBlock(courseCode, sectionCode);
+    }
+
+    private static class ParsedBlock {
+        final String courseCode;
+        final String sectionCode;
+
+        ParsedBlock(String courseCode, String sectionCode) {
+            this.courseCode = courseCode;
+            this.sectionCode = sectionCode;
+        }
     }
 
     private final Map<String, String> buildingCache = new HashMap<>();
@@ -126,7 +159,6 @@ public class SortTimetableInteractor implements SortTimetableInputBoundary {
         buildingCache.put(key, building);
         return building;
     }
-
 
     private Section findSectionByCode(List<Section> sections, String code) {
         if (sections == null) {
