@@ -1,4 +1,4 @@
-package Generator.DataAccess;
+package generator.data_access;
 
 import java.util.ArrayList;
 import java.util.List;
