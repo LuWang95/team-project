@@ -14,8 +14,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class GeoapifyDAO {
-    protected static final Map<String, String> BuildingCodeToAddress = new HashMap<>();
     private final int SUCCESS_CODE = 200;
+    protected static final Map<String, String> BuildingCodeToAddress = new HashMap<>();
 
     static {
         BuildingCodeToAddress.put("DA", "1 Spadina Crescent");
@@ -150,7 +150,17 @@ public class GeoapifyDAO {
      */
     public List<Double> getCoordinates(String buildingCode) throws CoordinateNotFoundException {
         final Client client = ClientBuilder.newClient();
-        final String address = BuildingCodeToAddress.get(buildingCode);
+        final String address;
+
+        // checks if building code is valid
+        if (buildingCode.isEmpty()) {
+            throw new CoordinateNotFoundException(buildingCode);
+        }
+
+        address = BuildingCodeToAddress.get(buildingCode);
+        if (address == null) {
+            throw new CoordinateNotFoundException(buildingCode);
+        }
 
         final Response response = client.target(GeoapifyConfig.BASE_URL)
                 .queryParam("text", address)
