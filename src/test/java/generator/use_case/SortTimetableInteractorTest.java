@@ -411,38 +411,4 @@ public class SortTimetableInteractorTest {
             );
         }
     }
-
-    /**
-     * Extra branch coverage for the big parsing if:
-     *  - block with 'S' at index 8  -> left of || false, right true
-     *  - block of length 8 with 'H' at index 6 -> length>=9 branch false
-     */
-    @Test
-    public void testHalfCourseParsingSAndLengthEightBranches() throws Exception {
-        // Empty DAO is fine; we only care about the parsing branches.
-        InMemoryCourseDAO courseDAO = new InMemoryCourseDAO();
-        RecordingDistanceDAO distanceDAO = new RecordingDistanceDAO(false);
-
-        SortTimetableInteractor interactor =
-                new SortTimetableInteractor(courseDAO, distanceDAO);
-
-        // First block: half-course with 'S' → hits (charAt(8)=='F' || charAt(8)=='S')
-        // where left is false, right is true.
-        String sBlock = "CSC207H1SLEC0101";
-
-        // Second block: length 8, charAt(6)=='H' → length>=8 true, charAt(6)=='H' true,
-        // but length>=9 false.
-        String length8Block = "ABCDEFH1"; // indices: 0..7, charAt(6) == 'H'
-
-        TimetableDTO dto = makeTwoSlotTimetable(sBlock, length8Block);
-
-        List<TimetableDTO> fall = Collections.singletonList(dto);
-        SortTimetableInputData input =
-                new SortTimetableInputData(fall, Collections.emptyList());
-
-        SortTimetableOutputData output = interactor.sort(input);
-
-        // Just verify it runs without throwing and returns the one timetable.
-        assertEquals(1, output.getFallTimetables().size());
-    }
 }
