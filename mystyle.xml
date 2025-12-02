@@ -4,8 +4,35 @@
         "https://checkstyle.org/dtds/configuration_1_2.dtd">
 
 <module name="Checker">
+
+    <property name="severity" value="warning"/>
+
+    <module name="FileTabCharacter">
+        <property name="eachLine" value="false"/>
+    </module>
+
+    <module name="LineLength">
+        <property name="max" value="140"/>
+        <property name="ignorePattern" value="^package.*|^import.*|http://|https://"/>
+    </module>
+
+    <module name="NewlineAtEndOfFile"/>
+
     <module name="TreeWalker">
         <module name="UnusedImports"/>
+
+        <module name="EmptyBlock">
+
+            <property name="option" value="TEXT"/>
+        </module>
+
+        <module name="NeedBraces"/>
+
+        <module name="WhitespaceAround">
+            <property name="tokens"
+                      value="ASSIGN, PLUS, MINUS, STAR, DIV, MOD,
+                             EQUAL, NOT_EQUAL, LT, GT, LE, GE,
+                             LAND, LOR"/>
+        </module>
     </module>
 </module>
-
