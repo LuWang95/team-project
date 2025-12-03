@@ -1,60 +1,62 @@
-# Team Project
+## Project summary
 
-## 1. Overview 
-Our team project is an application that helps Arts & Sciences students at the University of Toronto generate, compare, and refine timetables based on selected courses and degrees and time preferences. 
-By entering degree programs and course codes, studens are able to:
-1) Generate timetables that satisfy degree requirements.
-2) Apply time preferences (morning/afternoon/evening) and insert academic information (year of study).
-3) Sort timetables by walking distance between buildings or other criteria.
-4) Fix or manually edit individual sections to collaborate with friends.
-5) Save drafts of timetables for future reference.
+This application is a personalized student timetable generator for UofT that allows users to add individual courses or entire degrees, generate valid schedules for fall and winter, and adjust preferences such as preferred time of day. Users can save and reload timetables, export them as CSV or PNG, and sort different schedule options by estimated walking distance between consecutive classes using external mapping APIs.
 
-## 2. User Stories
+## User stories
 
-| #  | User Story                                                                               | Person(s) Responsible          |
-|----|--------------------------------------------------------------------------------------------------------|-------------------------------|
-| 1  | Compare different timetables in a clear view to choose the best one.                                  | Chenhao Sun                   |
-| 2  | Fix (lock) specific lecture sections so they stay with friends’ schedules.                             | Shiraz Ali                    |
-| 3  | Sort timetables (e.g., by gaps between lectures / walking distance).                                   | Septian Pasaribu        |
-| 4  | Manually modify lecture sections to customize a timetable.                                             | Lu Wang     |
-| 5  | Save drafts of timetables so decisions don’t need to be immediate.                                     | Jeremy Tam             |
-| 6  | Start from the minimum set of required courses and add electives as desired.                           | Peter Xu        |
-| 7  | Choose between equivalent courses (MAT235 vs MAT237, CSC236 vs CSC240).                                | Peter Xu / Lu Wang                    |
-| 8  | See conflicts highlighted while editing, to avoid invalid schedules.                                   | Shiraz Ali / Septian Pasaribu                    |
-| 9  | Apply time-of-day preferences for lecture sections.                                                    | Chenhao Sun / Jeremy Tam               |
-| 10 | See where elective slots appear and fill them with chosen courses.                                     | Whole team      |
+Current implemented and planned user stories include the following.
 
-## 3. Use Cases 
+- As a user, I can add and remove courses from my timetable so that my schedule only includes the courses I actually plan to take.
+- As a user, I can add and remove degrees (and select a year) so that required courses for that degree and year are automatically added to my timetable.
+- As a user, I can generate a timetable from my selected courses (and degrees) so that I see a valid schedule for both fall and winter semesters.
+- As a user, I can regenerate the timetable so that I can explore alternative valid schedules while keeping the same course set.
+- As a user, I can modify my preferences (such as preferred time of day) after generating a timetable so that I can refine my schedule without starting over.
+- As a user, I can save a timetable to a CSV file and export it as a PNG so that I can store and share my schedule outside the application.
+- As a user, I can load a previously saved timetable from CSV so that I can continue working with an existing schedule.
+- As a user, I can sort my set of generated timetables by total walking distance so that I can quickly choose the schedule that minimizes walking between classes.
 
-### 1) Add Course
-Allows users to manually add individual courses to their timetable by entering course codes. The system validates the course code, retrieves available lecture sections from the course database, and adds the selected course to the user's course list. This enables students to include elective courses beyond their degree requirements and customize their academic schedule.
-### 2) Remove Course
-Enables users to delete courses from their selected course list. When a course is removed, all associated lecture sections are cleared from the timetable, freeing up those time slots. The system checks if the course is locked (fixed) before deletion and provides appropriate warnings to prevent accidental removal of important courses.
-### 3) Add Degree
-Allows users to select their academic program (degree/major) from the Faculty of Arts & Science. The system automatically retrieves all mandatory courses required for that degree and presents equivalent course options (e.g., MAT235 vs MAT237, CSC236 vs CSC240) for user selection. This streamlines the course selection process by ensuring degree requirements are met.
-### 4) Remove Degree
-Enables users to remove a previously added degree from their preferences. When a degree is removed, all associated mandatory courses are cleared from the course list, allowing users to start fresh or switch to a different program without manually removing individual courses.
-### 5) Generate Timetable
-Creates optimized timetables based on selected courses and user preferences (time of day, year of study). The system generates multiple valid timetable combinations by finding non-conflicting lecture sections for all courses, applying sorting algorithms to rank timetables by criteria such as walking distance between classes and time gaps between lectures. Users can view different generated options.
-### 6) Sort Timetable
-Organizes generated timetables according to user-selected criteria, such as minimizing walking distance between consecutive classes, reducing gaps between lectures, or prioritizing preferred time slots (morning/afternoon/evening). This helps students quickly identify the most convenient schedule from multiple generated options.
-### 7) Regenerate Timetable
-Generates a new timetable configuration from the pool of possible schedules without changing user preferences or selected courses. This allows users to cycle through different valid combinations of lecture sections to find alternative schedules that better suit their needs, while keeping locked (fixed) courses unchanged.
-### 8) Save Timetable
-Exports the current timetable to a CSV file that users can save to their local computer. The file includes complete schedule information for both Fall and Winter semesters, preserving all course selections and lecture timings. This enables students to keep drafts of their schedules without making immediate enrollment decisions.
-### 9) Load Timetable
-Imports a previously saved timetable from a CSV file, restoring the complete schedule including all courses, lecture sections, and timing information for both Fall and Winter semesters.
+Who is responsible for each story?
+
+- Adding/removing courses: Jeremy Tam
+- Adding/removing degrees: Peter Xu
+- Generating Timetable: Lu Wang
+- Regenerating timetable: Chenhao Sun
+- Modifying preferences: Chenhao Sun
+- Saving/loading timetables: Shiraz Ali
+- Sorting timetables by walking distance: Septian 
 
 
+## APIs used
 
-Please keep this up-to-date with information about your project throughout the term.
+This project uses mapping and routing APIs to estimate walking distances between class locations.
 
-The readme should include information such as:
-- a summary of what your application is all about
-- a list of the user stories, along with who is responsible for each one
-- information about the API(s) that your project uses 
-- screenshots or animations demonstrating current functionality
+- Geoapify API  
+  - Purpose: Look up geographic coordinates for UofT campus buildings based on building codes used in course locations.
+- OpenRouteService API  
+  - Purpose: Compute walking distances between two building coordinates to estimate how far a student needs to walk between consecutive classes in a given timetable.
 
-By keeping this README up-to-date,
-your team will find it easier to prepare for the final presentation
-at the end of the term.
+These APIs are accessed through data access objects (e.g., Geoapify DAO and OpenRouteService DAO) that implement the DistanceDataAccessInterface used by the timetable sorting use case.
+
+## Current functionality screenshots
+
+Below is a checklist of suggested screenshots or short animations to include in this README as the project evolves.[1]
+
+- Timet<img width="841" height="291" alt="Screenshot 2025-12-03 at 7 11 31 AM" src="https://github.com/user-attachments/assets/97a8e95c-fb67-46f9-957a-290bb669f3e2" />
+able Builder main screen, showing:
+  - Academic information (degree, year of study) and course list input.
+  - Preferences section for selecting preferred time of day (morning/afternoon/evening).
+- Generated timetable view:
+  - Fall and winter timetable grids with courses placed in appropriate time slots.
+  - Enrolled courses summary with course codes, names, and credits.
+- Add/remove courses and degrees:
+  - UI for entering a course or degree code and confirmation of successful addition/removal.
+- Save/load timetables:
+  - “Save CSV” and “Export PNG” dialogs and example of loading a timetable from a CSV file.
+- Sorting by walking distance:
+  - Control or button to sort timetables, and comparison of timetables before and after sorting by walking distance.
+
+When available, add Markdown image links pointing to files in your repository, for example:
+
+- ![Timetable Builder main view](docs/images/timetable-builderdocs/images/generated-timetable section with real image paths and new screenshots as features are implemented or changed.
+
+[1](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/145969727/d7e5c889-c756-4913-af10-8b34ec7b85a6/Project-Presentation.pdf)
